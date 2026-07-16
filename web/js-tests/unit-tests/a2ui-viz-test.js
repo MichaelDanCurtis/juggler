@@ -13,8 +13,8 @@
  */
 
 import { assert } from '../utilities/test-helpers.js';
-import { renderSurface } from '../../extensions/juggler-a2ui/a2ui/renderer.js';
-import { buildSymbol, SYMBOL_NAMES } from '../../extensions/juggler-a2ui/a2ui/symbols.js';
+import { renderSurface } from '../../sdk/a2ui.js';
+import { buildSymbol, SYMBOL_NAMES } from '../../sdk/a2ui.js';
 
 /**
  * @typedef {object} TestResult
@@ -28,7 +28,7 @@ import { buildSymbol, SYMBOL_NAMES } from '../../extensions/juggler-a2ui/a2ui/sy
  * @param {string} type - Component type
  * @param {object} props - Component props
  * @param {object} [dataModel] - Surface data model
- * @param {import('../../extensions/juggler-a2ui/a2ui/renderer.js').SurfaceCallbacks} [callbacks] - Callbacks
+ * @param {import('../../sdk/a2ui.js').SurfaceCallbacks} [callbacks] - Callbacks
  * @returns {HTMLElement} The rendered surface
  */
 function renderOne(type, props, dataModel = {}, callbacks = {}) {

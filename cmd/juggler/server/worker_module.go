@@ -25,6 +25,7 @@ var workerSDKImports = map[string]string{
 	"juggler/ops":           "/sdk/ops.js",
 	"juggler/sandbox":       "/sdk/sandbox.js",
 	"juggler/ui":            "/sdk/ui-worker.js",
+	"juggler/a2ui":          "/sdk/a2ui.js",
 	"juggler/model":         "/sdk/model.js",
 	"juggler/item-utils":    "/sdk/item-utils-worker.js",
 	"juggler/registry":      "/sdk/registry.js",

@@ -18,8 +18,8 @@
 import { assert } from '../utilities/test-helpers.js';
 import {
   parsePointer, getByPointer, setByPointer, resolveBoundValue, resolveValue, toText
-} from '../../extensions/juggler-a2ui/a2ui/data-model.js';
-import { renderSurface, normalizeComponent } from '../../extensions/juggler-a2ui/a2ui/renderer.js';
+} from '../../sdk/a2ui.js';
+import { renderSurface, normalizeComponent } from '../../sdk/a2ui.js';
 
 /**
  * @typedef {object} TestResult
@@ -33,7 +33,7 @@ import { renderSurface, normalizeComponent } from '../../extensions/juggler-a2ui
  * @param {Record<string, object>} components - Components keyed by id
  * @param {string} rootId - Root component id
  * @param {object} [dataModel] - Surface data model
- * @param {import('../../extensions/juggler-a2ui/a2ui/renderer.js').SurfaceCallbacks} [callbacks] - Interaction callbacks
+ * @param {import('../../sdk/a2ui.js').SurfaceCallbacks} [callbacks] - Interaction callbacks
  * @returns {HTMLElement} The rendered surface element
  */
 function render(components, rootId, dataModel = {}, callbacks = {}) {

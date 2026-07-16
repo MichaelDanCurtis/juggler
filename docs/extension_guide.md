@@ -186,6 +186,12 @@ import { smartTruncate, createElement } from 'juggler/ui';
   `FileSystem`/`ReadOnlyFileSystem` and `OpsError`). See `web/sdk/ops.js`.
 - **`juggler/ui`** holds render/format helpers (`smartTruncate`, `createElement`,
   `FormattingHelpers`, …). See `web/sdk/ui.js`.
+- **`juggler/a2ui`** renders declarative A2UI surfaces (https://a2ui.org) —
+  describe UI as component JSON + a data model instead of hand-rolling DOM:
+  `renderSurface`, JSON-Pointer binding helpers, the basic + viz component
+  catalogs (charts, metric tiles, network diagrams), and declarative motion.
+  See `web/sdk/a2ui.js`; the `@juggler/a2ui` extension is the reference
+  consumer.
 
 An extension whose `engineApi` range excludes the current SDK version is refused
 at load with a clear diagnostic instead of a mystery `import` failure

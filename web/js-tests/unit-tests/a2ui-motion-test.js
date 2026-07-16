@@ -13,11 +13,11 @@
  */
 
 import { assert } from '../utilities/test-helpers.js';
-import { renderSurface } from '../../extensions/juggler-a2ui/a2ui/renderer.js';
+import { renderSurface } from '../../sdk/a2ui.js';
 import {
   applyMotion, resetMotion, ensureMotionStyles, diffChangedPaths,
   componentBoundPaths, pathAffected
-} from '../../extensions/juggler-a2ui/a2ui/motion.js';
+} from '../../sdk/a2ui.js';
 
 /**
  * @typedef {object} TestResult

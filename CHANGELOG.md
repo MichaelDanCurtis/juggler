@@ -5,6 +5,7 @@ of changes; this project follows semantic versioning.
 
 ## [Unreleased]
 
+- Extensions can render declarative UI via the new juggler/a2ui SDK module
 - A2UI surfaces now animate: value pulses, entry effects, and flow/heartbeat motion
 - Added A2UI charts, metric tiles, and network diagrams with a built-in symbol set
 - A2UI surfaces are now interactive: clicks flow back to the model as action events

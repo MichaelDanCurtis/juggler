@@ -5,14 +5,13 @@
 
 import ContextItem from 'juggler/context-item';
 import { createItem } from 'juggler/registry';
-import { renderSurface } from '../a2ui/renderer.js';
-import { setByPointer } from '../a2ui/data-model.js';
+import {
+  renderSurface, setByPointer, SYMBOL_NAMES, applyMotion, resetMotion
+} from 'juggler/a2ui';
 import {
   formatActionMessage, resolveActionContext, registerDispatch, clearPending,
   pendingFor, reconcileResponses, RESPONSE_TIMEOUT_MS
 } from '../a2ui/actions.js';
-import { SYMBOL_NAMES } from '../a2ui/symbols.js';
-import { applyMotion, resetMotion } from '../a2ui/motion.js';
 
 /** Bound on stored action responses per surface (oldest pruned first). */
 const MAX_ACTION_RESPONSES = 5;
