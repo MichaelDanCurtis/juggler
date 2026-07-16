@@ -45,13 +45,13 @@ import { BASIC_CATALOG } from './catalog-basic.js';
  * @property {(value: unknown) => unknown} resolve - Resolve a property value (literal or data binding)
  * @property {(value: unknown) => string} text - Resolve then convert to display text
  * @property {(def: ComponentDef, parent: HTMLElement, wrap?: (child: HTMLElement) => HTMLElement) => void} renderChildren - Render a def's children into parent (optionally wrapping each)
- * @property {(def: ComponentDef) => void} dispatchAction - Dispatch a component's action through the surface callbacks
+ * @property {(def: ComponentDef, sourceElement?: HTMLElement) => void} dispatchAction - Dispatch a component's action through the surface callbacks
  */
 
 /**
  * Callbacks a host passes to receive surface interactions.
  * @typedef {object} SurfaceCallbacks
- * @property {(info: {surfaceId: string, componentId: string, action: Record<string, unknown>}) => void} [onAction] - Invoked when an interactive component fires its action
+ * @property {(info: {surfaceId: string, componentId: string, action: Record<string, unknown>, sourceElement?: HTMLElement}) => void} [onAction] - Invoked when an interactive component fires its action; sourceElement is the live DOM node for immediate visual feedback
  */
 
 /**
@@ -180,18 +180,23 @@ export function renderSurface(surface, callbacks = {}) {
           parentEl.appendChild(wrap ? wrap(child) : child);
         }
       },
-      dispatchAction: actionDef => {
+      dispatchAction: (actionDef, sourceElement) => {
         if (!callbacks.onAction) return;
         callbacks.onAction({
           surfaceId: surface.surfaceId,
           componentId: actionDef.id,
-          action: actionDef.action ?? {}
+          action: actionDef.action ?? {},
+          sourceElement
         });
       }
     };
 
     try {
-      return builder(def, ctx);
+      const el = builder(def, ctx);
+      // Tag every component's root element with its id so hosts can address
+      // rendered components (busy overlays, response badges, tests).
+      el.dataset.a2uiId = def.id;
+      return el;
     } catch (e) {
       return placeholder(`Component "${def.type}" failed: ${e instanceof Error ? e.message : String(e)}`);
     }

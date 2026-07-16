@@ -179,7 +179,7 @@ export const BASIC_CATALOG = {
       ctx.renderChildren(def, el);
     }
     if (ctx.resolve(def.props.disabled) === true) el.disabled = true;
-    el.addEventListener('click', () => ctx.dispatchAction(def));
+    el.addEventListener('click', () => ctx.dispatchAction(def, el));
     return el;
   }
 };

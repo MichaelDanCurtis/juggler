@@ -106,4 +106,51 @@ export const a2uiUpdateDataModelTest = {
   ]
 };
 
-export const tests = [a2uiCreateSurfaceTest, a2uiUpdateDataModelTest];
+/**
+ * The client→agent loop: a `[A2UI action]` user message (what a click on a
+ * wantResponse control sends) reaches the model, which answers with
+ * a2ui_respond_action — writing the response into the surface item's data.
+ * @type {import('../utilities/integration-test-runner.js').IntegrationTestDefinition}
+ */
+export const a2uiRespondActionTest = {
+  name: 'a2ui-respond-action',
+  description: 'An [A2UI action] message round-trips to a2ui_respond_action on the surface',
+  fixture: 'unit-test-fixture',
+
+  llmResponses: [
+    toolUseResponse('call_1', 'a2ui_create_surface', dashboardParams('panel'), 'Rendering.'),
+    textResponse('Surface ready.'),
+    toolUseResponse('call_2', 'a2ui_respond_action',
+      { surfaceId: 'panel', actionId: 'act_test_1', value: { refreshed: true } },
+      'Answering the control.'),
+    textResponse('Answered.')
+  ],
+
+  operations: [
+    { type: 'send-message', message: 'Show the panel' },
+    { type: 'wait-for-approval', toolUseId: 'call_1' },
+    { type: 'approve', toolUseId: 'call_1' },
+    {
+      type: 'send-message',
+      message: '[A2UI action] Event "refresh" from component "cpu" on surface "panel". '
+        + 'The user is waiting on this control — respond with a2ui_respond_action (actionId "act_test_1").'
+    },
+    { type: 'wait-for-approval', toolUseId: 'call_2' },
+    { type: 'approve', toolUseId: 'call_2' }
+  ],
+
+  expectedItems: [
+    { type: 'system-prompt' },
+    { type: 'user', content: 'Show the panel' },
+    { type: 'assistant', content: 'Rendering.' },
+    { type: 'tool-action', toolName: 'a2ui_create_surface', state: 'completed' },
+    { type: 'a2ui-surface' },
+    { type: 'assistant', content: 'Surface ready.' },
+    { type: 'user' },
+    { type: 'assistant', content: 'Answering the control.' },
+    { type: 'tool-action', toolName: 'a2ui_respond_action', state: 'completed' },
+    { type: 'assistant', content: 'Answered.' }
+  ]
+};
+
+export const tests = [a2uiCreateSurfaceTest, a2uiUpdateDataModelTest, a2uiRespondActionTest];

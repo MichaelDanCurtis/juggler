@@ -7,6 +7,13 @@ import ContextItem from 'juggler/context-item';
 import { createItem } from 'juggler/registry';
 import { renderSurface } from '../a2ui/renderer.js';
 import { setByPointer } from '../a2ui/data-model.js';
+import {
+  formatActionMessage, resolveActionContext, registerDispatch, clearPending,
+  pendingFor, reconcileResponses, RESPONSE_TIMEOUT_MS
+} from '../a2ui/actions.js';
+
+/** Bound on stored action responses per surface (oldest pruned first). */
+const MAX_ACTION_RESPONSES = 5;
 
 /**
  * A2UI surfaces — agent-driven declarative UI rendered natively in the
@@ -145,6 +152,23 @@ class A2uiSurfaceContextItem extends ContextItem {
           properties: { surfaceId },
           required: ['surfaceId']
         }
+      },
+      {
+        name: 'a2ui_respond_action',
+        category: 'write',
+        description: 'Answer a pending A2UI action. When a "[A2UI action]" message carries an '
+          + 'actionId, the user\'s control is waiting on this call — pass the actionId with a '
+          + 'result value, or an error message when the action cannot be honored.',
+        input_schema: {
+          type: 'object',
+          properties: {
+            surfaceId,
+            actionId: { type: 'string', description: 'The actionId from the "[A2UI action]" message' },
+            value: { description: 'The action\'s result (any JSON); omit when reporting an error' },
+            error: { type: 'string', description: 'Why the action failed, when it did' }
+          },
+          required: ['surfaceId', 'actionId']
+        }
       }
     ];
   }
@@ -200,7 +224,8 @@ class A2uiSurfaceContextItem extends ContextItem {
       a2ui_create_surface: 'Render a UI surface',
       a2ui_update_components: 'Update a UI surface',
       a2ui_update_data_model: 'Update UI surface data',
-      a2ui_delete_surface: 'Remove a UI surface'
+      a2ui_delete_surface: 'Remove a UI surface',
+      a2ui_respond_action: 'Answer a UI action'
     };
     let payload = '';
     try {
@@ -275,6 +300,14 @@ class A2uiSurfaceContextItem extends ContextItem {
       }
       case 'a2ui_delete_surface':
         return needSurfaceId() || { valid: true, params: toolInput };
+      case 'a2ui_respond_action': {
+        const bad = needSurfaceId();
+        if (bad) return bad;
+        if (!p.actionId || typeof p.actionId !== 'string') {
+          return { valid: false, error: 'Missing required parameter: actionId' };
+        }
+        return { valid: true, params: toolInput };
+      }
       default:
         return { valid: false, error: `Unknown A2UI tool "${this.toolName}"` };
     }
@@ -328,8 +361,35 @@ class A2uiSurfaceContextItem extends ContextItem {
       case 'a2ui_update_components': return this._executeUpdateComponents(p);
       case 'a2ui_update_data_model': return this._executeUpdateDataModel(p);
       case 'a2ui_delete_surface': return this._executeDelete(p);
+      case 'a2ui_respond_action': return this._executeRespondAction(p);
       default: throw new Error(`Unknown A2UI tool "${this.toolName}"`);
     }
+  }
+
+  /**
+   * Record the model's answer to a wantResponse action. Delivery is
+   * doc-mediated: writing `data.actionResponses[actionId]` syncs to every
+   * client, whose cards reconcile pending busy states against it on repaint.
+   * The store is bounded — oldest responses are pruned.
+   * @param {any} p - Validated params
+   * @returns {Promise<object>} Ack
+   */
+  async _executeRespondAction(p) {
+    const item = this._findSurface(p.surfaceId);
+    if (!item) throw new Error(`Unknown surfaceId "${p.surfaceId}"`);
+    const data = A2uiSurfaceContextItem._cloneData(item);
+    /** @type {Record<string, object>} */
+    const responses = data.actionResponses || {};
+    responses[p.actionId] = p.error !== undefined
+      ? { error: p.error }
+      : { value: p.value ?? null };
+    // Prune oldest first (object key order is insertion order).
+    const keys = Object.keys(responses);
+    for (let i = 0; i < keys.length - MAX_ACTION_RESPONSES; i++) delete responses[keys[i]];
+    data.actionResponses = responses;
+    this.messageThread.updateContextItem(item.id, { data });
+    await this.session?.save?.();
+    return { surfaceId: p.surfaceId, actionId: p.actionId, isError: p.error !== undefined };
   }
 
   /**
@@ -439,6 +499,9 @@ class A2uiSurfaceContextItem extends ContextItem {
       case 'a2ui_delete_surface':
         summary = `Deleted surface "${r.surfaceId}"`;
         break;
+      case 'a2ui_respond_action':
+        summary = `${r.isError ? 'Rejected' : 'Answered'} action "${r.actionId}" on "${r.surfaceId}"`;
+        break;
       default:
         summary = 'A2UI operation completed';
     }
@@ -495,18 +558,91 @@ class A2uiSurfaceContextItem extends ContextItem {
     }, {
       onAction: info => this._handleAction(info)
     });
+
+    // Re-derive wantResponse busy states on every repaint: responses written
+    // by a2ui_respond_action arrive as data changes, so reconciling here is
+    // what clears a spinner the moment the model answers (on every client).
+    reconcileResponses(d.surfaceId, d.actionResponses);
+    for (const componentId of Object.keys(d.components || {})) {
+      const pending = pendingFor(d.surfaceId, componentId);
+      if (pending?.actionId) {
+        const el = /** @type {HTMLElement|null} */ (surfaceEl.querySelector(`[data-a2ui-id="${CSS.escape(componentId)}"]`));
+        if (el) A2uiSurfaceContextItem._setBusy(el, true);
+      }
+    }
     return { typeName: 'A2UI', summary: surfaceEl };
   }
 
   /**
-   * A user interaction on this surface. Increment 3 turns this into an
-   * `a2ui-action` item that re-enters the agent loop (fire-and-forget vs
-   * wantResponse per the design doc); until then interactions are visible in
-   * the console but deliberately inert.
-   * @param {{surfaceId: string, componentId: string, action: Record<string, unknown>}} info - Action info
+   * Toggle a component's waiting-on-response affordance.
+   * @param {HTMLElement} el - The component's root element
+   * @param {boolean} on - Whether the component is waiting
    */
-  _handleAction(info) {
-    console.debug('[a2ui] action (delivery lands in increment 3):', info);
+  static _setBusy(el, on) {
+    el.classList.toggle('a2ui-action-pending', on);
+    el.setAttribute('aria-busy', on ? 'true' : 'false');
+    if (el.tagName === 'BUTTON') /** @type {HTMLButtonElement} */ (el).disabled = on;
+  }
+
+  /**
+   * A user interaction on this surface — the client→agent half of A2UI.
+   *
+   * The action becomes a `[A2UI action]` **user message** sent through
+   * `conversation.sendMessage`, which gives the design's delivery semantics
+   * for free: worker idle → a turn starts; worker busy → the worker queues it
+   * and drains at the next boundary. The action's `context` bindings resolve
+   * against the current data model at click time.
+   *
+   * `wantResponse` actions mint an actionId, mark the source component busy,
+   * and wait for `a2ui_respond_action` (doc-mediated; see
+   * `_executeRespondAction`). The wedge guard: pending entries self-expire
+   * after RESPONSE_TIMEOUT_MS and a timer restores the live element, so an
+   * agent that ignores the flag can never wedge a control. Local
+   * `functionCall` actions (spec's client-side functions) are deferred.
+   * @param {{surfaceId: string, componentId: string, action: Record<string, unknown>, sourceElement?: HTMLElement}} info - Action info
+   * @returns {Promise<void>}
+   */
+  async _handleAction(info) {
+    const d = /** @type {any} */ (this.data) || {};
+    const action = /** @type {any} */ (info.action) || {};
+    if (action.functionCall) return;
+    if (!d.surfaceId || pendingFor(d.surfaceId, info.componentId)) return;
+
+    const event = action.event || {};
+    const wantResponse = event.wantResponse === true;
+    const actionId = wantResponse
+      ? (typeof event.actionId === 'string' && event.actionId
+        ? event.actionId
+        : `act_${Date.now().toString(36)}_${Math.floor(Math.random() * 1e6).toString(36)}`)
+      : undefined;
+
+    registerDispatch(d.surfaceId, info.componentId, actionId);
+    const el = info.sourceElement;
+    if (wantResponse && el) {
+      A2uiSurfaceContextItem._setBusy(el, true);
+      // Wedge guard for the LIVE element: the pending entry self-expires, but
+      // without a data change nothing repaints — restore this element too.
+      setTimeout(() => {
+        if (el.isConnected && !pendingFor(d.surfaceId, info.componentId)) {
+          A2uiSurfaceContextItem._setBusy(el, false);
+        }
+      }, RESPONSE_TIMEOUT_MS + 50);
+    }
+
+    const content = formatActionMessage({
+      surfaceId: d.surfaceId,
+      componentId: info.componentId,
+      eventName: (typeof event.name === 'string' && event.name) || 'action',
+      context: resolveActionContext(event.context ?? action.context, d.dataModel),
+      actionId
+    });
+
+    const dropped = await this.conversation?.sendMessage?.(content, null, this.messageThread);
+    if (dropped) {
+      clearPending(d.surfaceId, info.componentId);
+      if (el) A2uiSurfaceContextItem._setBusy(el, false);
+      console.warn(`[a2ui] action not delivered: ${dropped}`);
+    }
   }
 
   /**
