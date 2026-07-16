@@ -5,6 +5,7 @@ of changes; this project follows semantic versioning.
 
 ## [Unreleased]
 
+- The model can now render persistent interactive UI surfaces via A2UI tools
 - Added the A2UI extension groundwork: a native renderer for agent-driven UI
 - Made sure .md files are previewed as markdown, not syntax-highlighted text
 - Followed XDG Base Directory spec for config/cache on Linux

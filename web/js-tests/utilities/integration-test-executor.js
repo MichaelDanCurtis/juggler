@@ -62,6 +62,8 @@ import { runTests as runFileSystemApiTests } from '../unit-tests/filesystem-api-
 import { runTests as runGlobActionTests } from '../unit-tests/glob-action-test.js';
 import { runTests as runAskUserQuestionDetailsTests } from '../unit-tests/ask-user-question-details-test.js';
 import { runTests as runA2uiRendererTests } from '../unit-tests/a2ui-renderer-test.js';
+import { runTests as runA2uiSurfaceTests } from '../unit-tests/a2ui-surface-test.js';
+import { tests as a2uiTests } from '../integration-tests/a2ui-tests.js';
 import { runTests as runItemAccessorTests } from '../unit-tests/item-accessor-test.js';
 import { runTests as runMessageTypeGuardTests } from '../unit-tests/message-type-guard-test.js';
 import { runTests as runModelFilterTests } from '../unit-tests/model-filter-test.js';
@@ -210,6 +212,7 @@ const ALL_TESTS = [
   ...monitorKillTests,
   ...largeOutputTests,
   ...memoryTests,
+  ...a2uiTests,
   ...attentionAlertTests,
   ...binGuardTests,
   ...modelAvailabilityTests
@@ -285,6 +288,7 @@ const UNIT_TEST_SUITES = [
   { name: 'unit:context-menu', run: runContextMenuTests },
   { name: 'unit:ask-user-question-details', run: runAskUserQuestionDetailsTests },
   { name: 'unit:a2ui-renderer', run: runA2uiRendererTests },
+  { name: 'unit:a2ui-surface', run: runA2uiSurfaceTests },
   { name: 'unit:extension-registry', run: runExtensionRegistryTests },
   { name: 'unit:sdk-facade-parity', run: runSdkFacadeParityTests },
   { name: 'unit:extension-collision', run: runExtensionCollisionTests },

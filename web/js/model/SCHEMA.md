@@ -163,6 +163,14 @@ Tool-produced context items use `type: 'tool-action'` with
 | `error` | string \| undefined | Creation error, if any. |
 | `preventUserDeletion` | boolean \| undefined | If true, the delete control is hidden. |
 
+The `data` payload is type-specific and owned by the providing plugin; it must
+only be written through `addContextItem`/`updateContextItem` (never raw Yjs).
+One shape worth naming because its item is long-lived and tool-mutated across
+turns: **`a2ui-surface`** (from `@juggler/a2ui`) stores
+`{surfaceId, catalogId, rootId, components, dataModel, deleted}` — the
+`a2ui_*` tools upsert it by its deterministic itemId (`A2UI_<surfaceId>`), and
+`context-item-message` re-renders the surface live when `data` changes.
+
 ### LLM-only output types (`tool-use`, `tool-result`)
 `tool-use` and `tool-result` items are produced by the context-builder when
 preparing a request payload — they are **not** stored in `items`. They split
