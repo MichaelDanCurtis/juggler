@@ -108,7 +108,12 @@ export async function handleNewToolAction(messageThread, toolUseId, conversation
     id: ActionClass.MANIFEST?.id || 'unknown',
     session: conversation._session,
     conversation,
-    messageThread
+    messageThread,
+    // Multi-tool classes route on ItemContext.toolName (see action-executor's
+    // execution context, which already threads it); without it here,
+    // validate()/getApprovalConfig() on such a class sees undefined and
+    // rejects every call that arrives via the worker's evaluate-tool command.
+    toolName
   });
 
   let prepared;
