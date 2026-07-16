@@ -12,6 +12,7 @@ import {
   pendingFor, reconcileResponses, RESPONSE_TIMEOUT_MS
 } from '../a2ui/actions.js';
 import { SYMBOL_NAMES } from '../a2ui/symbols.js';
+import { applyMotion, resetMotion } from '../a2ui/motion.js';
 
 /** Bound on stored action responses per surface (oldest pruned first). */
 const MAX_ACTION_RESPONSES = 5;
@@ -557,16 +558,20 @@ class A2uiSurfaceContextItem extends ContextItem {
     if (actionStatus !== undefined) return null;
     const d = /** @type {any} */ (this.data) || {};
     if (d.deleted) {
+      // A recreated surface under the same id should replay its entry motion.
+      resetMotion(d.surfaceId);
       return { typeName: 'A2UI', summary: `Surface "${d.surfaceId}" (deleted)` };
     }
-    const surfaceEl = renderSurface({
+    const surfaceState = {
       surfaceId: d.surfaceId,
       rootId: d.rootId,
       components: d.components || {},
       dataModel: d.dataModel || {}
-    }, {
+    };
+    const surfaceEl = renderSurface(surfaceState, {
       onAction: info => this._handleAction(info)
     });
+    applyMotion(surfaceEl, surfaceState);
 
     // Re-derive wantResponse busy states on every repaint: responses written
     // by a2ui_respond_action arrive as data changes, so reconciling here is

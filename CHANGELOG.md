@@ -5,6 +5,7 @@ of changes; this project follows semantic versioning.
 
 ## [Unreleased]
 
+- A2UI surfaces now animate: value pulses, entry effects, and flow/heartbeat motion
 - Added A2UI charts, metric tiles, and network diagrams with a built-in symbol set
 - A2UI surfaces are now interactive: clicks flow back to the model as action events
 - The model can now render persistent interactive UI surfaces via A2UI tools
