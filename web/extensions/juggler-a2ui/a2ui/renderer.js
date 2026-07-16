@@ -28,6 +28,16 @@
 
 import { resolveValue, toText } from './data-model.js';
 import { BASIC_CATALOG } from './catalog-basic.js';
+import { VIZ_CATALOG } from './catalog-viz.js';
+
+/**
+ * The union the renderer draws from. Surfaces declare a `catalogId`, but v1
+ * renders the union regardless — the id is stored and reported, enforcement
+ * (refusing components outside the declared catalog) is deferred until
+ * cross-implementation conformance requires it.
+ * @type {Record<string, (def: ComponentDef, ctx: RenderContext) => HTMLElement>}
+ */
+const COMPONENTS = { ...BASIC_CATALOG, ...VIZ_CATALOG };
 
 /**
  * A component definition normalized to the renderer's canonical shape.
@@ -166,7 +176,7 @@ export function renderSurface(surface, callbacks = {}) {
     const def = index.get(id);
     if (!def) return placeholder(`Missing component "${id}"`);
     if (ancestors.has(id)) return placeholder(`Cyclic component reference "${id}"`);
-    const builder = BASIC_CATALOG[def.type];
+    const builder = COMPONENTS[def.type];
     if (!builder) return placeholder(`Unsupported component "${def.type}"`);
 
     const branch = new Set(ancestors).add(id);

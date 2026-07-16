@@ -11,6 +11,7 @@ import {
   formatActionMessage, resolveActionContext, registerDispatch, clearPending,
   pendingFor, reconcileResponses, RESPONSE_TIMEOUT_MS
 } from '../a2ui/actions.js';
+import { SYMBOL_NAMES } from '../a2ui/symbols.js';
 
 /** Bound on stored action responses per surface (oldest pruned first). */
 const MAX_ACTION_RESPONSES = 5;
@@ -62,7 +63,7 @@ class A2uiSurfaceContextItem extends ContextItem {
    * tool descriptions so the model never emits a component we cannot draw
    * (unknowns degrade to placeholder boxes, but why invite that).
    */
-  static SUPPORTED_COMPONENTS = 'Text, Row, Column, Card, List, Divider, Image, Button';
+  static SUPPORTED_COMPONENTS = 'Text, Row, Column, Card, List, Divider, Image, Button, Chart, Metric, Diagram';
 
   /**
    * Shared schema fragment for a component definition list.
@@ -77,7 +78,15 @@ class A2uiSurfaceContextItem extends ContextItem {
         + `${A2uiSurfaceContextItem.SUPPORTED_COMPONENTS}. `
         + 'Prop values are literals or {"path": "/json/pointer"} bindings into the dataModel. '
         + 'Text: props.text; Image: props.url (+alt); Button: props.label and props.action '
-        + '(an arbitrary action payload delivered back when clicked). '
+        + '(an arbitrary action payload delivered back when clicked; {"event": {"name": ..., '
+        + '"context": ..., "wantResponse": bool}}). '
+        + 'Chart: props.chartType (line|area|bar|scatter|pie|sparkline), props.data '
+        + '(number array, or object array with props.series naming value keys and props.x the label key), props.title. '
+        + 'Metric: props.label, props.value, props.delta (number), props.spark (number array). '
+        + 'Diagram: props.nodes [{id, symbol, label, status: ok|warn|error|off, x?, y? (0-100)}], '
+        + 'props.edges [{from, to, label?, style?, flow?}]; node symbols: '
+        + `${SYMBOL_NAMES.join(', ')}. Nodes may carry an action like Button. `
+        + 'Bind Chart/Metric data via {"path": ...} and stream updates with a2ui_update_data_model. '
         + 'Children reference other components by id — never nest definitions.',
       items: {
         type: 'object',

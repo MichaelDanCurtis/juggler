@@ -64,6 +64,7 @@ import { runTests as runAskUserQuestionDetailsTests } from '../unit-tests/ask-us
 import { runTests as runA2uiRendererTests } from '../unit-tests/a2ui-renderer-test.js';
 import { runTests as runA2uiSurfaceTests } from '../unit-tests/a2ui-surface-test.js';
 import { runTests as runA2uiActionsTests } from '../unit-tests/a2ui-actions-test.js';
+import { runTests as runA2uiVizTests } from '../unit-tests/a2ui-viz-test.js';
 import { tests as a2uiTests } from '../integration-tests/a2ui-tests.js';
 import { runTests as runItemAccessorTests } from '../unit-tests/item-accessor-test.js';
 import { runTests as runMessageTypeGuardTests } from '../unit-tests/message-type-guard-test.js';
@@ -291,6 +292,7 @@ const UNIT_TEST_SUITES = [
   { name: 'unit:a2ui-renderer', run: runA2uiRendererTests },
   { name: 'unit:a2ui-surface', run: runA2uiSurfaceTests },
   { name: 'unit:a2ui-actions', run: runA2uiActionsTests },
+  { name: 'unit:a2ui-viz', run: runA2uiVizTests },
   { name: 'unit:extension-registry', run: runExtensionRegistryTests },
   { name: 'unit:sdk-facade-parity', run: runSdkFacadeParityTests },
   { name: 'unit:extension-collision', run: runExtensionCollisionTests },
