@@ -9,10 +9,82 @@ import { iconOptionsForItem } from '../utils/item-badge.js';
 
 /**
  * Context item message component - icon + custom content with plugin icon support
+ *
+ * Re-renders itself when its item's Y.Map fields change (same self-observation
+ * pattern as `tool-action-message`): a context item's `data` can be mutated
+ * long after insertion — `addContextItem` upserts and `updateContextItem`
+ * patches in place (plan steps, A2UI surfaces) — and neither of the framework's
+ * update paths reaches this element (`positionElements` only calls
+ * `updateFromItem` where defined; the streaming observer targets
+ * assistant/thinking/thread only). Without its own observer the card is
+ * static after first paint.
  */
 class ContextItemMessage extends BaseMessage {
+  /** @type {(() => void)|null} @private */
+  _yjsObserver = null;
+
+  /** @type {import('../model/message-thread.js').default|null} @private */
+  _observedThread = null;
+
+  /** @type {string|null} @private */
+  _lastSnapshot = null;
+
   static get observedAttributes() {
     return ['item-id', 'item-type', 'error', 'color-preset', 'icon'];
+  }
+
+  connectedCallback() {
+    this._setupLiveUpdate();
+    super.connectedCallback();
+  }
+
+  /**
+   * Observe the thread's items array and re-render when THIS item's rendered
+   * fields change. Unlike tool-action-message there is no approval-churn
+   * guard: a context item's re-render on `data` change is exactly the wanted
+   * behavior (e.g. an A2UI surface repainting when the model streams new
+   * data), and no pending-approval widget lives inside these cards.
+   * @private
+   */
+  _setupLiveUpdate() {
+    const messageThread = this._getMessageThread();
+    if (!messageThread || !this.itemId) return;
+
+    this._lastSnapshot = this._snapshot();
+    this._observedThread = messageThread;
+    this._yjsObserver = () => {
+      const snapshot = this._snapshot();
+      if (snapshot !== this._lastSnapshot) {
+        this._lastSnapshot = snapshot;
+        this.render();
+      }
+    };
+    messageThread.yarray.observeDeep(this._yjsObserver);
+    this.addCleanup(() => {
+      if (this._observedThread && this._yjsObserver) {
+        this._observedThread.yarray.unobserveDeep(this._yjsObserver);
+      }
+      this._yjsObserver = null;
+      this._observedThread = null;
+    });
+  }
+
+  /**
+   * Serialize the fields whose change should trigger a re-render.
+   * @returns {string|null} A comparable snapshot, or null when the item is gone
+   * @private
+   */
+  _snapshot() {
+    const item = this._observedThread?.findByItemId?.(this.itemId)
+      ?? this._getMessageThread()?.findByItemId?.(this.itemId);
+    if (!item) return null;
+    const data = item.get('data');
+    const plainData = data?.toJSON ? data.toJSON() : data;
+    try {
+      return JSON.stringify({ type: item.get('type'), error: item.get('error'), data: plainData });
+    } catch {
+      return null;
+    }
   }
 
   get itemId() {
