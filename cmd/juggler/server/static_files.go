@@ -49,6 +49,13 @@ func setHTMLSecurityHeadersFramed(w http.ResponseWriter, nonce string, sameOrigi
 	if sameOriginFrameable {
 		frameAncestors = "frame-ancestors 'self'"
 	}
+	// Prizmanyx fork: FACET_EMBED_ANCESTORS widens embedding to the Prizmanyx
+	// web app's origin(s) so its /console page can iframe this server (dev
+	// pair: "http://localhost:* http://127.0.0.1:*"). Unset = upstream
+	// behaviour above; the pop-out window is unaffected either way.
+	if extra := os.Getenv("FACET_EMBED_ANCESTORS"); extra != "" {
+		frameAncestors = "frame-ancestors 'self' " + extra
+	}
 	connectSrc := "connect-src 'self' ws: wss:"
 	if extraConnect != "" {
 		connectSrc += " " + extraConnect
@@ -398,11 +405,15 @@ func (s *Server) serveIndex(w http.ResponseWriter, r *http.Request) {
 		IsWindowMode  bool
 		CSPNonce      string
 		APIToken      string
+		EmbedParents  string
 	}{
 		StaticVersion: s.staticVersion,
 		IsTestMode:    s.testMode,
 		IsDevMode:     s.devMode,
 		APIToken:      s.apiToken,
+		// Prizmanyx fork: the embed bridge validates postMessage origins
+		// against the same source list that grants frame-ancestors.
+		EmbedParents: os.Getenv("FACET_EMBED_ANCESTORS"),
 		// The desktop app opens the page with ?window=1; remote browsers never
 		// have it. Mirrors the client-side check in index.html and gates the
 		// Wails runtime <script>, which only does anything in a native window.

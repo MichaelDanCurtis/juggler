@@ -11,7 +11,6 @@ import (
 
 	"juggler/cmd/juggler/core"
 	"juggler/cmd/juggler/server/handlers"
-	"juggler/internal/jlog"
 	"juggler/internal/updatecheck"
 )
 
@@ -43,14 +42,12 @@ func (s *Server) newUpdateChecker() *updatecheck.Checker {
 // suite must never reach the network) — in which case /api/update-status still
 // answers with the seeded "no update" status.
 func (s *Server) startUpdateChecker() {
-	if s.testMode {
-		return
-	}
-	if s.updateChecker == nil {
-		return
-	}
-	jlog.Info("updatecheck: polling %s", updateManifestURL())
-	s.updateChecker.Start(s.shutdownChan)
+	// Prizmanyx fork: never poll upstream's version manifest. This build is
+	// pinned — updates ship through the fork, and the upstream auto-updater
+	// would replace the patched binary. /api/update-status still answers
+	// with the seeded "no update" status, and the rest of the update
+	// plumbing stays intact so a fork-owned manifest can revive it later.
+	_ = s
 }
 
 // updateStatusMsg is the WS push envelope; embedding Status promotes its fields

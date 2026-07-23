@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juggler - AI Code Agent</title>
+    <title>Facet — Prizmanyx Console</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/v{{.StaticVersion}}/resources/juggler-logo.svg">
+    <link rel="icon" type="image/svg+xml" href="/v{{.StaticVersion}}/resources/prizmanyx.svg">
 
     <!-- Fonts (self-hosted; see web/css/fonts.css) -->
     <link rel="stylesheet" href="/v{{.StaticVersion}}/css/fonts.css">
@@ -54,6 +54,8 @@
     <link rel="stylesheet" href="/v{{.StaticVersion}}/css/context-items.css">
     <link rel="stylesheet" href="/v{{.StaticVersion}}/css/plugin-catalog.css">
     <link rel="stylesheet" href="/v{{.StaticVersion}}/css/prism-theme.css">
+    <!-- Facet: Prizmanyx design-language override layer — must load LAST. -->
+    <link rel="stylesheet" href="/v{{.StaticVersion}}/css/prizmanyx-theme.css">
 
     <!-- Marked.js for markdown rendering (vendored) -->
     <script src="/v{{.StaticVersion}}/js/vendor/marked.min.js"></script>
@@ -144,7 +146,15 @@
         // native WKWebView debug context menu (reload / Inspect Element) — see
         // services/context-menu-service.js. Absent (falsy) in normal sessions.
         {{if .IsDevMode}}window.JUGGLER_DEV_MODE = true;{{end}}
-        document.documentElement.style.setProperty('--logo-with-name-url', "url('/v{{.StaticVersion}}/resources/juggler-logo-with-name.svg')");
+        document.documentElement.style.setProperty('--logo-with-name-url', "url('/v{{.StaticVersion}}/resources/prizmanyx-mark.svg')");
+        // Prizmanyx fork: embed mode — the Prizmanyx shell owns the chrome
+        // (header + conversation tabs); ?embed=1 hides ours (CSS in
+        // prizmanyx-theme.css). FACET_EMBED_PARENTS gates the postMessage
+        // bridge (utils/embed-bridge.js) to the granted parent origins.
+        window.FACET_EMBED_PARENTS = "{{.EmbedParents}}";
+        if (new URLSearchParams(window.location.search).has('embed')) {
+            document.documentElement.classList.add('embed-mode');
+        }
         // Mirror the window-mode marker (set synchronously in <head>) onto
         // <body> so CSS rules keyed on .window-mode keep working unchanged.
         if (document.documentElement.dataset.windowMode === '1') {
@@ -202,14 +212,11 @@
 
             <!-- Header Actions (undo/redo + global controls) -->
             <header-actions>
-                <!-- Update button — hidden until an update is relevant. Merges the
-                     server version notice with the in-app auto-updater (when
-                     present) and opens the update dialog on click. -->
-                <update-button id="update-button" hidden></update-button>
+                <!-- Prizmanyx fork: no update button — this build is pinned; updates
+                     ship through the fork, never the upstream auto-updater. -->
                 <!-- Regular controls. Grouped so that on a narrow (phone) header
-                     they stay squeezed onto a single non-wrapping row, while the
-                     update pill (a sibling, outside this group) can take its own
-                     row. `display: contents` on wide viewports so grouping has no
+                     they stay squeezed onto a single non-wrapping row.
+                     `display: contents` on wide viewports so grouping has no
                      layout effect there. -->
                 <div class="header-actions-controls">
                 <!-- Undo / Redo -->
@@ -310,8 +317,6 @@
     <script type="module" src="/v{{.StaticVersion}}/js/components/context-preview-modal.js"></script>
     <script type="module" src="/v{{.StaticVersion}}/js/components/settings-panel.js"></script>
     <script type="module" src="/v{{.StaticVersion}}/js/components/about-modal.js"></script>
-    <script type="module" src="/v{{.StaticVersion}}/js/components/update-notice.js"></script>
-    <script type="module" src="/v{{.StaticVersion}}/js/components/update-button.js"></script>
     <script type="module" src="/v{{.StaticVersion}}/js/components/bin-modal.js"></script>
     <script type="module" src="/v{{.StaticVersion}}/js/components/diff-viewer.js"></script>
 
@@ -351,7 +356,6 @@
 
     <!-- About Modal (shows when clicking the logo) -->
     <about-modal></about-modal>
-    <update-notice></update-notice>
 
 </body>
 </html>

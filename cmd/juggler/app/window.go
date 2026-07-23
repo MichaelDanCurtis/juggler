@@ -80,7 +80,7 @@ func runHeadlessServerApp(srv *server.Server, done <-chan struct{}, requestQuit 
 	// this name is never user-visible.
 	app := application.New(application.Options{
 		Name:        fmt.Sprintf("Juggler Server %d", os.Getpid()),
-		Description: "AI Code Agent",
+		Description: "Prizmanyx Console",
 		Mac: application.MacOptions{
 			ApplicationShouldTerminateAfterLastWindowClosed: false,
 			// Background process with no main window — the engine WebView stays
@@ -98,7 +98,7 @@ func runHeadlessServerApp(srv *server.Server, done <-chan struct{}, requestQuit 
 		// Windows/Linux twins of the macOS ApplicationShouldTerminate... = false
 		// above.
 		Linux: application.LinuxOptions{
-			ProgramName:                   "Juggler",
+			ProgramName:                   "Facet",
 			DisableQuitOnLastWindowClosed: true,
 		},
 		Windows: application.WindowsOptions{

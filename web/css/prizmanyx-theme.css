@@ -1,0 +1,94 @@
+/* Facet — the Prizmanyx design language, as a token override layer.
+ *
+ * Loaded LAST (see index.html) so these values win the cascade over the
+ * upstream theme in styles.css. Source of truth: apps/web/app/globals.css in
+ * the Prizmanyx repo — every value here is copied from it, never invented.
+ * Only the DARK theme is mapped (Prizmanyx is dark-first); toggling to light
+ * intentionally falls back to the upstream light palette for now.
+ */
+
+/* Self-hosted, matching the repo's font policy (see fonts.css). Latin only. */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("../resources/fonts/space-grotesk-300-700-normal-latin.woff2") format('woff2');
+}
+
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../resources/fonts/space-mono-400-normal-latin.woff2") format('woff2');
+}
+
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../resources/fonts/space-mono-700-normal-latin.woff2") format('woff2');
+}
+
+:root {
+  --font-mono: 'Space Mono', 'Cousine', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-sans: 'Space Grotesk', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Space Grotesk carries no 200 weight (upstream leaned on Inter Thin);
+     Prizmanyx body text sits at 400. */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Prizmanyx is sharp-cornered (radius 3/4/6px); upstream's 24px popup
+     corners read foreign next to it. */
+  --radius-popup: 0.5rem;
+  --radius-popup-item: 0.25rem;
+}
+
+:root,
+:root[data-theme="dark"] {
+  /* Surfaces: pure-black bg, flat #111/#1a1a1a elevations — never glass. */
+  --bg-primary: #000000;
+  --bg-secondary: #111111;
+  --bg-raised: #1a1a1a;
+
+  /* Hairline dividers (#222), intentional/wireframe borders (#333). */
+  --border-color: #222222;
+  --border-divider: #222222;
+  --border-floating: #333333;
+
+  --text-primary: #e8e8e8;
+  --text-secondary: #999999;
+  --text-tertiary: #666666;
+
+  /* The brand accent slot: Prizmanyx coral, not GitHub blue. Status colors
+     map to Prizmanyx's teal/amber/danger. */
+  --accent-blue: #ff6a4d;
+  --accent-green: #4a9e5c;
+  --accent-yellow: #d4a843;
+  --accent-red: #ff5c5c;
+
+  /* User chat bubbles: flat surface-3, not translucent slate. */
+  --bubble-user-bg: #1e1e1e;
+}
+
+/* Composer bubble: Prizmanyx inputs are sharp-cornered with a near-black
+   fill and hairline border (globals.css --input / --hairline). Overrides the
+   upstream 1.25rem soft bubble in components.css. */
+input-box input-box-wrapper {
+  border-radius: var(--radius-lg);
+  background: #0a0a0a;
+  border: 1px solid #222222;
+}
+
+/* Embed mode (?embed=1): the Prizmanyx shell renders the header chrome and
+   the conversation tabs (via the embed bridge), so ours disappear and the
+   conversation surface owns the whole iframe. */
+html.embed-mode .app-header,
+html.embed-mode #conversation-bar {
+  display: none;
+}

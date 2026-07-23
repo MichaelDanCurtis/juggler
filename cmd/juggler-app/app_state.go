@@ -171,7 +171,7 @@ func (a *appState) initApplication() {
 	wailsLogger, onWailsError, onWailsWarn, onWailsPanic := wailsLogHandlers()
 	a.app = application.New(application.Options{
 		Name:           "Juggler",
-		Description:    "AI Code Agent",
+		Description:    "Prizmanyx Console",
 		Logger:         wailsLogger,
 		LogLevel:       slog.LevelDebug,
 		ErrorHandler:   onWailsError,

@@ -664,13 +664,24 @@ app-container {
     content: "";
     display: block;
     height: 2.5rem;
-    aspect-ratio: 79.433 / 31.038;
+    /* Prizmanyx fork: the mark SVG is square (64x64), unlike the wide
+       upstream wordmark; the name renders as the ::after text below. */
+    aspect-ratio: 1 / 1;
     background-color: var(--text-primary);
     mask-image: var(--logo-with-name-url);
     mask-size: contain;
     mask-repeat: no-repeat;
     mask-position: center;
     flex-shrink: 0;
+}
+
+.logo::after {
+    content: "FACET";
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: var(--text-primary);
+    white-space: nowrap;
 }
 
 /* Sidebar drawer toggle (hamburger) and its scrim are only meaningful on
@@ -1669,6 +1680,12 @@ a:hover {
 
     .logo::before {
         height: 1.5rem;
+    }
+
+    /* Mark only on narrow headers — the wordmark text doesn't scale with the
+       ::before height the way the old all-in-one SVG did. */
+    .logo::after {
+        display: none;
     }
 }
 

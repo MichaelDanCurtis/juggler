@@ -323,11 +323,11 @@ const assetsFromDiskUnavailableMsg = "--assets-from-disk needs to run from a Jug
 
 func printBanner() {
 	fmt.Printf(`
-    ▄▄ ▄▄ ▄▄  ▄▄▄▄  ▄▄▄▄ ▄▄    ▄▄▄▄▄ ▄▄▄▄
-    ██ ██ ██ ██ ▄▄ ██ ▄▄ ██    ██▄▄  ██▄█▄
-  ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██
+  ▄▄▄▄▄ ▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄ ▄▄▄▄▄▄
+  ██▄▄  ██▄▄██ ██   ██▄▄    ██
+  ██    ██  ██ ▀███ ██▄▄▄   ██
 
-  AI Code Agent • %s
+  Prizmanyx Console • %s
 
 `, core.Version)
 }

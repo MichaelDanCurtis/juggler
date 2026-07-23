@@ -317,7 +317,7 @@ func runTestPoolWindowApp(srv *server.Server, devMode bool, headless bool, testI
 
 	app := application.New(application.Options{
 		Name:        "Juggler",
-		Description: "AI Code Agent",
+		Description: "Prizmanyx Console",
 		Icon:        appIcon,
 		Mac: application.MacOptions{
 			// We drive shutdown explicitly via app.Quit() in the main window's

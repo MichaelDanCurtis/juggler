@@ -4086,7 +4086,8 @@ about-modal .about-header {
 
 about-modal .about-logo {
     height: 3rem;
-    aspect-ratio: 79.433 / 31.038;
+    /* Prizmanyx fork: square mark, not the wide upstream wordmark. */
+    aspect-ratio: 1 / 1;
     margin: 0 auto 0.75rem;
     background-color: var(--text-primary);
     mask-image: var(--logo-with-name-url);
