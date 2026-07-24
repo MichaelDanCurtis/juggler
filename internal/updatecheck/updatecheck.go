@@ -2,7 +2,7 @@
 //     ██ ██ ██ ██ ▄▄ ██ ▄▄ ██    ██▄▄  ██▄█▄   Copyright (c) 2026 Julian Storer
 //   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   AGPL-3.0-or-later - see LICENSE
 
-// Package updatecheck polls a remote version manifest (juggler.studio) and
+// Package updatecheck polls a remote version manifest (facet.studio) and
 // decides whether the running build should show a "new version available"
 // notice. It is deliberately stateless across restarts: the website is the
 // single source of truth for what to show, the result is held only in memory,
@@ -11,7 +11,7 @@
 //
 // The request carries the running version, OS and arch as query params
 // (?v=&os=&arch=). On static hosting (GitHub Pages) these are ignored and the
-// version comparison happens here; once juggler.studio gains a real backend the
+// version comparison happens here; once facet.studio gains a real backend the
 // same params let it target responses and gather analytics without any client
 // change. The manifest also reserves a `downloads` block (per os/arch artifact
 // URLs + integrity fields) for a future auto-updater; it is parsed but unused
@@ -30,15 +30,15 @@ import (
 	"sync/atomic"
 	"time"
 
-	"juggler/internal/jlog"
+	"facet/internal/jlog"
 )
 
 // DefaultManifestURL is the well-known location of the version manifest.
-const DefaultManifestURL = "https://juggler.studio/juggler-version.json"
+const DefaultManifestURL = "https://facet.studio/facet-version.json"
 
 // Schema is the required value of the manifest's "schema" field — a guard
 // against a captive-portal page or unrelated JSON being parsed as a manifest.
-const Schema = "juggler-version"
+const Schema = "facet-version"
 
 // SupportedSchemaVersion is the highest manifest schemaVersion this build was
 // written against. A higher value is still parsed (unknown fields are ignored,
@@ -253,7 +253,7 @@ func (c *Checker) CheckOnce(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	req.Header.Set("User-Agent", "juggler/"+c.cfg.CurrentVersion)
+	req.Header.Set("User-Agent", "facet/"+c.cfg.CurrentVersion)
 	req.Header.Set("Accept", "application/json")
 	if e := c.etag.Load(); e != nil && *e != "" {
 		req.Header.Set("If-None-Match", *e)

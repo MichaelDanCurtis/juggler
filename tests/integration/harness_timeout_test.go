@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"juggler/tests/helpers"
+	"facet/tests/helpers"
 )
 
 // acceptButNeverReply stands up a TCP listener that accepts every connection

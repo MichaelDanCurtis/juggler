@@ -2,13 +2,13 @@
 //     ██ ██ ██ ██ ▄▄ ██ ▄▄ ██    ██▄▄  ██▄█▄   Copyright (c) 2026 Julian Storer
 //   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   AGPL-3.0-or-later - see LICENSE
 
-// Package logpaths is the single source of truth for where Juggler writes its
-// logs on disk. Both binaries — the server (cmd/juggler) and the desktop app
-// (cmd/juggler-app) — resolve paths through here, so a given project maps to
+// Package logpaths is the single source of truth for where Facet writes its
+// logs on disk. Both binaries — the server (cmd/facet) and the desktop app
+// (cmd/facet-app) — resolve paths through here, so a given project maps to
 // the same file no matter which process opens it.
 //
 // Logs live in the platform-conventional application-log directory (see
-// LogDir) — deliberately OUTSIDE ~/.juggler, so that folder stays copyable
+// LogDir) — deliberately OUTSIDE ~/.facet, so that folder stays copyable
 // (config, credentials, sessions) without dragging logs along, and so each OS
 // surfaces them where users and their tooling expect (e.g. macOS Console.app
 // reads ~/Library/Logs).
@@ -17,7 +17,7 @@
 // server lives in that project's own folder, so a bug report is still a single
 // tree to zip but conversations no longer interleave into one file:
 //
-//	<log-dir>/                            (macOS: ~/Library/Logs/Juggler)
+//	<log-dir>/                            (macOS: ~/Library/Logs/Facet)
 //	├── app.log                           desktop app
 //	├── host/                             server launched with no project
 //	│   ├── server.log                    process-level: startup, HTTP/WS, lifecycle
@@ -60,14 +60,14 @@ const slugNameMaxRunes = 40
 // one supported OS, plus C0/DEL controls. Replaced with "_".
 var unsafeCharRe = regexp.MustCompile(`[\\/:*?"<>|\x00-\x1f\x7f]`)
 
-// LogDir returns the directory all Juggler logs live under, following each
+// LogDir returns the directory all Facet logs live under, following each
 // platform's convention for application logs:
 //
-//	macOS    ~/Library/Logs/Juggler
-//	Windows  %LOCALAPPDATA%\Juggler\Logs
-//	Linux    $XDG_STATE_HOME/juggler/logs   (default ~/.local/state/juggler/logs)
+//	macOS    ~/Library/Logs/Facet
+//	Windows  %LOCALAPPDATA%\Facet\Logs
+//	Linux    $XDG_STATE_HOME/facet/logs   (default ~/.local/state/facet/logs)
 //
-// This is deliberately OUTSIDE ~/.juggler so that folder stays copyable without
+// This is deliberately OUTSIDE ~/.facet so that folder stays copyable without
 // dragging logs along. If the conventional location can't be resolved it falls
 // back to the OS temp dir, so a path is always produced (logging never silently
 // has nowhere to go).
@@ -80,36 +80,36 @@ func LogDir() string {
 // inputs (GOOS, home, an env lookup), so every OS branch is unit-testable from
 // any host. Returns the OS temp dir as a last resort.
 //
-// JUGGLER_LOG_DIR, if set, overrides every platform default. It is the
+// FACET_LOG_DIR, if set, overrides every platform default. It is the
 // sanctioned way to redirect logs away from the user's real application-log
 // directory — chiefly the integration harness, which points every test
 // subprocess at a throwaway temp dir so test runs never litter
-// ~/Library/Logs/Juggler with browser-test-*.log files.
+// ~/Library/Logs/Facet with browser-test-*.log files.
 func resolveLogDir(goos, home string, getenv func(string) string) string {
-	if override := getenv("JUGGLER_LOG_DIR"); override != "" {
+	if override := getenv("FACET_LOG_DIR"); override != "" {
 		return override
 	}
 	switch goos {
 	case "darwin":
 		if home != "" {
-			return filepath.Join(home, "Library", "Logs", "Juggler")
+			return filepath.Join(home, "Library", "Logs", "Facet")
 		}
 	case "windows":
 		if la := getenv("LOCALAPPDATA"); la != "" {
-			return filepath.Join(la, "Juggler", "Logs")
+			return filepath.Join(la, "Facet", "Logs")
 		}
 		if home != "" {
-			return filepath.Join(home, "AppData", "Local", "Juggler", "Logs")
+			return filepath.Join(home, "AppData", "Local", "Facet", "Logs")
 		}
 	default: // Linux and other Unixes — XDG Base Directory spec (logs are "state").
 		if xdg := getenv("XDG_STATE_HOME"); xdg != "" {
-			return filepath.Join(xdg, "juggler", "logs")
+			return filepath.Join(xdg, "facet", "logs")
 		}
 		if home != "" {
-			return filepath.Join(home, ".local", "state", "juggler", "logs")
+			return filepath.Join(home, ".local", "state", "facet", "logs")
 		}
 	}
-	return filepath.Join(os.TempDir(), "juggler-logs")
+	return filepath.Join(os.TempDir(), "facet-logs")
 }
 
 // AppLogPath returns the desktop app's log file: app.log in the platform log

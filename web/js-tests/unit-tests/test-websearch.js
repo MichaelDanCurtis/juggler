@@ -7,7 +7,7 @@
  * Tests parsing, domain filtering, and URL building in isolation
  */
 
-import WebSearchContextItem from '../../extensions/juggler-core/context-items/web-search-context-item.js';
+import WebSearchContextItem from '../../extensions/facet-core/context-items/web-search-context-item.js';
 import {
   initializeRegistries,
   createTestSession,

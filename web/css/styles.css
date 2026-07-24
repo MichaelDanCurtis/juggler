@@ -3040,7 +3040,7 @@ thread-column-actions {
 
 /* ============================================================================
    WINDOW APP MODE
-   Applied (via the .window-mode class) when juggler runs as a native desktop
+   Applied (via the .window-mode class) when facet runs as a native desktop
    window. Makes the header a drag region for moving the window, while keeping all
    interactive elements clickable. Left padding clears the macOS traffic lights.
    ============================================================================ */

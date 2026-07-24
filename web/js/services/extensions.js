@@ -5,7 +5,7 @@
 /**
  * Extensions service — fetches the unified extension catalog from the backend.
  *
- * A Juggler Extension is the packaging unit: one `juggler.extension.json`
+ * A Facet Extension is the packaging unit: one `facet.extension.json`
  * manifest plus a bundle of capabilities (context items, strategies, commands).
  * `GET /api/extensions` returns the discovered extensions with their `provides`
  * globs already expanded to concrete served URLs. This service is the single
@@ -19,7 +19,7 @@ import { whenRegistriesReady } from '../registries/registry-ready.js';
 
 /**
  * @typedef {object} ExtensionManifest
- * @property {string} id - Scoped extension id, e.g. '@juggler/core'
+ * @property {string} id - Scoped extension id, e.g. '@facet/core'
  * @property {string} name - Human-readable extension name
  * @property {string} version - Extension semver
  * @property {string} [author] - Extension author
@@ -42,7 +42,7 @@ import { whenRegistriesReady } from '../registries/registry-ready.js';
  * @property {string} source - Provenance: 'builtin', 'user'
  * @property {ExtensionCapabilities} capabilities - Glob-expanded served URLs per type
  * @property {string} [error] - Set when the manifest failed to parse/validate
- * @property {string} [manifestPath] - Absolute on-disk path of juggler.extension.json (omitted for embedded builtin extensions with no revealable file)
+ * @property {string} [manifestPath] - Absolute on-disk path of facet.extension.json (omitted for embedded builtin extensions with no revealable file)
  * @property {Record<string, string>} [files] - Map of each capability's served URL to its absolute on-disk path (omitted for embedded builtin)
  */
 
@@ -229,7 +229,7 @@ export async function buildExtensionSystemPromptContributions() {
 
 /**
  * @typedef {object} ExtensionLocations
- * @property {string} userExtensions - Global extension container (~/.juggler/extensions)
+ * @property {string} userExtensions - Global extension container (~/.facet/extensions)
  */
 
 /** @type {ExtensionLocations} */

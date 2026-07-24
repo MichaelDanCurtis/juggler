@@ -35,17 +35,17 @@ func TestResolveLogDirPerPlatform(t *testing.T) {
 		want   string
 	}{
 		{"macOS", "darwin", home, noenv,
-			filepath.Join(home, "Library", "Logs", "Juggler")},
+			filepath.Join(home, "Library", "Logs", "Facet")},
 		{"linux default (XDG state)", "linux", home, noenv,
-			filepath.Join(home, ".local", "state", "juggler", "logs")},
+			filepath.Join(home, ".local", "state", "facet", "logs")},
 		{"linux honours XDG_STATE_HOME", "linux", home,
 			env(map[string]string{"XDG_STATE_HOME": "/xdg/state"}),
-			filepath.Join("/xdg/state", "juggler", "logs")},
+			filepath.Join("/xdg/state", "facet", "logs")},
 		{"windows LOCALAPPDATA", "windows", home,
 			env(map[string]string{"LOCALAPPDATA": `C:\Users\u\AppData\Local`}),
-			filepath.Join(`C:\Users\u\AppData\Local`, "Juggler", "Logs")},
+			filepath.Join(`C:\Users\u\AppData\Local`, "Facet", "Logs")},
 		{"windows without LOCALAPPDATA", "windows", home, noenv,
-			filepath.Join(home, "AppData", "Local", "Juggler", "Logs")},
+			filepath.Join(home, "AppData", "Local", "Facet", "Logs")},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -56,21 +56,21 @@ func TestResolveLogDirPerPlatform(t *testing.T) {
 	}
 }
 
-// JUGGLER_LOG_DIR overrides every platform default and home/env fallback. The
+// FACET_LOG_DIR overrides every platform default and home/env fallback. The
 // integration harness relies on this to point test subprocesses at a throwaway
 // dir so runs never litter the user's real application-log directory.
 func TestResolveLogDirHonorsOverride(t *testing.T) {
-	const override = "/tmp/juggler-test-logs"
+	const override = "/tmp/facet-test-logs"
 	env := func(string) string { return override }
 	for _, goos := range []string{"darwin", "linux", "windows"} {
 		if got := resolveLogDir(goos, "/home/u", env); got != override {
-			t.Errorf("resolveLogDir(%q) with JUGGLER_LOG_DIR = %q, want override %q", goos, got, override)
+			t.Errorf("resolveLogDir(%q) with FACET_LOG_DIR = %q, want override %q", goos, got, override)
 		}
 	}
 	// Empty override is ignored — the platform default still applies.
 	noenv := func(string) string { return "" }
 	if got := resolveLogDir("darwin", "/home/u", noenv); got == override {
-		t.Errorf("empty JUGGLER_LOG_DIR should not override; got %q", got)
+		t.Errorf("empty FACET_LOG_DIR should not override; got %q", got)
 	}
 }
 
@@ -78,7 +78,7 @@ func TestResolveLogDirHonorsOverride(t *testing.T) {
 // fallback) so logging never has nowhere to go.
 func TestResolveLogDirFallsBackWhenHomeless(t *testing.T) {
 	noenv := func(string) string { return "" }
-	want := filepath.Join(os.TempDir(), "juggler-logs")
+	want := filepath.Join(os.TempDir(), "facet-logs")
 	for _, goos := range []string{"darwin", "linux", "windows"} {
 		if got := resolveLogDir(goos, "", noenv); got != want {
 			t.Errorf("resolveLogDir(%q, homeless) = %q, want temp fallback %q", goos, got, want)
@@ -86,13 +86,13 @@ func TestResolveLogDirFallsBackWhenHomeless(t *testing.T) {
 	}
 }
 
-// Logs must NOT live under ~/.juggler — that folder should be copyable (config,
+// Logs must NOT live under ~/.facet — that folder should be copyable (config,
 // credentials, sessions) without dragging logs along.
-func TestLogDirIsNotUnderDotJuggler(t *testing.T) {
+func TestLogDirIsNotUnderDotFacet(t *testing.T) {
 	withHome(t)
 	dir := LogDir()
-	if strings.Contains(filepath.ToSlash(dir), "/.juggler/") {
-		t.Errorf("LogDir() = %q must not live under ~/.juggler", dir)
+	if strings.Contains(filepath.ToSlash(dir), "/.facet/") {
+		t.Errorf("LogDir() = %q must not live under ~/.facet", dir)
 	}
 	if !filepath.IsAbs(dir) {
 		t.Errorf("LogDir() = %q should be absolute", dir)

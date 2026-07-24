@@ -6,9 +6,9 @@
  * Render the input/output detail view for one LLM round-trip.
  *
  * The blob is loaded lazily from the per-conversation transaction store
- * (`.juggler/{convID}.txns/{txnID}.json`) when the user opens the View
+ * (`.facet/{convID}.txns/{txnID}.json`) when the user opens the View
  * Transaction panel. Shape mirrors what the worker writes in
- * `cmd/juggler/worker/strategy.go:saveTransactionBlob`.
+ * `cmd/facet/worker/strategy.go:saveTransactionBlob`.
  */
 
 import { formatNumber } from '../utils/format.js';

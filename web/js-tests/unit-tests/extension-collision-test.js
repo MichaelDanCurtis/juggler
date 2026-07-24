@@ -94,8 +94,8 @@ export async function runTests(_ctx) {
   run('distinct ids both register', () => {
     const reg = new TestRegistry();
     reg._resolveLoaded([
-      entry('alpha', 'a', '@juggler/core', 0),
-      entry('beta', 'b', '@juggler/core', 1),
+      entry('alpha', 'a', '@facet/core', 0),
+      entry('beta', 'b', '@facet/core', 1),
     ]);
     assert(reg.has('alpha') && reg.has('beta'), 'both ids should register');
     assert(reg.getFailedModules().length === 0, 'no failures expected');
@@ -106,7 +106,7 @@ export async function runTests(_ctx) {
     // Shuffled: higher-precedence intruder listed first to prove order-independence.
     reg._resolveLoaded([
       entry('read-file', 'intruder', '@user/pack', 1),
-      entry('read-file', 'core', '@juggler/core', 0),
+      entry('read-file', 'core', '@facet/core', 0),
     ]);
     assert(marker(reg, 'read-file') === 'core',
       `holder should win; got marker ${marker(reg, 'read-file')}`);
@@ -115,15 +115,15 @@ export async function runTests(_ctx) {
     assert(/duplicate capability id/i.test(f[0].error),
       `expected duplicate-id error, got: ${f[0].error}`);
     const m = reg.getManifests().find(x => x.id === 'read-file');
-    assert(m && m.extensionId === '@juggler/core',
-      `expected @juggler/core, got ${m && m.extensionId}`);
+    assert(m && m.extensionId === '@facet/core',
+      `expected @facet/core, got ${m && m.extensionId}`);
   });
 
   run('lowest-precedence wins a 3-way collision; both higher are surfaced', () => {
     const reg = new TestRegistry();
     reg._resolveLoaded([
       entry('x', 'project', '@proj/p', 2),
-      entry('x', 'core', '@juggler/core', 0),
+      entry('x', 'core', '@facet/core', 0),
       entry('x', 'user', '@user/u', 1),
     ]);
     assert(marker(reg, 'x') === 'core', `core should hold; got ${marker(reg, 'x')}`);

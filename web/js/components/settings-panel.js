@@ -1,6 +1,6 @@
 //     ▄▄ ▄▄ ▄▄  ▄▄▄▄  ▄▄▄▄ ▄▄    ▄▄▄▄▄ ▄▄▄▄
 //     ██ ██ ██ ██ ▄▄ ██ ▄▄ ██    ██▄▄  ██▄█▄   Copyright (c) 2026 Julian Storer
-//   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   https://juggler.studio
+//   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   https://facet.studio
 //
 //   This program is free software: you can redistribute it and/or modify it under the terms of
 //   the GNU Affero General Public License as published by the Free Software Foundation, either
@@ -166,7 +166,7 @@ export function formatMcpTokenCost(status) {
  * Validate a proposed MCP server name. Names become part of the LLM tool id
  * (`mcp__<name>__<tool>`), so they must be non-empty, free of whitespace and
  * slashes, unique within their scope, and not collide with the built-in
- * `juggler` prefix used by the CLI bridge.
+ * `facet` prefix used by the CLI bridge.
  * @param {string} name - The proposed name (already trimmed by the caller is fine)
  * @param {string[]} [existingNames] - Names already used in the target scope
  * @returns {string} An error message, or '' when the name is valid.
@@ -176,7 +176,7 @@ export function validateMcpServerName(name, existingNames) {
   if (!trimmed) return 'Name is required.';
   if (/\s/.test(trimmed)) return 'Name cannot contain spaces.';
   if (trimmed.includes('/')) return 'Name cannot contain "/".';
-  if (trimmed === 'juggler') return '"juggler" is reserved for the built-in tools.';
+  if (trimmed === 'facet') return '"facet" is reserved for the built-in tools.';
   if ((existingNames || []).includes(trimmed)) return `A server named "${trimmed}" already exists in this scope.`;
   return '';
 }
@@ -417,7 +417,7 @@ class SettingsPanel extends HTMLElement {
                 </nav>
 
                 <div class="settings-loading" id="settings-loading">
-                    <juggler-spinner style="--size: 2.5rem"></juggler-spinner>
+                    <facet-spinner style="--size: 2.5rem"></facet-spinner>
                     <div class="settings-loading-text">Loading settings...</div>
                 </div>
 
@@ -426,7 +426,7 @@ class SettingsPanel extends HTMLElement {
                         <p class="settings-description">
                             To set a new API key, enter it below and click "Save API Keys".
                             <br/>
-                            These are stored in <code>~/.juggler/credentials.json</code>.
+                            These are stored in <code>~/.facet/credentials.json</code>.
                         </p>
 
                         <div class="settings-form" id="provider-form">
@@ -440,7 +440,7 @@ class SettingsPanel extends HTMLElement {
                             The model assigned to each new conversation when it is created.
                             Changing it never affects conversations that already exist.
                             <br/>
-                            Stored in <code>~/.juggler/default-model.json</code>.
+                            Stored in <code>~/.facet/default-model.json</code>.
                         </p>
 
                         <div class="settings-form" id="default-model-form">
@@ -462,7 +462,7 @@ class SettingsPanel extends HTMLElement {
 
                     <section class="settings-tab-content" id="tab-connectivity">
                         <p class="settings-description">
-                            Control who can reach this Juggler instance.
+                            Control who can reach this Facet instance.
                         </p>
                         <div class="settings-form" id="connectivity-form">
                         </div>
@@ -1446,7 +1446,7 @@ class SettingsPanel extends HTMLElement {
   /**
    * Build the CLI binary-path input row for the Claude Code provider. Loads the
    * current value from `this.config.claudecodeBinaryPath`; saves via /api/config
-   * on blur or Enter. Empty clears the override (falls back to JUGGLER_CLAUDE_PATH
+   * on blur or Enter. Empty clears the override (falls back to FACET_CLAUDE_PATH
    * then auto-detection on the server). A non-empty save also enables the
    * provider so it becomes selectable without a restart.
    * @param {any} provider - Provider info object (for the enable call)

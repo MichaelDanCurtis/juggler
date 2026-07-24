@@ -22,7 +22,7 @@ import {
   createTestConversation,
   assert
 } from '../utilities/test-helpers.js';
-import { renderExecutePermissionSection } from '../../extensions/juggler-core/context-items/execute/permission-section.js';
+import { renderExecutePermissionSection } from '../../extensions/facet-core/context-items/execute/permission-section.js';
 
 /** @typedef {{passed: number, failed: number, errors: string[]}} TestResult */
 

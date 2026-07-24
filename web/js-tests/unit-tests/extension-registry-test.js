@@ -7,16 +7,16 @@
  *
  * After the registries stopped fetching `/api/{builtin}-plugins` and began
  * sourcing builtin capabilities from `/api/extensions` (the manifest-driven
- * `@juggler/core` extension), these tests prove parity by construction:
+ * `@facet/core` extension), these tests prove parity by construction:
  *
- *   1. The extensions service returns `@juggler/core` with non-empty,
+ *   1. The extensions service returns `@facet/core` with non-empty,
  *      error-free capability lists for all three plugin types.
  *   2. `getExtensionCapabilities()` attributes every capability ref to its
  *      owning extension id.
  *   3. After registry init, every known core capability still registers under
  *      the same bare id (no scoping leaked into cap ids — protects session
  *      restore) — context items, strategies, and commands alike.
- *   4. Each registered core capability is attributed to `@juggler/core` via the
+ *   4. Each registered core capability is attributed to `@facet/core` via the
  *      threaded `extensionId` on `getManifests()` / `getAllManifests()`.
  *   5. The LLM-facing tool set is intact: canonical core tool names still
  *      resolve to a context-item class.
@@ -41,7 +41,7 @@ import { createItem } from '../../sdk/registry.js';
  * @property {string[]} errors Collected error messages.
  */
 
-const CORE = '@juggler/core';
+const CORE = '@facet/core';
 
 // Representative core capability ids that must survive the switchover unchanged.
 const CORE_CONTEXT_ITEMS = ['read-file', 'write-file', 'execute'];
@@ -77,7 +77,7 @@ export async function runTests(_ctx) {
   if (!strategyRegistry.isInitialized()) await strategyRegistry.init();
   if (!commandRegistry.isInitialized()) await commandRegistry.init();
 
-  await run('extensions service returns @juggler/core with no error', async () => {
+  await run('extensions service returns @facet/core with no error', async () => {
     resetExtensionsCache();
     const extensions = await fetchExtensions();
     assert(Array.isArray(extensions), 'expected an array of extensions');
@@ -90,16 +90,16 @@ export async function runTests(_ctx) {
     assert(core.capabilities.commands.length > 0, 'core has no commands');
   });
 
-  await run('getExtensionCapabilities attributes builtin refs to @juggler/core', async () => {
+  await run('getExtensionCapabilities attributes builtin refs to @facet/core', async () => {
     for (const type of /** @type {const} */ (['context-item', 'strategy', 'command'])) {
       const refs = await getExtensionCapabilities(type);
       assert(refs.length > 0, `no capability refs for type ${type}`);
       // At least the core extension contributes; every ref carries an owning
-      // extension id. Builtin refs (served under /extensions/juggler-core/) must
-      // be attributed to @juggler/core specifically. Other refs (anonymous
+      // extension id. Builtin refs (served under /extensions/facet-core/) must
+      // be attributed to @facet/core specifically. Other refs (anonymous
       // user wrappers) may also be present.
-      const coreRefs = refs.filter(r => r.path.startsWith('/extensions/juggler-core/'));
-      assert(coreRefs.length > 0, `no builtin /extensions/juggler-core/ refs for type ${type}`);
+      const coreRefs = refs.filter(r => r.path.startsWith('/extensions/facet-core/'));
+      assert(coreRefs.length > 0, `no builtin /extensions/facet-core/ refs for type ${type}`);
       for (const ref of refs) {
         assert(typeof ref.extensionId === 'string' && ref.extensionId.length > 0,
           `ref ${ref.path} has no extensionId`);
@@ -129,7 +129,7 @@ export async function runTests(_ctx) {
     }
   });
 
-  await run('context-item manifests are attributed to @juggler/core', () => {
+  await run('context-item manifests are attributed to @facet/core', () => {
     const manifests = contextItemRegistry.getManifests();
     const byId = new Map(manifests.map(m => [m.id, m]));
     for (const id of CORE_CONTEXT_ITEMS) {
@@ -140,7 +140,7 @@ export async function runTests(_ctx) {
     }
   });
 
-  await run('strategy manifests are attributed to @juggler/core', () => {
+  await run('strategy manifests are attributed to @facet/core', () => {
     const manifests = strategyRegistry.getAllManifests();
     const byId = new Map(manifests.map(m => [m.id, m]));
     for (const id of CORE_STRATEGIES) {
@@ -158,7 +158,7 @@ export async function runTests(_ctx) {
     }
   });
 
-  await run('juggler/registry exposes a narrow createItem that delegates to the registry', () => {
+  await run('facet/registry exposes a narrow createItem that delegates to the registry', () => {
     assert(typeof createItem === 'function', 'createItem named export should be a function');
     // Delegation: bad JSON surfaces the registry's own validation error.
     let threw = false;

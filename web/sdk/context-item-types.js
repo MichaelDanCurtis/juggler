@@ -4,10 +4,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * `juggler/context-item` type vocabulary — the JSDoc typedefs shared by the
+ * `facet/context-item` type vocabulary — the JSDoc typedefs shared by the
  * ContextItem base class and every plugin/consumer. Split out of context-item.js
  * so the class file stays focused on behaviour; context-item.js re-exports these
- * names so `import('juggler/context-item').TypeName` keeps resolving. Imported
+ * names so `import('facet/context-item').TypeName` keeps resolving. Imported
  * for typedefs only — no runtime exports.
  */
 
@@ -213,7 +213,7 @@
  * @property {'system'|'user'} [contextPosition] - Where content appears: 'system' = system prompt, 'user' = conversation (default: 'user')
  * @property {boolean} [watchesFileChanges] - React to file modifications (default: false)
  * @property {string} [idPrefix] - **@internal** (outside the engineApi compat promise; used by core, third-party support not guaranteed). Prefix for generated IDs (e.g., 'ITEM', 'RULE'). Defaults to 'ITEM'
- * @property {string} [author] - Author name (e.g., 'Juggler Team')
+ * @property {string} [author] - Author name (e.g., 'Facet Team')
  * @property {boolean} [delegatesToSubthread] - If true, this item's tool MAY run
  *   as a subthread instead of executing client-side. The flag only advertises
  *   the capability to the worker; the per-call decision is

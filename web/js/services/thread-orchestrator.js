@@ -6,7 +6,7 @@
  * @file Client-side helpers for the per-thread `pendingRequests` Y.Array.
  * Strategies (running on any client) submit a request entry and await its
  * terminal status. The worker is the orchestrator — it observes pendingRequests
- * via `cmd/juggler/worker/pending_requests.go`, dispatches the underlying
+ * via `cmd/facet/worker/pending_requests.go`, dispatches the underlying
  * operation (create-thread, continue), and writes the result back onto the entry.
  *
  * Storage is PER-THREAD (mirrors pending_items.go): the array hangs off the

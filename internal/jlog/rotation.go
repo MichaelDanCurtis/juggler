@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	"juggler/internal/atomicio"
+	"facet/internal/atomicio"
 )
 
 // rotatingWriter is a size-capped append writer: when a write would push the

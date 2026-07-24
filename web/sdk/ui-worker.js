@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * Worker-safe `juggler/ui` facade.
+ * Worker-safe `facet/ui` facade.
  *
  * Engine/plugin workers may import modules that reference UI helpers for
  * viewer-only methods, but those helpers must not pull DOM modules into the
@@ -57,7 +57,7 @@ export function escapeJsonContent(text) {
 
 /** @param {string} name */
 function domUnavailable(name) {
-  throw new Error(`juggler/ui.${name} is viewer-only and unavailable in an engine worker`);
+  throw new Error(`facet/ui.${name} is viewer-only and unavailable in an engine worker`);
 }
 
 // Viewer-only DOM helpers — present so plugin imports resolve in the engine

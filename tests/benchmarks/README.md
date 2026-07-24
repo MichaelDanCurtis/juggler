@@ -1,22 +1,22 @@
-# Juggler AI Coding Benchmarks
+# Facet AI Coding Benchmarks
 
-Automated testing framework for evaluating Juggler's AI coding capabilities.
+Automated testing framework for evaluating Facet's AI coding capabilities.
 
 ## Overview
 
-The benchmark framework tests Juggler through its **actual frontend APIs** - the same way users interact with it. Each test creates its own isolated session and sandbox directory, ensuring authentic end-to-end testing.
+The benchmark framework tests Facet through its **actual frontend APIs** - the same way users interact with it. Each test creates its own isolated session and sandbox directory, ensuring authentic end-to-end testing.
 
 ## Quick Start
 
 ### Prerequisites
 
-**API Key Configuration**: The benchmark runner uses the same credential store as the main Juggler app.
+**API Key Configuration**: The benchmark runner uses the same credential store as the main Facet app.
 
-1. **Via Juggler UI** (Recommended):
-   - Run `./bin/juggler`
+1. **Via Facet UI** (Recommended):
+   - Run `./bin/facet`
    - Go to Settings → Credentials
    - Add your API keys
-   - Keys are saved to `~/.juggler/credentials.json`
+   - Keys are saved to `~/.facet/credentials.json`
 
 2. **Via Environment Variables** (Alternative):
    ```bash
@@ -38,8 +38,8 @@ make benchmark
 ```
 
 The headless runner:
-- Starts Juggler server automatically
-- Loads API keys from `~/.juggler/credentials.json` or environment variables
+- Starts Facet server automatically
+- Loads API keys from `~/.facet/credentials.json` or environment variables
 - Runs tests in headless Chrome
 - Displays live progress with colored output
 - Generates summary table with pass/fail status
@@ -47,9 +47,9 @@ The headless runner:
 
 ### Option 2: Interactive Browser Testing
 
-1. **Start Juggler**:
+1. **Start Facet**:
    ```bash
-   ./bin/juggler
+   ./bin/facet
    ```
 
 2. **Navigate to test runner**:
@@ -74,7 +74,7 @@ TestOrchestrator (coordinates test execution)
     ↓
 TestExecutor (runs each task)
     ↓
-Real Juggler APIs:
+Real Facet APIs:
     - Session API (create sessions)
     - Plugin API (read files, execute commands)
     - WebSocket API (send messages, get responses)
@@ -124,7 +124,7 @@ make benchmark
 
 ### What Gets Tested
 
-✅ **Real Juggler workflow**:
+✅ **Real Facet workflow**:
 - Session creation via API
 - Context item creation and management
 - Context assembly from context items
@@ -222,14 +222,14 @@ benchmarks/
 
 ### Test Execution Directory Structure
 
-When tests run, each test creates an isolated directory in `/tmp/juggler/`:
+When tests run, each test creates an isolated directory in `/tmp/facet/`:
 
 ```
-/tmp/juggler/
+/tmp/facet/
 └── 20251107-152004-task-bugfix-001/    # Date-stamped results directory
     ├── log.txt                          # Complete test execution log
     └── fixture/                         # Isolated fixture working directory
-        ├── .juggler/                    # Session data
+        ├── .facet/                    # Session data
         ├── src/                         # Source files
         ├── tests/                       # Test files
         └── ...                          # Other fixture files
@@ -413,9 +413,9 @@ make benchmark ARGS="--category=context-items"
 
 **No API key configured:**
 - Error message: "No API key configured for provider..."
-- Solution: Add API keys via Juggler UI (Settings → Credentials) or set environment variables
-- The test runner loads keys from `~/.juggler/credentials.json`
-- If the file exists but keys are missing, add them through the Juggler UI
+- Solution: Add API keys via Facet UI (Settings → Credentials) or set environment variables
+- The test runner loads keys from `~/.facet/credentials.json`
+- If the file exists but keys are missing, add them through the Facet UI
 
 **Tests not loading:**
 - Check `/api/test/tasks` returns task list
@@ -430,7 +430,7 @@ make benchmark ARGS="--category=context-items"
 - Check fixture files exist
 - Verify scoring criteria are correct
 - Review browser console logs
-- For SWE-bench tests, check if git repos cloned correctly in `/tmp/juggler/`
+- For SWE-bench tests, check if git repos cloned correctly in `/tmp/facet/`
 
 ## Future Enhancements
 
@@ -448,5 +448,5 @@ From CLAUDE.md:
 > ❌ **NO MOCKS**: All tests use real providers with real API keys
 > ✅ Integration tests only - test against actual APIs
 
-The benchmarks follow this principle - they test the real Juggler system using real APIs, not mock implementations.
+The benchmarks follow this principle - they test the real Facet system using real APIs, not mock implementations.
 

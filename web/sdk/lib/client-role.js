@@ -20,7 +20,7 @@
  * @returns {boolean} True if engine mode
  */
 export function isEngine() {
-  return /** @type {any} */ (globalThis).JUGGLER_ENGINE === true;
+  return /** @type {any} */ (globalThis).FACET_ENGINE === true;
 }
 
 /**

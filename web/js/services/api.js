@@ -62,7 +62,7 @@ import { getTheme } from '../utils/theme-manager.js';
  */
 
 /**
- * REST API service for Juggler backend
+ * REST API service for Facet backend
  * @class
  */
 class APIService {
@@ -283,7 +283,7 @@ class APIService {
   }
 
   /**
-   * Bin a conversation — moves its folder to .juggler/bin/.
+   * Bin a conversation — moves its folder to .facet/bin/.
    * Reversible via restoreConversation until it is auto-purged.
    * @param {string} conversationId
    * @param {{lane?: string}} [options] - lane identifies the requesting
@@ -299,7 +299,7 @@ class APIService {
   }
 
   /**
-   * Move a conversation out of .juggler/bin/ back to the active set.
+   * Move a conversation out of .facet/bin/ back to the active set.
    * @param {string} conversationId
    * @returns {Promise<void>}
    */
@@ -569,7 +569,7 @@ class APIService {
    * URL of the GET route that streams a stored asset's bytes (for rendering).
    *
    * The bytes are loaded by the browser as an `<img src>`, which cannot carry
-   * the `X-Juggler-Token` header the fetch() shim adds to /api requests. So the
+   * the `X-Facet-Token` header the fetch() shim adds to /api requests. So the
    * per-instance token rides as a `?token=` query param instead — exactly as
    * the WebSocket dial does (services/websocket.js) — and the server accepts it
    * for this read-only asset route (see isAssetGetRequest in api_auth.go).
@@ -579,7 +579,7 @@ class APIService {
    */
   assetURL(conversationId, sha) {
     const url = `${this.baseURL}/session/conversations/${encodeURIComponent(conversationId)}/assets/${encodeURIComponent(sha)}`;
-    const token = /** @type {{__jugglerToken?: string}} */ (globalThis).__jugglerToken;
+    const token = /** @type {{__facetToken?: string}} */ (globalThis).__facetToken;
     return token ? `${url}?token=${encodeURIComponent(token)}` : url;
   }
 

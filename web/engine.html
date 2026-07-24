@@ -2,29 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Juggler Engine</title>
+    <title>Facet Engine</title>
 
     <!-- diff-match-patch for proper diff algorithm -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
 
-    <!-- Public Extension SDK: the ONLY juggler/* specifiers an extension may import.
+    <!-- Public Extension SDK: the ONLY facet/* specifiers an extension may import.
          Each maps to a curated re-export façade in web/sdk/ (decoupled from internal
          file layout). See docs/extension_guide.md. -->
     <script type="importmap" nonce="{{.CSPNonce}}">
     {
         "imports": {
-            "juggler/context-item": "/v{{.StaticVersion}}/sdk/context-item.js",
-            "juggler/strategy-type": "/v{{.StaticVersion}}/sdk/strategy-type.js",
-            "juggler/command-type": "/v{{.StaticVersion}}/sdk/command-type.js",
-            "juggler/ops": "/v{{.StaticVersion}}/sdk/ops.js",
-            "juggler/sandbox": "/v{{.StaticVersion}}/sdk/sandbox.js",
-            "juggler/ui": "/v{{.StaticVersion}}/sdk/ui.js",
-            "juggler/a2ui": "/v{{.StaticVersion}}/sdk/a2ui.js",
-            "juggler/model": "/v{{.StaticVersion}}/sdk/model.js",
-            "juggler/item-utils": "/v{{.StaticVersion}}/sdk/item-utils.js",
-            "juggler/registry": "/v{{.StaticVersion}}/sdk/registry.js",
-            "juggler/version": "/v{{.StaticVersion}}/sdk/version.js",
-            "juggler/utils/html": "/v{{.StaticVersion}}/sdk/lib/html.js"
+            "facet/context-item": "/v{{.StaticVersion}}/sdk/context-item.js",
+            "facet/strategy-type": "/v{{.StaticVersion}}/sdk/strategy-type.js",
+            "facet/command-type": "/v{{.StaticVersion}}/sdk/command-type.js",
+            "facet/ops": "/v{{.StaticVersion}}/sdk/ops.js",
+            "facet/sandbox": "/v{{.StaticVersion}}/sdk/sandbox.js",
+            "facet/ui": "/v{{.StaticVersion}}/sdk/ui.js",
+            "facet/a2ui": "/v{{.StaticVersion}}/sdk/a2ui.js",
+            "facet/model": "/v{{.StaticVersion}}/sdk/model.js",
+            "facet/item-utils": "/v{{.StaticVersion}}/sdk/item-utils.js",
+            "facet/registry": "/v{{.StaticVersion}}/sdk/registry.js",
+            "facet/version": "/v{{.StaticVersion}}/sdk/version.js",
+            "facet/utils/html": "/v{{.StaticVersion}}/sdk/lib/html.js"
         }
     }
     </script>
@@ -37,8 +37,8 @@
         // module worker; engine-worker-main passes this value through so any
         // worker-side /api fallback calls (including bash's blocking fallback and
         // background shell ops) satisfy the same production auth gate as viewers.
-        window.__jugglerToken = '{{.APIToken}}';
-        window.JUGGLER_ENGINE = true;
+        window.__facetToken = '{{.APIToken}}';
+        window.FACET_ENGINE = true;
     </script>
 
     <!-- Engine entry point: boots the worker-backed runtime. The engine's

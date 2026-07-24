@@ -22,7 +22,7 @@ import (
 	"testing"
 	"time"
 
-	"juggler/cmd/juggler/server"
+	"facet/cmd/facet/server"
 )
 
 // testServerEntry is one isolated Wails subprocess+fixture pair in the pool.
@@ -37,19 +37,19 @@ type testServerEntry struct {
 var testServerPool chan testServerEntry
 
 // testLogDir is a throwaway directory the pool points every subprocess's logs
-// at (via JUGGLER_LOG_DIR), so a test run never writes browser-test-*.log into
+// at (via FACET_LOG_DIR), so a test run never writes browser-test-*.log into
 // the user's real application-log directory. Created in TestMain, removed on
 // pool shutdown. Empty when unset (e.g. the -short path).
 var testLogDir string
 
 // poolConfig controls the test-pool topology.
 //
-//   - JUGGLER_TEST_WINDOWS=N: number of Wails-window subprocesses (default 1).
+//   - FACET_TEST_WINDOWS=N: number of Wails-window subprocesses (default 1).
 //     Each subprocess is fully isolated — its own SessionManager, engine,
 //     WebSocket server. Cranking this up gives perfect isolation but burns
 //     more memory and WebKit helper startup time.
 //
-//   - JUGGLER_TEST_IFRAMES=N: number of test-runner iframes per subprocess
+//   - FACET_TEST_IFRAMES=N: number of test-runner iframes per subprocess
 //     (default 9 → 3×3 grid). Each iframe is its own JS realm with its own
 //     WebSocket connection, but they share the subprocess's SessionManager,
 //     engine, and server actors. Iframes stress-test the server-side
@@ -68,12 +68,12 @@ type poolConfig struct {
 
 func loadPoolConfig() poolConfig {
 	cfg := poolConfig{windows: 1, iframes: 9}
-	if v := os.Getenv("JUGGLER_TEST_WINDOWS"); v != "" {
+	if v := os.Getenv("FACET_TEST_WINDOWS"); v != "" {
 		if n, err := strconv.Atoi(v); err == nil && n > 0 {
 			cfg.windows = n
 		}
 	}
-	if v := os.Getenv("JUGGLER_TEST_IFRAMES"); v != "" {
+	if v := os.Getenv("FACET_TEST_IFRAMES"); v != "" {
 		if n, err := strconv.Atoi(v); err == nil && n > 0 {
 			cfg.iframes = n
 		}
@@ -84,14 +84,14 @@ func loadPoolConfig() poolConfig {
 func (c poolConfig) totalSlots() int { return c.windows * c.iframes }
 
 // serverBinary is the built server binary under <root>/bin, using the platform
-// executable name — "juggler" on Unix, "juggler.exe" on Windows. Both halves of
+// executable name — "facet" on Unix, "facet.exe" on Windows. Both halves of
 // the contract need this: `go build -o` writes the output name verbatim (it does
 // NOT append .exe on a Windows target), and Windows exec.LookPath refuses to run
 // an extension-less file. So the three spawn sites here and the CI build step
 // must all agree on this name, or the suite fails at spawn with "executable file
 // not found" on Windows (which -short used to hide).
 func serverBinary(root string) string {
-	name := "juggler"
+	name := "facet"
 	if runtime.GOOS == "windows" {
 		name += ".exe"
 	}
@@ -107,23 +107,23 @@ func TestMain(m *testing.M) {
 		os.Exit(m.Run())
 	}
 
-	jugglerRoot, err := server.FindProjectRoot(".")
+	facetRoot, err := server.FindProjectRoot(".")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "cannot find project root: %v\n", err)
 		os.Exit(1)
 	}
 
-	binary := serverBinary(jugglerRoot)
-	srcFixture := filepath.Join(jugglerRoot, "tests", "benchmarks", "fixtures", "unit-test-fixture")
+	binary := serverBinary(facetRoot)
+	srcFixture := filepath.Join(facetRoot, "tests", "benchmarks", "fixtures", "unit-test-fixture")
 
 	log.SetOutput(io.Discard)
 
 	cfg := loadPoolConfig()
 
 	// Redirect every subprocess's logs into a throwaway dir so the run never
-	// litters the user's real ~/Library/Logs/Juggler with browser-test-*.log.
+	// litters the user's real ~/Library/Logs/Facet with browser-test-*.log.
 	// Removed in poolHandle.shutdown alongside the fixtures.
-	if dir, err := os.MkdirTemp("", "juggler-test-logs-*"); err == nil {
+	if dir, err := os.MkdirTemp("", "facet-test-logs-*"); err == nil {
 		testLogDir = dir
 	} else {
 		fmt.Fprintf(os.Stderr, "cannot create test log dir: %v\n", err)
@@ -165,9 +165,9 @@ func TestMain(m *testing.M) {
 			os.Exit(1)
 		}
 
-		entry, err := startJugglerSubprocess(binary, fixtureDir, cfg.iframes)
+		entry, err := startFacetSubprocess(binary, fixtureDir, cfg.iframes)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "cannot start juggler subprocess: %v\n", err)
+			fmt.Fprintf(os.Stderr, "cannot start facet subprocess: %v\n", err)
 			os.RemoveAll(fixtureDir)
 			startedPool.shutdown()
 			os.Exit(1)
@@ -212,41 +212,41 @@ func (p *poolHandle) shutdown() {
 	})
 }
 
-// startJugglerSubprocess starts a slot subprocess and returns the entry once
-// JUGGLER_ADDR= is printed to stdout. If iframes>1, the subprocess opens its
+// startFacetSubprocess starts a slot subprocess and returns the entry once
+// FACET_ADDR= is printed to stdout. If iframes>1, the subprocess opens its
 // viewer window at /test-pool?n=iframes (one Wails window hosting N test
 // lanes); otherwise it opens the production app which self-redirects to
-// /headless-test. Set JUGGLER_TEST_SHOW_WINDOW=1 to make the window visible.
-func startJugglerSubprocess(binary, fixture string, iframes int) (testServerEntry, error) {
+// /headless-test. Set FACET_TEST_SHOW_WINDOW=1 to make the window visible.
+func startFacetSubprocess(binary, fixture string, iframes int) (testServerEntry, error) {
 	args := []string{"--test", "--assets-from-disk", "--port", "0", "--project", fixture}
 	if iframes > 1 {
 		args = append(args, "--test-iframes", strconv.Itoa(iframes))
 	}
-	if os.Getenv("JUGGLER_TEST_SHOW_WINDOW") == "1" {
+	if os.Getenv("FACET_TEST_SHOW_WINDOW") == "1" {
 		args = append(args, "--window")
 	}
 	cmd := exec.Command(binary, args...)
-	// Opt-in coalescing stress: set JUGGLER_TEST_SYNC_THROTTLE_MS to a larger
+	// Opt-in coalescing stress: set FACET_TEST_SYNC_THROTTLE_MS to a larger
 	// value to widen the outbound-sync window so a fast turn's busy→idle
 	// transition always merges into one broadcast — useful for hunting waits
 	// that depend on observing a transient state edge instead of a durable
 	// fence (Conversation.completedTurns). NOT forced on by default: a global
 	// throttle bump also slows every cross-conversation sync, which makes
 	// load-sensitive multi-conv tests exceed their budget. The env is inherited
-	// by the child (resolveSyncThrottle reads it in cmd/juggler/worker); the
+	// by the child (resolveSyncThrottle reads it in cmd/facet/worker); the
 	// default (10ms) is the production value. Run e.g.
-	// `JUGGLER_TEST_SYNC_THROTTLE_MS=40 make test` for a targeted stress pass.
+	// `FACET_TEST_SYNC_THROTTLE_MS=40 make test` for a targeted stress pass.
 	cmd.Env = os.Environ()
 	// Always enable the per-worker event tape in the pool. It's a fixed-size
 	// ring buffer per conversation worker, so the cost is negligible, and it
 	// is the only way a browser-test failure block can include the WORKER
 	// TAPE section (the /api/test/dump-tape endpoint returns nothing when
 	// tracing is off).
-	cmd.Env = append(cmd.Env, "JUGGLER_TRACE=1")
+	cmd.Env = append(cmd.Env, "FACET_TRACE=1")
 	// Redirect this server's logs into the pool's throwaway dir (see testLogDir)
 	// so the run never writes into the user's real application-log directory.
 	if testLogDir != "" {
-		cmd.Env = append(cmd.Env, "JUGGLER_LOG_DIR="+testLogDir)
+		cmd.Env = append(cmd.Env, "FACET_LOG_DIR="+testLogDir)
 	}
 	// Put the child in its own process group so we can kill the whole group
 	// (parent + any grandchildren) on cleanup. Without this, signals to the
@@ -257,17 +257,17 @@ func startJugglerSubprocess(binary, fixture string, iframes int) (testServerEntr
 	if err != nil {
 		return testServerEntry{}, fmt.Errorf("stdout pipe: %w", err)
 	}
-	// Pipe stderr to a per-subprocess log in /tmp/juggler-test-logs/ so we can
-	// post-mortem batch hangs after the fact. Set JUGGLER_TEST_DISCARD_STDERR=1
+	// Pipe stderr to a per-subprocess log in /tmp/facet-test-logs/ so we can
+	// post-mortem batch hangs after the fact. Set FACET_TEST_DISCARD_STDERR=1
 	// to skip.
-	if os.Getenv("JUGGLER_TEST_DISCARD_STDERR") == "1" {
+	if os.Getenv("FACET_TEST_DISCARD_STDERR") == "1" {
 		cmd.Stderr = io.Discard
 	} else {
-		logDir := filepath.Join(os.TempDir(), "juggler-test-logs")
+		logDir := filepath.Join(os.TempDir(), "facet-test-logs")
 		if err := os.MkdirAll(logDir, 0o755); err != nil {
 			return testServerEntry{}, fmt.Errorf("create log dir: %w", err)
 		}
-		stderrPath := filepath.Join(logDir, "juggler-stderr-"+filepath.Base(fixture)+".log")
+		stderrPath := filepath.Join(logDir, "facet-stderr-"+filepath.Base(fixture)+".log")
 		stderrFile, err := os.Create(stderrPath)
 		if err != nil {
 			return testServerEntry{}, fmt.Errorf("stderr file: %w", err)
@@ -284,7 +284,7 @@ func startJugglerSubprocess(binary, fixture string, iframes int) (testServerEntr
 		scanner := bufio.NewScanner(stdout)
 		for scanner.Scan() {
 			line := scanner.Text()
-			if after, ok := strings.CutPrefix(line, "JUGGLER_ADDR="); ok {
+			if after, ok := strings.CutPrefix(line, "FACET_ADDR="); ok {
 				addrCh <- after
 			}
 		}
@@ -296,7 +296,7 @@ func startJugglerSubprocess(binary, fixture string, iframes int) (testServerEntr
 	case <-time.After(60 * time.Second):
 		signalGroup(cmd, syscall.SIGKILL)
 		cmd.Wait() //nolint:errcheck
-		return testServerEntry{}, fmt.Errorf("timeout waiting for JUGGLER_ADDR from %s", binary)
+		return testServerEntry{}, fmt.Errorf("timeout waiting for FACET_ADDR from %s", binary)
 	}
 }
 

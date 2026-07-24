@@ -301,7 +301,7 @@ let streamDest = null;
  * — or a silent settings Preview — with no clue why. The desktop app's WebView
  * console is invisible in a shipped build, so a fault a real user hits would
  * leave no trace to send us; this POSTs it to the shared frontend→app-log bridge
- * ({@link module:cmd/juggler/server/client_report} / `POST /api/client/report`)
+ * ({@link module:cmd/facet/server/client_report} / `POST /api/client/report`)
  * tagged source="chime", at Info (`level` "info") or Error ("error").
  *
  * Fire-and-forget and fully swallowed — reporting a fault must never throw back

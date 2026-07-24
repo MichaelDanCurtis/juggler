@@ -1,4 +1,4 @@
-# Contributing to Juggler
+# Contributing to Facet
 
 Thanks for your interest. This document covers the basics. The authoritative
 engineering guide — architecture, concurrency, Yjs invariants, and the
@@ -6,12 +6,12 @@ submodule-fork workflow — is [`AGENTS.md`](AGENTS.md).
 
 ## Setup
 
-Juggler needs Go 1.26+ and a recent Node toolchain (for JS linting). Clone with
+Facet needs Go 1.26+ and a recent Node toolchain (for JS linting). Clone with
 submodules so the vendored Wails fork is populated:
 
 ```bash
 git clone --recurse-submodules https://github.com/juggler-ai/juggler
-cd juggler
+cd facet
 make build
 ```
 
@@ -20,14 +20,14 @@ If you already cloned without submodules, run `git submodule update --init --rec
 ## Building and running
 
 ```bash
-make build       # Lint + build all Go binaries (bin/juggler, bin/juggler-app, bin/juggler-test)
+make build       # Lint + build all Go binaries (bin/facet, bin/facet-app, bin/facet-test)
 make go-build    # Build the Go binaries only (skip linting)
 make dev         # Build, then run the server against on-disk assets
 ```
 
-Juggler is two binaries: `cmd/juggler` is the headless **server** (HTTP/WS plus
-the hidden engine WebView), and `cmd/juggler-app` is the multi-window **desktop
-app** (`bin/Juggler.app`). The desktop app is a pure viewer that talks to a
+Facet is two binaries: `cmd/facet` is the headless **server** (HTTP/WS plus
+the hidden engine WebView), and `cmd/facet-app` is the multi-window **desktop
+app** (`bin/Facet.app`). The desktop app is a pure viewer that talks to a
 server over HTTP/WebSocket. See the Architecture section of
 [`AGENTS.md`](AGENTS.md) for the full split.
 
@@ -102,8 +102,8 @@ A few conventions you'll be held to in review; full rationale is in
   `workerManager` directly.
 - **Render callbacks** never perform state changes — fire events from the action
   site instead.
-- **The server stays windowless**: `cmd/juggler` creates only the hidden engine
-  WebView in production. Visible windows belong to `cmd/juggler-app`.
+- **The server stays windowless**: `cmd/facet` creates only the hidden engine
+  WebView in production. Visible windows belong to `cmd/facet-app`.
 
 ## Vendored fork (`3rdparty/wails`)
 

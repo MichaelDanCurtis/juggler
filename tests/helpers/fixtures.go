@@ -21,7 +21,7 @@ type TestProject struct {
 
 // NewTestProject creates a new test project
 func NewTestProject(t *testing.T) *TestProject {
-	tmpDir, err := os.MkdirTemp("", "juggler-test-*")
+	tmpDir, err := os.MkdirTemp("", "facet-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
@@ -141,7 +141,7 @@ func EmptyProject(t *testing.T) *TestProject {
 // CreateTempDir creates a temporary directory for testing
 func CreateTempDir(t *testing.T) string {
 	t.Helper()
-	tmpDir, err := os.MkdirTemp("", "juggler-security-test-*")
+	tmpDir, err := os.MkdirTemp("", "facet-security-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}

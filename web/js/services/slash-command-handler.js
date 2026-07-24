@@ -14,7 +14,7 @@ import commandRegistry from '../registries/command-registry.js';
  * @property {boolean} handled - Whether the command was recognized and executed
  * @property {string} [message] - Optional message to display to user
  * @property {boolean} [error] - Whether this was an error
- * @property {import('juggler/command-type').CommandSideEffect[]} [sideEffects] - Declarative side-effects
+ * @property {import('facet/command-type').CommandSideEffect[]} [sideEffects] - Declarative side-effects
  */
 
 /**

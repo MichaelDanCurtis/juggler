@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"time"
 
-	"juggler/cmd/juggler/worker"
+	"facet/cmd/facet/worker"
 )
 
 // MockResponse wraps one canned LLM call outcome. Exactly one of Response,

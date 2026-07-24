@@ -13,8 +13,8 @@ import (
 	"testing"
 	"unicode/utf16"
 
-	"juggler/cmd/juggler/ops"
-	"juggler/tests/helpers"
+	"facet/cmd/facet/ops"
+	"facet/tests/helpers"
 )
 
 // utf16LEWithBOM encodes s as UTF-16 little-endian with a leading BOM — the
@@ -682,7 +682,7 @@ func TestLoadFile_UserInitiatedRelativeOutsideRoot(t *testing.T) {
 
 // TestGetTree_UserInitiatedRelativeOutsideRoot is the folder analogue of the
 // above: an @-mentioned directory outside the project root (the exact reported
-// case, `@../juggler-studio/worker/`) must list with userInitiated and be
+// case, `@../facet-studio/worker/`) must list with userInitiated and be
 // rejected without it.
 func TestGetTree_UserInitiatedRelativeOutsideRoot(t *testing.T) {
 	parent := helpers.CreateTempDir(t)

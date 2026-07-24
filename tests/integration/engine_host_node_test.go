@@ -13,12 +13,12 @@ import (
 	"testing"
 	"time"
 
-	"juggler/cmd/juggler/server"
-	"juggler/internal/enginehost"
+	"facet/cmd/facet/server"
+	"facet/internal/enginehost"
 )
 
 // TestNodeEngineHostBootsAndConnects is the node-engine-host conformance test.
-// It boots the shipped server binary with JUGGLER_ENGINE_HOST=node and proves,
+// It boots the shipped server binary with FACET_ENGINE_HOST=node and proves,
 // end-to-end on the real binary, that the alternative (webview-free) host works:
 //
 //   - Choose picks the node host and logs the §3.2 boot one-liner naming it.
@@ -36,7 +36,7 @@ import (
 // diagnostics test bed: it asserts the boot log line names the right mode.
 func TestNodeEngineHostBootsAndConnects(t *testing.T) {
 	if testing.Short() {
-		t.Skip("spawns the juggler binary; skipped in -short mode")
+		t.Skip("spawns the facet binary; skipped in -short mode")
 	}
 	node, err := exec.LookPath("node")
 	if err != nil {
@@ -103,15 +103,15 @@ func TestNodeEngineHostBootsAndConnects(t *testing.T) {
 	}
 }
 
-// startNodeEngineServer spawns the headless server with JUGGLER_ENGINE_HOST=node
-// and returns once it prints JUGGLER_ADDR (bound and serving). It mirrors
+// startNodeEngineServer spawns the headless server with FACET_ENGINE_HOST=node
+// and returns once it prints FACET_ADDR (bound and serving). It mirrors
 // startHeadlessServer but forces the node engine host via the environment.
 func startNodeEngineServer(t *testing.T, binary, proj, logFile string) *headlessServer {
 	t.Helper()
 	cmd := exec.Command(binary,
 		"--window=false", "--port", "0",
 		"--project", proj, "--log-file", logFile)
-	cmd.Env = append(os.Environ(), "JUGGLER_ENGINE_HOST=node")
+	cmd.Env = append(os.Environ(), "FACET_ENGINE_HOST=node")
 	setProcGroupAttr(cmd)
 
 	stdout, err := cmd.StdoutPipe()
@@ -127,7 +127,7 @@ func startNodeEngineServer(t *testing.T, binary, proj, logFile string) *headless
 	go func() {
 		sc := bufio.NewScanner(stdout)
 		for sc.Scan() {
-			if after, ok := strings.CutPrefix(sc.Text(), "JUGGLER_ADDR="); ok {
+			if after, ok := strings.CutPrefix(sc.Text(), "FACET_ADDR="); ok {
 				addrCh <- after
 				return
 			}
@@ -140,7 +140,7 @@ func startNodeEngineServer(t *testing.T, binary, proj, logFile string) *headless
 		return hs
 	case <-time.After(45 * time.Second):
 		hs.stop()
-		t.Fatalf("timeout waiting for JUGGLER_ADDR from node-mode server for %s", proj)
+		t.Fatalf("timeout waiting for FACET_ADDR from node-mode server for %s", proj)
 		return nil
 	}
 }

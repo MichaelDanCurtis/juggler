@@ -7,7 +7,7 @@
  * catalog from the backend.
  *
  * A user command is a markdown file (YAML frontmatter + prompt-template body)
- * under `~/.juggler/commands/` (user scope) or `<project>/.juggler/commands/`
+ * under `~/.facet/commands/` (user scope) or `<project>/.facet/commands/`
  * (project scope). `GET /api/user-commands` returns every discovered definition
  * with its parsed frontmatter and body — malformed ones carry an `error` string
  * rather than being dropped. This service is the single frontend entry point the

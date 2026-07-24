@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * `juggler/model` — the conversation data model surface: message constructors,
+ * `facet/model` — the conversation data model surface: message constructors,
  * type/state enums, message predicates, and the compaction lifecycle helpers a
  * strategy or command needs to read/segment a thread.
  */

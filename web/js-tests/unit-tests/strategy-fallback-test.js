@@ -5,8 +5,8 @@
 /**
  * Strategy fallback tests.
  *
- * Juggler must boot and stay usable even when every strategy plugin (all of
- * them ship in the disable-able `@juggler/core` extension) is turned off. The
+ * Facet must boot and stay usable even when every strategy plugin (all of
+ * them ship in the disable-able `@facet/core` extension) is turned off. The
  * registry guarantees this: createStrategy() never throws — when neither the
  * requested id nor 'default' is registered it returns the framework-owned
  * FallbackStrategy, so session load succeeds and the Extensions settings stay
@@ -17,7 +17,7 @@
 import { assert } from '../utilities/test-helpers.js';
 import strategyRegistry from '../../js/registries/strategy-registry.js';
 import FallbackStrategy from '../../js/registries/fallback-strategy.js';
-import StrategyType from 'juggler/strategy-type';
+import StrategyType from 'facet/strategy-type';
 
 /**
  * @typedef {object} TestResult
@@ -81,7 +81,7 @@ export async function runTests(_ctx) {
   });
 
   await run('createStrategy never throws when NO strategy is registered', () => {
-    // Simulate the @juggler/core extension being disabled: the registry holds
+    // Simulate the @facet/core extension being disabled: the registry holds
     // no strategies at all. Snapshot and restore so the shared singleton is
     // untouched for other suites, even if an assertion throws.
     const saved = new Map(strategyRegistry.items);

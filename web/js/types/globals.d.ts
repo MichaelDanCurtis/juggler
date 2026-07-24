@@ -3,7 +3,7 @@
 //   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   AGPL-3.0-or-later - see LICENSE
 
 /**
- * Global type declarations for Juggler
+ * Global type declarations for Facet
  */
 
 interface Window {
@@ -36,7 +36,7 @@ interface Window {
 	/**
 	 * Reference to main application instance (debugging)
 	 */
-	jugglerApp?: unknown;
+	facetApp?: unknown;
 
 	/**
 	 * Show choice dialog
@@ -57,7 +57,7 @@ interface Window {
 	/**
 	 * Set by server when running in test mode; causes app.js to poll for pending tests.
 	 */
-	JUGGLER_TEST_MODE?: boolean;
+	FACET_TEST_MODE?: boolean;
 
 }
 

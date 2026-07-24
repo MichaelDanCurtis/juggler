@@ -1640,7 +1640,7 @@ class WorkerManager {
         // gate the call behind the test flag rather than firing a request that
         // 404s in production (over the studio tunnel that 404 is a visible
         // console line). Fire-and-forget.
-        if (/** @type {any} */ (globalThis).JUGGLER_TEST_MODE) {
+        if (/** @type {any} */ (globalThis).FACET_TEST_MODE) {
           fetch('/api/test/debug-log', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

@@ -2,7 +2,7 @@
 //     ██ ██ ██ ██ ▄▄ ██ ▄▄ ██    ██▄▄  ██▄█▄   Copyright (c) 2026 Julian Storer
 //   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   AGPL-3.0-or-later - see LICENSE
 
-// Package jlog provides unified logging for Juggler.
+// Package jlog provides unified logging for Facet.
 //
 // Three log levels control what appears where:
 //
@@ -124,7 +124,7 @@ func writeHeader(opts Options) {
 	for _, k := range keys {
 		parts = append(parts, fmt.Sprintf("%s=%s", k, opts.HeaderExtra[k]))
 	}
-	fileLogger.Printf("===== juggler %s =====", strings.Join(parts, " "))
+	fileLogger.Printf("===== facet %s =====", strings.Join(parts, " "))
 }
 
 func nonEmpty(s, fallback string) string {

@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"juggler/cmd/juggler/worker"
+	"facet/cmd/facet/worker"
 )
 
 func waitForWorkerCreation(t *testing.T, manager *worker.Manager, convID string) *worker.ConversationWorker {

@@ -20,7 +20,7 @@ import (
 // ones, which rotation never does.
 const DefaultLogRetention = 14 * 24 * time.Hour
 
-// logFileRe matches Juggler's own log files: a structured or stderr log and any
+// logFileRe matches Facet's own log files: a structured or stderr log and any
 // rotation backup — "host.log", "myproj-a1b2.log", "app.stderr.log",
 // "myproj-a1b2.log.3", etc. The sweep only ever removes files matching this, so
 // an unrelated file a user dropped into the log directory is never touched.
@@ -33,8 +33,8 @@ var logFileRe = regexp.MustCompile(`\.log(\.\d+)?$`)
 // a dead project's whole folder disappears once its last log ages out.
 //
 // It is best-effort startup housekeeping: it only ever touches files that match
-// one of Juggler's own log names (logFileRe), and it ignores individual remove
-// errors — a second juggler process may have removed the same stale file a
+// one of Facet's own log names (logFileRe), and it ignores individual remove
+// errors — a second facet process may have removed the same stale file a
 // moment earlier, which is success, not failure. A non-positive maxAge disables
 // the sweep entirely (returns 0).
 func SweepOldLogs(dir string, maxAge time.Duration, now time.Time) int {

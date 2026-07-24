@@ -32,9 +32,9 @@ const POLL_INTERVAL_MS = 5000;
 const CONNECT_SETTLE_MS = 2 * POLL_INTERVAL_MS;
 
 /** Web Lock name serialising the cross-window fire claim. */
-const CLAIM_LOCK_NAME = 'juggler-scheduled-send-fire';
+const CLAIM_LOCK_NAME = 'facet-scheduled-send-fire';
 /** localStorage key holding recently-claimed fires (shared across same-origin windows). */
-const CLAIM_STORE_KEY = 'juggler.scheduledSend.claims';
+const CLAIM_STORE_KEY = 'facet.scheduledSend.claims';
 /** How long a claim lingers before it's pruned — bounds the store's size. */
 const CLAIM_TTL_MS = 24 * 60 * 60 * 1000;
 

@@ -77,7 +77,7 @@ export default class MessageThread {
     const resolvedStrategyId = strategyId ?? this.getEffectiveStrategyId();
     /** @type {string} */
     this.currentStrategyId = resolvedStrategyId;
-    /** @type {import('juggler/strategy-type').default} */
+    /** @type {import('facet/strategy-type').default} */
     this.strategy = strategyRegistry.createStrategy(resolvedStrategyId, this);
 
     /** @type {number|null} */
@@ -599,7 +599,7 @@ export default class MessageThread {
    */
   mutate(fn) {
     this.transact(fn);
-    if (typeof window !== 'undefined' && /** @type {any} */ (window).__jugglerDevMode) {
+    if (typeof window !== 'undefined' && /** @type {any} */ (window).__facetDevMode) {
       try { this.assertInvariants(); }
       catch (e) { console.error('[invariant violation after mutate()]', e); }
     }
@@ -1036,7 +1036,7 @@ export default class MessageThread {
    * Stop a running background-output binding: flip `cancelRequested` on its
    * `deliverTaskOutput` entry. The worker's pending-request loop observes the
    * flag, stops the pump, kills the task, and stamps the entry `cancelled`
-   * (see `cancelPendingEntry` in `cmd/juggler/worker/pending_requests.go`) — so
+   * (see `cancelPendingEntry` in `cmd/facet/worker/pending_requests.go`) — so
    * the kill needs zero new worker code. Mirrors the abort path in
    * {@link submitPendingRequest}. No-op if the binding is missing or already
    * terminal. This is an action-site mutation (e.g. a Stop button click), never
@@ -1413,19 +1413,19 @@ export default class MessageThread {
   // ── Context items ──────────────────────────────────────────────────
   // CRUD and lifecycle live in message-thread-context-items.js.
 
-  /** @returns {import('juggler/context-item').default[]} Context items */
+  /** @returns {import('facet/context-item').default[]} Context items */
   get contextItems() { return contextItemHelpers.getContextItems(this); }
 
   /**
    * @plugin-api
    * @param {string} itemId
-   * @returns {import('juggler/context-item').default|undefined} Context item instance
+   * @returns {import('facet/context-item').default|undefined} Context item instance
    */
   getContextItem(itemId) { return contextItemHelpers.getContextItem(this, itemId); }
 
   /**
    * @plugin-api
-   * @param {import('juggler/context-item').default} contextItem
+   * @param {import('facet/context-item').default} contextItem
    */
   addContextItem(contextItem) { contextItemHelpers.addContextItem(this, contextItem); }
 
@@ -1469,7 +1469,7 @@ export default class MessageThread {
 
   /**
    * @param {string} itemId
-   * @param {import('juggler/context-item').default} [changedItem]
+   * @param {import('facet/context-item').default} [changedItem]
    * @returns {Promise<void>}
    */
   async _handleContextItemContentChanged(itemId, changedItem) {

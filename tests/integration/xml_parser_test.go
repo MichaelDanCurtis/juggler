@@ -7,8 +7,8 @@ package integration_test
 import (
 	"testing"
 
-	provider "juggler/cmd/juggler/providers/registry"
-	"juggler/cmd/juggler/providers/utils"
+	provider "facet/cmd/facet/providers/registry"
+	"facet/cmd/facet/providers/utils"
 )
 
 func TestXMLToolCallParsing(t *testing.T) {

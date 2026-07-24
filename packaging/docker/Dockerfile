@@ -1,9 +1,9 @@
-# Headless Juggler server. See docs/headless-linux.md.
+# Headless Facet server. See docs/headless-linux.md.
 #
-# Build:  place a Linux `juggler` binary next to this Dockerfile (from the
+# Build:  place a Linux `facet` binary next to this Dockerfile (from the
 #         release tarball, or your own build), then
-#           docker build -t juggler .
-# Run:    docker run -it -p 3939:3939 -v "$PWD:/work" -w /work juggler
+#           docker build -t facet .
+# Run:    docker run -it -p 3939:3939 -v "$PWD:/work" -w /work facet
 #
 # The server runs its agent engine inside a hidden WebKitGTK webview, so the
 # image carries the GTK4/WebKitGTK runtime and starts under Xvfb (a virtual
@@ -22,9 +22,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # disabling it here is the standard containerised-WebKit configuration.
 ENV WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1
 
-COPY juggler /usr/local/bin/juggler
+COPY facet /usr/local/bin/facet
 
 EXPOSE 3939
 
-ENTRYPOINT ["xvfb-run", "-a", "/usr/local/bin/juggler"]
+ENTRYPOINT ["xvfb-run", "-a", "/usr/local/bin/facet"]
 CMD ["--public"]

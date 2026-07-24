@@ -10,7 +10,7 @@
  * "Gemini 2.5 Pro"). These helpers just render it, falling back to the raw wire
  * id only when a provider supplies no name. No prettifying or per-provider
  * special-casing lives here — that belongs in the provider (see
- * cmd/juggler/providers/.../ and providers/utils.ModelDisplayName).
+ * cmd/facet/providers/.../ and providers/utils.ModelDisplayName).
  */
 
 /**

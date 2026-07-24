@@ -64,7 +64,7 @@ export async function executeContextItem(mt, conv, itemTypeId, params, options =
     const context = { projectPath: session.projectPath };
     const mergeResult = ItemClass.mergeOrReplace(params, existingItemsOfType, context);
     if (mergeResult) {
-      const existingItem = /** @type {import('juggler/context-item').default} */ (mergeResult.item);
+      const existingItem = /** @type {import('facet/context-item').default} */ (mergeResult.item);
       if (!existingItem?.id || !mt.findByItemId(existingItem.id)) {
         console.error(`[ContextItemOrchestrator] BUG: mergeOrReplace for ${itemTypeId} returned invalid item - creating new`);
       } else if (existingItem.type !== itemTypeId) {
@@ -74,7 +74,7 @@ export async function executeContextItem(mt, conv, itemTypeId, params, options =
           Object.assign(existingItem.data, mergeResult.mergedParams);
         }
         if (mergeResult.action === 'reuse' || mergeResult.action === 'merge') {
-          /** @type {import('juggler/context-item').ToolCallContext} */
+          /** @type {import('facet/context-item').ToolCallContext} */
           const ctx = { session, conversation: conv };
           const toolResult = await existingItem.handleToolCall(toolName, params, ctx);
           if (!toolResult.success) {
@@ -106,10 +106,10 @@ export async function executeContextItem(mt, conv, itemTypeId, params, options =
 
   // Create and execute
   const contextItem = new ItemClass({ id: newItemId, type: itemTypeId, session, conversation: conv, messageThread: mt });
-  /** @type {import('juggler/context-item').ToolCallResult} */
+  /** @type {import('facet/context-item').ToolCallResult} */
   let toolResult;
   try {
-    /** @type {import('juggler/context-item').ToolCallContext} */
+    /** @type {import('facet/context-item').ToolCallContext} */
     const ctx = { session, conversation: conv };
     toolResult = await contextItem.handleToolCall(toolName, params, ctx);
   } catch (err) {
@@ -201,7 +201,7 @@ export async function refreshAllContextItems(mt, conv) {
  * @param {MessageThread} mt
  * @param {Conversation} conv
  * @param {string} itemId
- * @param {import('juggler/context-item').default} [changedItem]
+ * @param {import('facet/context-item').default} [changedItem]
  */
 export async function handleContextItemContentChanged(mt, conv, itemId, changedItem) {
   const contextItem = changedItem || mt.getContextItem(itemId);

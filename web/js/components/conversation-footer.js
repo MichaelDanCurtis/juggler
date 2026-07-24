@@ -194,11 +194,11 @@ class ConversationFooter extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
             <footer-processing class="hidden">
-                <juggler-spinner></juggler-spinner>
+                <facet-spinner></facet-spinner>
                 <span class="llm-busy-text"></span>
                 <button class="message-action-btn footer-pause-btn" type="button" title="Pause as soon as possible, without cancelling any operations in progress">
                     <svg class="footer-pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z"/></svg>
-                    <juggler-spinner class="footer-pause-spinner" style="--size: 1rem"></juggler-spinner>
+                    <facet-spinner class="footer-pause-spinner" style="--size: 1rem"></facet-spinner>
                     <span class="footer-pause-label">Pause</span>
                 </button>
                 <button class="message-action-btn footer-stop-btn" type="button" title="Cancel all pending operations and stop.">
@@ -331,10 +331,10 @@ class ConversationFooter extends HTMLElement {
    */
   _stopOwnColumn() {
     const threadItemId = this._messageThread?.threadItemId ?? null;
-    // @ts-ignore - jugglerApp is added dynamically in app.js
-    if (window.jugglerApp && window.jugglerApp.cancelLLMOperation) {
+    // @ts-ignore - facetApp is added dynamically in app.js
+    if (window.facetApp && window.facetApp.cancelLLMOperation) {
       // @ts-ignore
-      window.jugglerApp.cancelLLMOperation(threadItemId);
+      window.facetApp.cancelLLMOperation(threadItemId);
     }
   }
 
@@ -350,10 +350,10 @@ class ConversationFooter extends HTMLElement {
    */
   _pauseOwnColumn() {
     const threadItemId = this._messageThread?.threadItemId ?? null;
-    // @ts-ignore - jugglerApp is added dynamically in app.js
-    if (window.jugglerApp && window.jugglerApp.cancelLLMOperation) {
+    // @ts-ignore - facetApp is added dynamically in app.js
+    if (window.facetApp && window.facetApp.cancelLLMOperation) {
       // @ts-ignore
-      window.jugglerApp.cancelLLMOperation(threadItemId, { polite: true, toggle: true });
+      window.facetApp.cancelLLMOperation(threadItemId, { polite: true, toggle: true });
     }
   }
 
@@ -382,7 +382,7 @@ class ConversationFooter extends HTMLElement {
       show(processing);
       hide(idle);
       if (text) text.textContent = state.statusMessage || '';
-      const spinner = this.querySelector('juggler-spinner');
+      const spinner = this.querySelector('facet-spinner');
       if (spinner) toggle(spinner, state.showSpinner !== false);
       if (nextSteps) {
         nextSteps.textContent = state.nextSteps || '';

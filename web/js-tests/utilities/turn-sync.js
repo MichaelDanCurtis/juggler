@@ -8,7 +8,7 @@
  * The one correct way for a test to wait for the worker: observe a DURABLE,
  * level-triggered terminal condition, never a transient state edge. The worker
  * bumps a monotonic counter in the durable `completedTurns` metadata key on
- * every idle transition (cmd/juggler/worker/worker.go sendStatus);
+ * every idle transition (cmd/facet/worker/worker.go sendStatus);
  * `Conversation.completedTurns` exposes it. Fencing on that counter is immune
  * to Yjs sync batching — a fast turn whose busy→idle window coalesces into a
  * single broadcast still advances the counter — and to the stale-idle race (an

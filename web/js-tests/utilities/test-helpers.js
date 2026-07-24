@@ -605,7 +605,7 @@ export async function createApprovalTestConversation(session) {
  * @param {Session} _session - Session instance (unused but kept for API consistency)
  * @param {{id: string, name: string, input: Record<string, unknown>}} toolCall - Tool call to execute
  * @param {number} [timeoutMs=2000] - Timeout for waiting for pending state
- * @returns {Promise<{toolUseId: string, executionPromise: Promise<import('juggler/strategy-type').ToolOutcome[]>}>} The tool use ID and execution promise
+ * @returns {Promise<{toolUseId: string, executionPromise: Promise<import('facet/strategy-type').ToolOutcome[]>}>} The tool use ID and execution promise
  */
 export async function executeToolUntilApproval(conversation, _session, toolCall, timeoutMs = 2000) {
   // The Yjs observer only processes REMOTE (non-local) transactions.

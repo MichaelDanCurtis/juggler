@@ -7,7 +7,7 @@
  * frameless Windows and Linux windows.
  *
  * The desktop window strips the native title bar on Windows (Win32 caption) and
- * Linux (GTK decorations) — see cmd/juggler-app/window_frame_{windows,linux}.go
+ * Linux (GTK decorations) — see cmd/facet-app/window_frame_{windows,linux}.go
  * — so the app's own header fills the top of the window, matching the frameless
  * macOS look. macOS keeps its native traffic lights via the transparent
  * MacTitleBar, so it needs no HTML controls; Windows and Linux are the platforms

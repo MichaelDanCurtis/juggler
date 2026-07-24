@@ -15,7 +15,7 @@
  * @typedef {{atBottom: boolean, topItemId: string|null}} ScrollState
  */
 
-const STORAGE_KEY = 'jugglerScrollStates';
+const STORAGE_KEY = 'facetScrollStates';
 
 /**
  * @returns {{[conversationId: string]: ScrollState}} All persisted states.

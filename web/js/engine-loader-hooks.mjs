@@ -10,7 +10,7 @@
  * `document` it does `import('/worker-module?url=<extUrl>')`. In the webview
  * worker the module base is the server's http origin, so `/worker-module…`
  * resolves to a same-origin HTTP fetch and the server rewrites the module's
- * bare `juggler/*` SDK specifiers before returning it. Under Node the engine
+ * bare `facet/*` SDK specifiers before returning it. Under Node the engine
  * graph is imported from disk (a file:// base), so `/worker-module…` would
  * resolve to a bogus filesystem path — the "Cannot find module '/worker-module'"
  * failure that otherwise kills every extension tool in node mode.
@@ -66,7 +66,7 @@ export async function resolve(specifier, context, nextResolve) {
  */
 export async function load(url, context, nextLoad) {
   if (origin && url.startsWith(origin + '/worker-module')) {
-    const res = await fetch(url, token ? { headers: { 'X-Juggler-Token': token } } : undefined);
+    const res = await fetch(url, token ? { headers: { 'X-Facet-Token': token } } : undefined);
     if (!res.ok) {
       throw new Error(`engine-loader-hooks: worker-module fetch failed (${res.status}) for ${url}`);
     }

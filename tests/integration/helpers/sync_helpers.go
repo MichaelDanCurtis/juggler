@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"juggler/cmd/juggler/worker"
+	"facet/cmd/facet/worker"
 )
 
 // WaitForDocumentCondition polls the document until the condition returns true or timeout.

@@ -12,7 +12,7 @@
  *    for writable fields, Copy-only for read-only selections, nothing for plain
  *    elements or read-only fields — this is what keeps the native menu (with its
  *    Inspect Element / Writing Tools items) from ever showing over text;
- *  - end-to-end wiring: a real `contextmenu` event opens the juggler popup,
+ *  - end-to-end wiring: a real `contextmenu` event opens the facet popup,
  *    suppresses the native menu (preventDefault), and Escape dismisses it.
  * @module unit-tests/context-menu-test
  */
@@ -176,7 +176,7 @@ export async function runTests() {
     bare.remove();
   }
 
-  // === End-to-end: contextmenu over a textarea opens the juggler edit menu ===
+  // === End-to-end: contextmenu over a textarea opens the facet edit menu ===
   const taHost = document.createElement('textarea');
   taHost.value = 'abc';
   document.body.appendChild(taHost);
@@ -189,9 +189,9 @@ export async function runTests() {
     const notCancelled = taHost.dispatchEvent(ev);
     tally(check(notCancelled === false,
       'e2e: native menu suppressed over a text field (preventDefault)', errors));
-    const editMenu = document.querySelector('.juggler-context-menu');
+    const editMenu = document.querySelector('.facet-context-menu');
     const editLabels = editMenu
-      ? Array.from(editMenu.querySelectorAll('.juggler-context-menu-item')).map(b => b.textContent)
+      ? Array.from(editMenu.querySelectorAll('.facet-context-menu-item')).map(b => b.textContent)
       : [];
     tally(check(
       JSON.stringify(editLabels) === JSON.stringify(['Cut', 'Copy', 'Paste', 'Select All']),
@@ -200,7 +200,7 @@ export async function runTests() {
     await new Promise((r) => setTimeout(r, 0));
   } finally {
     taHost.remove();
-    const leftover = document.querySelector('.juggler-context-menu');
+    const leftover = document.querySelector('.facet-context-menu');
     if (leftover) leftover.remove();
   }
 
@@ -210,27 +210,27 @@ export async function runTests() {
   document.body.appendChild(host);
   try {
     // Pre-condition: no menu open.
-    const before = document.querySelector('.juggler-context-menu');
-    tally(check(before === null, 'e2e: no juggler menu should exist before the event', errors));
+    const before = document.querySelector('.facet-context-menu');
+    tally(check(before === null, 'e2e: no facet menu should exist before the event', errors));
 
     host.dispatchEvent(new MouseEvent('contextmenu', {
       bubbles: true, cancelable: true, clientX: 20, clientY: 20,
     }));
 
-    const menu = document.querySelector('.juggler-context-menu');
-    tally(check(menu !== null, 'e2e: contextmenu over a claimed element should open the juggler menu', errors));
-    const rows = menu ? menu.querySelectorAll('.juggler-context-menu-item') : [];
+    const menu = document.querySelector('.facet-context-menu');
+    tally(check(menu !== null, 'e2e: contextmenu over a claimed element should open the facet menu', errors));
+    const rows = menu ? menu.querySelectorAll('.facet-context-menu-item') : [];
     tally(check(rows.length === 1 && rows[0].textContent === 'Test Action',
       'e2e: menu should render the provider rows', errors));
 
     // Escape dismisses.
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     await new Promise((r) => setTimeout(r, 0));
-    tally(check(document.querySelector('.juggler-context-menu') === null,
-      'e2e: Escape should dismiss the juggler menu', errors));
+    tally(check(document.querySelector('.facet-context-menu') === null,
+      'e2e: Escape should dismiss the facet menu', errors));
   } finally {
     host.remove();
-    const leftover = document.querySelector('.juggler-context-menu');
+    const leftover = document.querySelector('.facet-context-menu');
     if (leftover) leftover.remove();
   }
 

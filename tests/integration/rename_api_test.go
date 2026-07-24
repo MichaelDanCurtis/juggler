@@ -14,9 +14,9 @@ import (
 	"strings"
 	"testing"
 
-	"juggler/cmd/juggler/core"
-	"juggler/cmd/juggler/server/handlers"
-	"juggler/tests/helpers"
+	"facet/cmd/facet/core"
+	"facet/cmd/facet/server/handlers"
+	"facet/tests/helpers"
 
 	"github.com/gorilla/mux"
 )

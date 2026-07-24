@@ -21,14 +21,14 @@ import keyShortcutManager from './key-shortcut-manager.js';
 import { readPref, writePref, notifyPrefChanged } from './ui-pref-store.js';
 
 /** localStorage key holding `{ seen: string[] }`. */
-const STORAGE_KEY = 'juggler-tips';
+const STORAGE_KEY = 'facet-tips';
 
 /**
  * Fired on `window` whenever a tip is retired (learn-by-doing, or the seen set
  * otherwise changes). The sidebar rail listens so it re-syncs immediately instead
  * of waiting for an unrelated render.
  */
-export const TIPS_CHANGED_EVENT = 'juggler:tips-changed';
+export const TIPS_CHANGED_EVENT = 'facet:tips-changed';
 
 /**
  * A materialized tip ready for display.

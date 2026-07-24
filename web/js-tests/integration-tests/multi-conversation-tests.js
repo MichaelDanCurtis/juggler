@@ -251,7 +251,7 @@ export const duplicateConversationTest = {
   },
 
   // Verify transaction blobs survive duplication: the source's
-  // `.juggler/{convID}.txns/` directory must be copied so items' transactionId
+  // `.facet/{convID}.txns/` directory must be copied so items' transactionId
   // references can still resolve when the user opens "View Transaction".
   customAssertions: async (conversation) => {
     const txnIds = new Set();
@@ -328,7 +328,7 @@ export const duplicateConversationNameTest = {
   ],
 
   customAssertions: async (conversation) => {
-    // Under JUGGLER_TEST_IFRAMES>1, multiple tests share one SessionManager,
+    // Under FACET_TEST_IFRAMES>1, multiple tests share one SessionManager,
     // so a sibling test may already hold "<base> (copy)" — the server then
     // resolves this clone to "<base> (copy 2)", "<base> (copy 3)", etc. The
     // production behaviour is correct; accept any " (copy)" or " (copy N)"
@@ -379,7 +379,7 @@ export const deleteActiveTabMruTest = {
 
   // No LLM responses needed; just verify the session selection via customAssertions.
   // Scope to THIS test's own conversations by id (not Map position): under
-  // JUGGLER_TEST_IFRAMES>1 the session order also carries sibling lanes' tabs
+  // FACET_TEST_IFRAMES>1 the session order also carries sibling lanes' tabs
   // and is reordered by their auto-recents activity, so positional indexing is
   // unreliable. own = [A, B, C] in creation order; C was just deleted.
   customAssertions: (conversation, ctx) => {
@@ -420,7 +420,7 @@ export const duplicateConversationTwiceNameTest = {
   ],
 
   customAssertions: (conversation, ctx) => {
-    // Scope to THIS test's own conversations. Under JUGGLER_TEST_IFRAMES>1,
+    // Scope to THIS test's own conversations. Under FACET_TEST_IFRAMES>1,
     // session.conversations is shared across iframes and includes sibling
     // tests' conversations; the source $CONV_0's own name may also already
     // carry a " (copy)" suffix if a sibling test held the base name first.

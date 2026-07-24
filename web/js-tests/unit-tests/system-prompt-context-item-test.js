@@ -13,7 +13,7 @@
  * @module unit-tests/system-prompt-context-item-test
  */
 
-import SystemPromptContextItem from '../../extensions/juggler-core/context-items/system-prompt-context-item.js';
+import SystemPromptContextItem from '../../extensions/facet-core/context-items/system-prompt-context-item.js';
 import { getDefaultIdentityText } from '../../sdk/lib/system-prompt-registry.js';
 import { assert } from '../utilities/test-helpers.js';
 

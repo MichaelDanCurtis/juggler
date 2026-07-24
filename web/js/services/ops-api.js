@@ -350,9 +350,9 @@ async function callOp(toolId, operation, params, signal, allowedPaths) {
   }
 
   const headers = /** @type {Record<string, string>} */ ({ 'Content-Type': 'application/json' });
-  const token = /** @type {{__jugglerToken?: string}} */ (globalThis).__jugglerToken;
+  const token = /** @type {{__facetToken?: string}} */ (globalThis).__facetToken;
   if (token) {
-    headers['X-Juggler-Token'] = token;
+    headers['X-Facet-Token'] = token;
   }
 
   const response = await fetch('/api/ops/call', {

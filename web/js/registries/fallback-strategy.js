@@ -2,13 +2,13 @@
 //     ██ ██ ██ ██ ▄▄ ██ ▄▄ ██    ██▄▄  ██▄█▄   Copyright (c) 2026 Julian Storer
 //   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   AGPL-3.0-or-later - see LICENSE
 
-import StrategyType from 'juggler/strategy-type';
+import StrategyType from 'facet/strategy-type';
 
 /**
  * FallbackStrategy - framework-owned last-resort strategy.
  *
- * Juggler is a hackable, plugin-based app: every strategy (including 'default')
- * ships in the `@juggler/core` extension and can be disabled via config. When a
+ * Facet is a hackable, plugin-based app: every strategy (including 'default')
+ * ships in the `@facet/core` extension and can be disabled via config. When a
  * conversation needs a strategy but none is registered — because the core
  * extension is disabled — the registry would otherwise have nothing to
  * instantiate and session load would throw, bricking the whole app (including
@@ -31,13 +31,13 @@ export default class FallbackStrategy extends StrategyType {
   /**
    * Strategy manifest. Mirrors the shape every strategy declares; the id is
    * never registered, so it cannot collide with a plugin's capability id.
-   * @type {import('juggler/strategy-type').StrategyManifest}
+   * @type {import('facet/strategy-type').StrategyManifest}
    */
   static MANIFEST = {
     id: 'fallback',
     name: 'No Strategy',
     version: '1.0.0',
     description: 'Built-in placeholder used when no strategy plugin is enabled. It only keeps the app alive and the Extensions settings reachable so a strategy can be re-enabled.',
-    author: 'Juggler',
+    author: 'Facet',
   };
 }

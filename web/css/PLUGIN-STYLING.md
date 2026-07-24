@@ -1,10 +1,10 @@
 # Plugin Styling Guide
 
-This document defines CSS conventions for Juggler plugins to ensure consistent styling and avoid conflicts between plugins and host styles.
+This document defines CSS conventions for Facet plugins to ensure consistent styling and avoid conflicts between plugins and host styles.
 
 ## Architecture Overview
 
-Juggler uses **Light DOM** (no Shadow DOM) with external stylesheets. This means:
+Facet uses **Light DOM** (no Shadow DOM) with external stylesheets. This means:
 - All CSS is global and can affect any element
 - Plugins share CSS with the host application
 - Naming conventions are critical to avoid conflicts

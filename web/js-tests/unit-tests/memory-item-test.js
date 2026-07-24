@@ -10,11 +10,11 @@
  * file is the single source of truth (never round-tripped through Yjs), and
  * `createContextText` reads it live at send time. Each sub-test points the item
  * at its own isolated path under the fixture so sibling pool lanes never
- * collide (the production path is the fixed `.juggler/MEMORY.md`).
+ * collide (the production path is the fixed `.facet/MEMORY.md`).
  * @module unit-tests/memory-item-test
  */
 
-import MemoryContextItem from '../../extensions/juggler-core/context-items/memory-context-item.js';
+import MemoryContextItem from '../../extensions/facet-core/context-items/memory-context-item.js';
 import { readFileLoad } from '../../js/services/ops-api.js';
 import {
   initializeRegistries,

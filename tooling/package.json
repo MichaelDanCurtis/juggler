@@ -1,5 +1,5 @@
 {
-  "name": "juggler",
+  "name": "facet",
   "version": "0.2.0",
   "description": "Production-ready AI code agent CLI with integrated web interface",
   "type": "module",
@@ -16,7 +16,7 @@
     "llm",
     "cli"
   ],
-  "author": "Juggler Team",
+  "author": "Facet Team",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
     "yjs": "^13.6.0"

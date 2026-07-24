@@ -150,6 +150,6 @@ class EngineApp {
 // Initialize engine
 const engine = new EngineApp();
 if (typeof window !== 'undefined') {
-  /** @type {any} */ (window).__jugglerEngine = engine;
+  /** @type {any} */ (window).__facetEngine = engine;
   /** @type {any} */ (window).engineApp = engine;
 }

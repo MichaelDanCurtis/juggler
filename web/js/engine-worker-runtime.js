@@ -9,7 +9,7 @@
  * engine's WebSocket and tool execution run off the main thread, immune to the
  * WebKit hidden/accessory main-thread throttling.
  *
- * The engine graph uses the public `juggler/*` SDK specifiers, and a module
+ * The engine graph uses the public `facet/*` SDK specifiers, and a module
  * worker has no import map to resolve them — so engine-app.js (and everything it
  * pulls in) is imported through the server's /worker-module loader, which
  * rewrites those specifiers to concrete URLs. This is the engine's sole runtime;
@@ -18,7 +18,7 @@
 
 // Mark this global BEFORE the engine graph loads so client-role.isEngine() makes
 // the real wsService connect as role=engine from inside the worker.
-globalThis.JUGGLER_ENGINE = true;
+globalThis.FACET_ENGINE = true;
 
 /**
  * Post server-visible startup telemetry. The engine runs in a worker inside the
@@ -63,7 +63,7 @@ function installAPITokenFetchShim(token) {
           (typeof input !== 'string' && inputAny && inputAny.headers) ||
           undefined
         );
-        headers.set('X-Juggler-Token', token);
+        headers.set('X-Facet-Token', token);
         init.headers = headers;
       }
     } catch { /* fall through to the unmodified fetch */ }
@@ -138,8 +138,8 @@ self.onmessage = (event) => {
 
   if (data.type !== 'start') return;
   /** @type {any} */ (globalThis).__assetPrefix = data.assetPrefix || '';
-  /** @type {any} */ (globalThis).__jugglerToken = data.apiToken || '';
-  installAPITokenFetchShim(/** @type {any} */ (globalThis).__jugglerToken);
+  /** @type {any} */ (globalThis).__facetToken = data.apiToken || '';
+  installAPITokenFetchShim(/** @type {any} */ (globalThis).__facetToken);
 
   // The engine fires this optional hook once it has booted and begun
   // connecting (see engine-app.js setup()). Relay it to the host (for the
@@ -150,7 +150,7 @@ self.onmessage = (event) => {
   };
 
   // Boot the real engine through the worker-module loader so its bare
-  // juggler/* specifiers resolve. Top-level code in engine-app.js constructs
+  // facet/* specifiers resolve. Top-level code in engine-app.js constructs
   // EngineApp and kicks off setup()/connect(). The URL is built as a variable
   // so it stays a runtime import (a literal would be statically resolved).
   const engineEntry = '/worker-module?url=' + encodeURIComponent('/js/engine-app.js');

@@ -56,7 +56,7 @@ export async function runTests(_ctx) {
   }
 
   test('strips straight double quotes', () => {
-    expect('"/Users/jules/code/juggler"', '/Users/jules/code/juggler');
+    expect('"/Users/jules/code/facet"', '/Users/jules/code/facet');
   });
 
   test('strips straight single quotes', () => {

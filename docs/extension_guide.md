@@ -1,6 +1,6 @@
-# Writing Juggler Extensions
+# Writing Facet Extensions
 
-This is the authoring guide for **extensions** — the unit Juggler uses to add
+This is the authoring guide for **extensions** — the unit Facet uses to add
 capabilities. It covers the concepts, packaging, and workflow. For the actual
 classes and methods you call, it points you at the SDK source: every base class
 in `web/sdk/` carries a JSDoc header with a quickstart and a full method
@@ -19,9 +19,9 @@ An extension bundles any mix of three capability types — each a class you
 
 | Capability | What it does | Base class (SDK module) | Built-in examples |
 |------------|--------------|-------------------------|-------------------|
-| **Context Item** | A tool the LLM can call (read a file, search, run a command) | `juggler/context-item` | `glob`, `read_file`, `write_file` |
-| **Strategy** | Controls how the agentic loop runs — turns, tools, stopping | `juggler/strategy-type` | `default`, `read-only`, `yolo` |
-| **Command** | A user-invoked slash command (`/clear`, `/compact`) | `juggler/command-type` | `clear`, `compact`, `thread` |
+| **Context Item** | A tool the LLM can call (read a file, search, run a command) | `facet/context-item` | `glob`, `read_file`, `write_file` |
+| **Strategy** | Controls how the agentic loop runs — turns, tools, stopping | `facet/strategy-type` | `default`, `read-only`, `yolo` |
+| **Command** | A user-invoked slash command (`/clear`, `/compact`) | `facet/command-type` | `clear`, `compact`, `thread` |
 
 An extension may **also** contribute a **system-prompt contribution** — not a
 class but a single module whose default export adds terse, durable guidance to
@@ -29,8 +29,8 @@ the system prompt (see [System-prompt contribution](#system-prompt-contribution)
 below). An extension that provides *only* a system-prompt contribution (a
 "prompt pack") is valid.
 
-Juggler ships its own built-ins as one core extension, `@juggler/core`
-(`web/extensions/juggler-core/`), loaded through the **exact same path** as any
+Facet ships its own built-ins as one core extension, `@facet/core`
+(`web/extensions/facet-core/`), loaded through the **exact same path** as any
 third-party extension. It is the best reference for well-formed capabilities.
 
 > **Just want a `/name` shortcut for a prompt you reuse?** You don't need an
@@ -41,35 +41,35 @@ third-party extension. It is the best reference for well-formed capabilities.
 ## Quick start
 
 ```bash
-juggler ext init my-extension       # scaffold manifest + one sample of each capability + README
-juggler ext validate ./my-extension # run the server's admission check locally
-juggler ext link ./my-extension     # symlink into ~/.juggler/extensions (hot-reloads on save)
-juggler ext add github.com/owner/repo  # git-clone a published extension into ~/.juggler/extensions
+facet ext init my-extension       # scaffold manifest + one sample of each capability + README
+facet ext validate ./my-extension # run the server's admission check locally
+facet ext link ./my-extension     # symlink into ~/.facet/extensions (hot-reloads on save)
+facet ext add github.com/owner/repo  # git-clone a published extension into ~/.facet/extensions
 ```
 
 `ext validate` applies the **same** check the server runs at discovery —
 required manifest fields, `engineApi` compatibility with this host, and that
 every `provides` glob resolves to real files — so a packaging mistake fails fast
 with a clear `✗` instead of a silently-missing extension. `ext link` symlinks
-your dev directory into `~/.juggler/extensions/` (validating first); start or
-reconnect to Juggler once and it loads. From then on, editing any capability
+your dev directory into `~/.facet/extensions/` (validating first); start or
+reconnect to Facet once and it loads. From then on, editing any capability
 file or the manifest **hot-reloads** the extension in connected viewers — no
 restart.
 
-`ext add` is a plain `git clone` into `~/.juggler/extensions/<name>`; it prints
+`ext add` is a plain `git clone` into `~/.facet/extensions/<name>`; it prints
 the extension's declared permissions and asks you to confirm before keeping it
 (`-y` skips the prompt). There is no auto-update — **update an installed
-extension with `git pull` in `~/.juggler/extensions/<name>`**, then reconnect (or
+extension with `git pull` in `~/.facet/extensions/<name>`**, then reconnect (or
 save a file to hot-reload).
 
 ## Anatomy of an extension
 
-An extension is a directory with a `juggler.extension.json` manifest at its root
+An extension is a directory with a `facet.extension.json` manifest at its root
 and capability files grouped by type:
 
 ```
 my-extension/
-  juggler.extension.json
+  facet.extension.json
   context-items/word-count-context-item.js
   strategies/cautious-strategy-type.js
   commands/hello-command-type.js
@@ -92,7 +92,7 @@ core extension does (`context-items/edit/`, `context-items/execute/`).
 ### The manifest
 
 ```jsonc
-// juggler.extension.json
+// facet.extension.json
 {
   "id": "@you/my-extension",        // scoped id — no global collisions
   "name": "My Extension",
@@ -123,7 +123,7 @@ A duplicate capability id across extensions is a surfaced load error, never a
 silent last-write-wins: the lowest-precedence provider holds the id.
 
 The manifest is the canonical definition of these fields:
-`cmd/juggler/extmanifest/extmanifest.go`. Each capability *also* has its own
+`cmd/facet/extmanifest/extmanifest.go`. Each capability *also* has its own
 `static MANIFEST` (id, name, version, description, plus type-specific fields) —
 that's defined in the SDK base class's JSDoc typedef.
 
@@ -131,8 +131,8 @@ that's defined in the SDK base class's JSDoc typedef.
 
 | Location | Scope | Path |
 |----------|-------|------|
-| **Built-in** | Always | embedded `@juggler/core` |
-| **Global** | All projects | `~/.juggler/extensions/` |
+| **Built-in** | Always | embedded `@facet/core` |
+| **Global** | All projects | `~/.facet/extensions/` |
 
 Precedence is global → built-in. Two extensions cannot provide the same
 capability id: a duplicate is a surfaced load error, and the built-in (lowest
@@ -143,7 +143,7 @@ precedence) keeps the id.
 Extensions are **unsandboxed JavaScript running with the full privileges of the
 app** — exactly like plugins in an editor. An enabled extension's code can read
 and write your files, run shell commands, and reach the network through
-`juggler/ops` (and, being ES modules in the same realm, even around it). There is
+`facet/ops` (and, being ES modules in the same realm, even around it). There is
 no per-extension containment.
 
 That means the `permissions` manifest field and the catalog's permission badges
@@ -160,20 +160,20 @@ rule that matters most:
 
 ## The SDK
 
-Extensions import **only** from the public `juggler/*` specifiers — the same
+Extensions import **only** from the public `facet/*` specifiers — the same
 surface the core extension uses, which is how third-party parity is guaranteed.
 The import map in `web/index.html` / `web/engine.html` is the full list; the ones
 you'll reach for:
 
 ```javascript
-import ContextItem from 'juggler/context-item';
-import StrategyType, { APPROVAL_POLICY } from 'juggler/strategy-type';
-import CommandType from 'juggler/command-type';
-import { readFile, writeFile, glob, grep, shell, webFetch } from 'juggler/ops';
-import { smartTruncate, createElement } from 'juggler/ui';
+import ContextItem from 'facet/context-item';
+import StrategyType, { APPROVAL_POLICY } from 'facet/strategy-type';
+import CommandType from 'facet/command-type';
+import { readFile, writeFile, glob, grep, shell, webFetch } from 'facet/ops';
+import { smartTruncate, createElement } from 'facet/ui';
 ```
 
-- **`juggler/ops`** is the privileged host-operations layer — filesystem, shell,
+- **`facet/ops`** is the privileged host-operations layer — filesystem, shell,
   search, tree, and web operations that were once built-in-only. These ops run
   with the user's full authority; there is no per-extension sandbox. Declare the
   access your code uses in the manifest `permissions` list — that declaration is
@@ -184,13 +184,13 @@ import { smartTruncate, createElement } from 'juggler/ui';
   `mkdir`, `glob`, `getTree`, `grep`, `findSymbol`, `shell`, `shellBackground`,
   `webFetch`, `webSearch`, `openPath`, `revealPath`, plus
   `FileSystem`/`ReadOnlyFileSystem` and `OpsError`). See `web/sdk/ops.js`.
-- **`juggler/ui`** holds render/format helpers (`smartTruncate`, `createElement`,
+- **`facet/ui`** holds render/format helpers (`smartTruncate`, `createElement`,
   `FormattingHelpers`, …). See `web/sdk/ui.js`.
-- **`juggler/a2ui`** renders declarative A2UI surfaces (https://a2ui.org) —
+- **`facet/a2ui`** renders declarative A2UI surfaces (https://a2ui.org) —
   describe UI as component JSON + a data model instead of hand-rolling DOM:
   `renderSurface`, JSON-Pointer binding helpers, the basic + viz component
   catalogs (charts, metric tiles, network diagrams), and declarative motion.
-  See `web/sdk/a2ui.js`; the `@juggler/a2ui` extension is the reference
+  See `web/sdk/a2ui.js`; the `@facet/a2ui` extension is the reference
   consumer.
 
 An extension whose `engineApi` range excludes the current SDK version is refused
@@ -202,7 +202,7 @@ at load with a clear diagnostic instead of a mystery `import` failure
 The `engineApi` semver promise (`web/sdk/version.js`) covers a **specific
 surface**, not everything you can reach:
 
-- **Covered:** the named exports of each `juggler/*` module; the documented
+- **Covered:** the named exports of each `facet/*` module; the documented
   `static MANIFEST` fields and `provides` fields; and the MessageThread methods
   marked **`@plugin-api`** in `web/js/model/message-thread.js`.
 - **Not covered:** anything reached through `this.session` / `this.conversation`,
@@ -214,7 +214,7 @@ surface**, not everything you can reach:
 
 Each base class's JSDoc header is the real reference — read it first. Below is
 the shape of each, with one runnable example. Study the matching built-ins under
-`web/extensions/juggler-core/` as templates.
+`web/extensions/facet-core/` as templates.
 
 ### Context Item — a tool for the LLM
 
@@ -226,7 +226,7 @@ The single most common mistake is reading `outcome.foo` instead of
 result.
 
 ```javascript
-import ContextItem from 'juggler/context-item';
+import ContextItem from 'facet/context-item';
 
 class WordCountContextItem extends ContextItem {
   static MANIFEST = {
@@ -292,7 +292,7 @@ The production surface is:
   for multi-phase strategies.
 
 ```javascript
-import StrategyType, { APPROVAL_POLICY } from 'juggler/strategy-type';
+import StrategyType, { APPROVAL_POLICY } from 'facet/strategy-type';
 
 // A "planning" strategy: expose only read/meta tools and auto-approve them, so
 // the model investigates without touching files or stopping for prompts.
@@ -339,7 +339,7 @@ perform host side-effects directly (opening a thread, etc.) — they **declare**
 them on `sideEffects` and the host dispatches.
 
 ```javascript
-import CommandType from 'juggler/command-type';
+import CommandType from 'facet/command-type';
 
 class HelloCommandType extends CommandType {
   static MANIFEST = {
@@ -394,7 +394,7 @@ export default function systemPromptContribution({ enabledPluginIds }) {
 }
 ```
 
-Reference: `web/extensions/juggler-core/system-prompt-contribution.js`; the
+Reference: `web/extensions/facet-core/system-prompt-contribution.js`; the
 aggregation contract is in `web/sdk/lib/system-prompt-registry.js`.
 
 ## Talking to the conversation
@@ -419,7 +419,7 @@ transaction use **`mutate(fn)`** (it also runs `assertInvariants()` in dev mode)
 
 ## Pinned file content: live-at-send-time
 
-Juggler ships two file-content context items with deliberately different
+Facet ships two file-content context items with deliberately different
 contracts — worth understanding if you build anything that pins or snapshots
 files:
 
@@ -437,14 +437,14 @@ live disk bytes (nothing to be stale against). Cross-turn history therefore show
 the file's *current* bytes; if you need bytes-as-of-an-earlier-turn, the
 `read_file` tool call in that turn captured an immutable snapshot. Per-turn
 snapshots, if ever needed, belong in the outgoing-prompt builder
-(`cmd/juggler/providers/anthropic/conversation.go`), not the context item.
+(`cmd/facet/providers/anthropic/conversation.go`), not the context item.
 
 ## Enabling and disabling
 
 Settings (gear icon) → **Extensions** lists every installed extension, its
 bundled capabilities, and any that failed to load. Toggle a whole extension or an
 individual capability live. Toggles persist to your project config
-(`<project>/.juggler/config.json`) as a flat list of disabled ids — an extension
+(`<project>/.facet/config.json`) as a flat list of disabled ids — an extension
 id disables everything it bundles:
 
 ```json
@@ -456,6 +456,6 @@ id disables everything it bundles:
 - **API source of truth** — `web/sdk/`: `context-item.js`, `strategy-type.js`,
   `command-type.js`, `ops.js`, `ui.js`, `version.js`. Read the JSDoc headers.
 - **Conversation API** — `web/js/model/message-thread.js` (grep `@plugin-api`).
-- **Worked examples** — `web/extensions/juggler-core/` (the built-in extension).
-- **Manifest format** — `cmd/juggler/extmanifest/extmanifest.go`.
-- **CLI** — `juggler ext --help`.
+- **Worked examples** — `web/extensions/facet-core/` (the built-in extension).
+- **Manifest format** — `cmd/facet/extmanifest/extmanifest.go`.
+- **CLI** — `facet ext --help`.

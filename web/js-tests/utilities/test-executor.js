@@ -50,7 +50,7 @@
  */
 
 /**
- * Test Executor - Runs individual test tasks using real Juggler APIs
+ * Test Executor - Runs individual test tasks using real Facet APIs
  * @class
  */
 
@@ -174,12 +174,12 @@ class TestExecutor {
         await strategyRegistry.init();
       }
 
-      // projectPath is provided by the Go test runner (juggler-test)
+      // projectPath is provided by the Go test runner (facet-test)
       const urlParams = new URLSearchParams(window.location.search);
       const projectPath = urlParams.get('projectPath');
 
       if (!projectPath) {
-        throw new Error('projectPath URL parameter is required. Tests must be run via juggler-test.');
+        throw new Error('projectPath URL parameter is required. Tests must be run via facet-test.');
       }
 
       // Use pre-created fixture directory from Go test runner
@@ -739,7 +739,7 @@ class TestExecutor {
 
   /**
    * Cleanup test resources
-   * Note: Fixture cleanup is handled by the Go test runner (juggler-test)
+   * Note: Fixture cleanup is handled by the Go test runner (facet-test)
    * @returns {Promise<void>}
    * @private
    */

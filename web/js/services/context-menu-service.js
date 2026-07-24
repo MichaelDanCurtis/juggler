@@ -9,7 +9,7 @@
  * is the discovery mechanism, see CLAUDE.md "Frontend service style") that owns
  * every menu the app shows. The dispatch order on a right-click is:
  *
- *  1. **Registered juggler providers.** Components register providers
+ *  1. **Registered facet providers.** Components register providers
  *     ({@link registerContextMenuProvider}); the first that claims the target
  *     wins (code blocks, diffs, conversation tabs, file refs…). We render our
  *     own popup and suppress the native menu.
@@ -24,8 +24,8 @@
  *     only way to keep clean, relevant edit menus (and no Inspect Element over a
  *     read-only paragraph) is to render them ourselves.
  *
- *  3. **Native fallback, dev-mode only.** When nothing juggler-specific applies
- *     and we're in runtime dev-mode (`window.JUGGLER_DEV_MODE`, injected by the
+ *  3. **Native fallback, dev-mode only.** When nothing facet-specific applies
+ *     and we're in runtime dev-mode (`window.FACET_DEV_MODE`, injected by the
  *     index template from the server's `--dev`/`--assets-from-disk`/config flag), we let
  *     the event fall through so the native debug menu (Reload / Inspect Element)
  *     stays reachable by right-clicking any non-text region. We seed
@@ -33,14 +33,14 @@
  *     own handler agrees and allows that native menu. Outside dev-mode we
  *     `preventDefault()` so the native menu never appears anywhere.
  *
- * Net effect: text and content menus are always juggler-owned and tidy
+ * Net effect: text and content menus are always facet-owned and tidy
  * regardless of build tag or dev-mode; the WKWebView debug menu shows only in a
  * real dev session and only over non-text areas.
  * @module services/context-menu-service
  */
 
 /**
- * A single command row in a juggler context menu.
+ * A single command row in a facet context menu.
  * @typedef {object} ContextMenuItem
  * @property {string} [label] - Display text. Omit for a separator.
  * @property {boolean} [separator] - When true, render a divider (ignores other fields).
@@ -76,7 +76,7 @@ let _openMenu = null;
 let _releaseOpenState = null;
 
 /**
- * Register a juggler context-menu provider. Call once at module load from the
+ * Register a facet context-menu provider. Call once at module load from the
  * component that owns the relevant DOM + behaviour.
  * @param {ContextMenuProvider} provider
  */
@@ -85,12 +85,12 @@ export function registerContextMenuProvider(provider) {
 }
 
 /**
- * Whether juggler is running in runtime dev-mode (server `--dev` /
+ * Whether facet is running in runtime dev-mode (server `--dev` /
  * `--assets-from-disk` / config). Drives the native debug-menu gate.
  * @returns {boolean} True when running in runtime dev-mode.
  */
 export function isDevMode() {
-  return !!(/** @type {any} */ (window).JUGGLER_DEV_MODE);
+  return !!(/** @type {any} */ (window).FACET_DEV_MODE);
 }
 
 // Input types that carry editable text (so Cut/Copy/Paste/Select All apply).
@@ -275,7 +275,7 @@ export function resolveMenu(start, event) {
 }
 
 /**
- * Align the Wails runtime's native-menu policy with juggler's runtime
+ * Align the Wails runtime's native-menu policy with facet's runtime
  * dev-mode by seeding `window._wails.environment.Debug`. Idempotent.
  * @private
  */
@@ -287,7 +287,7 @@ function syncWailsDebugFlag() {
 }
 
 /**
- * Close any open juggler menu and tear down its dismiss listeners.
+ * Close any open facet menu and tear down its dismiss listeners.
  * @private
  */
 function closeMenu() {
@@ -317,7 +317,7 @@ function _onOutside(e) {
 }
 
 /**
- * Render and position the juggler popup menu at viewport coords (x, y).
+ * Render and position the facet popup menu at viewport coords (x, y).
  * @param {ContextMenuItem[]} items
  * @param {number} x
  * @param {number} y
@@ -327,20 +327,20 @@ function showMenu(items, x, y) {
   closeMenu();
 
   const menu = document.createElement('div');
-  menu.className = 'juggler-context-menu';
+  menu.className = 'facet-context-menu';
   menu.setAttribute('role', 'menu');
 
   for (const item of items) {
     if (item.separator) {
       const sep = document.createElement('div');
-      sep.className = 'juggler-context-menu-separator';
+      sep.className = 'facet-context-menu-separator';
       sep.setAttribute('role', 'separator');
       menu.appendChild(sep);
       continue;
     }
     const row = document.createElement('button');
     row.type = 'button';
-    row.className = 'juggler-context-menu-item';
+    row.className = 'facet-context-menu-item';
     if (item.danger) row.classList.add('danger');
     row.setAttribute('role', 'menuitem');
     row.textContent = item.label || '';
@@ -391,7 +391,7 @@ function showMenu(items, x, y) {
 /**
  * Capture-phase `contextmenu` handler. Three-tier dispatch (see module doc):
  * registered providers → built-in text-edit menu → native fallback (dev only).
- * Any juggler menu suppresses the native one so its Inspect Element / Writing
+ * Any facet menu suppresses the native one so its Inspect Element / Writing
  * Tools items never appear over our content.
  * @param {MouseEvent} e - The contextmenu event.
  * @private
@@ -401,7 +401,7 @@ function onContextMenu(e) {
   const t = /** @type {any} */ (e.target);
   const start = t && typeof t.closest === 'function' ? /** @type {Element} */ (t) : null;
 
-  // 1) Registered juggler providers.
+  // 1) Registered facet providers.
   const resolved = resolveMenu(start, e);
   if (resolved) {
     e.preventDefault();
@@ -421,7 +421,7 @@ function onContextMenu(e) {
     return;
   }
 
-  // 3) Nothing juggler-specific applies. In dev-mode let the native debug menu
+  // 3) Nothing facet-specific applies. In dev-mode let the native debug menu
   //    (Reload / Inspect Element) through on non-text regions; otherwise
   //    suppress the native menu entirely.
   if (isDevMode()) return;

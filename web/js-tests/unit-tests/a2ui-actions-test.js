@@ -25,11 +25,11 @@ import {
   createTestConversation,
   assert
 } from '../utilities/test-helpers.js';
-import A2uiSurfaceContextItem from '../../extensions/juggler-a2ui/context-items/a2ui-surface-context-item.js';
+import A2uiSurfaceContextItem from '../../extensions/facet-a2ui/context-items/a2ui-surface-context-item.js';
 import {
   formatActionMessage, resolveActionContext, registerDispatch, clearPending,
   pendingFor, reconcileResponses, ACTION_COOLDOWN_MS, RESPONSE_TIMEOUT_MS
-} from '../../extensions/juggler-a2ui/a2ui/actions.js';
+} from '../../extensions/facet-a2ui/a2ui/actions.js';
 
 /**
  * @typedef {object} TestResult

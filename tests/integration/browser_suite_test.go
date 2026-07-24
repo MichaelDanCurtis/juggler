@@ -17,7 +17,7 @@ import (
 	"testing"
 	"time"
 
-	"juggler/tests/helpers"
+	"facet/tests/helpers"
 )
 
 // harnessHTTPTimeout bounds every harness→server HTTP request. The default
@@ -36,7 +36,7 @@ import (
 const harnessHTTPTimeout = 60 * time.Second
 
 // postConnectWindow bounds how long postToServer retries transport (dial)
-// failures. A freshly-spawned pool server announces its address (JUGGLER_ADDR=)
+// failures. A freshly-spawned pool server announces its address (FACET_ADDR=)
 // the instant it knows its port — which can be a beat before its HTTP listener
 // is actually accepting, and on a loaded CI runner that gap is wider. Without a
 // retry, that single "connection refused" fails the WHOLE suite before any test
@@ -66,7 +66,7 @@ func TestBrowser(t *testing.T) {
 		t.Fatal("browser returned empty test list")
 	}
 
-	// Wipe each pool slot's fixture (preserving .juggler/ session state) so
+	// Wipe each pool slot's fixture (preserving .facet/ session state) so
 	// `-count=N` iterations don't see leftover test files from the prior
 	// iteration ("Created file" vs "Updated file" mismatches, etc.). The
 	// iframe-pool integration runner skips its per-test wipe because it

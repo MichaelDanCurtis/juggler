@@ -486,7 +486,7 @@ class ConversationArea extends HTMLElement {
     `;
 
     // Give new users (no persisted width) a sensible fixed 50rem.
-    setupColumnResize(this, 'juggler-column-width', undefined, 50);
+    setupColumnResize(this, 'facet-column-width', undefined, 50);
   }
 
   /**

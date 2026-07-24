@@ -103,7 +103,7 @@ jobs:
       # WebKitGTK/GTK4/libsoup dev headers for the cgo Wails v3 Linux backend.
       # The server (hidden engine WebView) and the desktop app both link
       # against these.
-      # xvfb: the browser suite spawns bin/juggler, a Wails/WebKitGTK app whose
+      # xvfb: the browser suite spawns bin/facet, a Wails/WebKitGTK app whose
       # hidden engine WebView needs an X display even in --test mode. Hosted
       # Linux runners are headless, so the suite runs under a virtual framebuffer
       # (see the "Run tests" step). macOS (WKWebView) / Windows (WebView2) don't.
@@ -134,27 +134,27 @@ jobs:
           set -euo pipefail
           mkdir -p bin
           # Regenerate the go:embed source files from their assets/ sources
-          # (cmd/juggler/icon.png is gitignored, so absent on a fresh checkout).
+          # (cmd/facet/icon.png is gitignored, so absent on a fresh checkout).
           # `make lint` above also does this as a side effect, but the build is
           # what actually depends on it — keep it explicit here.
           make app-icon-embed wails-runtime-embed
-          # bin/juggler is what the browser test suite spawns, so the tests
+          # bin/facet is what the browser test suite spawns, so the tests
           # below exercise the very binary we just built. On Windows the output
           # must be named .exe: `go build -o` writes the name verbatim (no auto
           # .exe on a Windows target) and Windows can't exec an extension-less
           # file — the harness's serverBinary() resolves the same name.
           EXE=""
           [ "${RUNNER_OS}" = "Windows" ] && EXE=".exe"
-          go build -o "bin/juggler${EXE}" ./cmd/juggler
-          go build -o "bin/juggler-test${EXE}" ./cmd/juggler-test
+          go build -o "bin/facet${EXE}" ./cmd/facet
+          go build -o "bin/facet-test${EXE}" ./cmd/facet-test
 
       # The Linux desktop app (GTK), built on every run as a continuous
-      # compile-regression guard: juggler-app's Linux build is new, so a break
+      # compile-regression guard: facet-app's Linux build is new, so a break
       # should surface on the first offending push.
       - name: Build Linux desktop app
         if: runner.os == 'Linux'
         shell: bash
-        run: go build -o bin/juggler-app ./cmd/juggler-app
+        run: go build -o bin/facet-app ./cmd/facet-app
 
       # Go package unit tests (claudecode provider, worker, etc.) — ~75s under
       # -race. Kept a separate step from the browser suite so the CI log names
@@ -166,13 +166,13 @@ jobs:
         run: go test -count=1 -race -timeout 5m ./cmd/...
 
       # Browser test suite: drives the WebKitGTK engine inside a spawned
-      # bin/juggler. -count=1 (not -short) is load-bearing — under -short the
+      # bin/facet. -count=1 (not -short) is load-bearing — under -short the
       # whole suite self-skips (browser_suite_test.go / main_test.go TestMain),
       # so this is the step that actually exercises the behavioural gate.
       # On Linux the spawned server needs a display, so run under xvfb; other
       # platforms render headless. Full output lands in the step log.
       #
-      # JUGGLER_TEST_IFRAMES=4 (default 9): the pool runs N concurrent test
+      # FACET_TEST_IFRAMES=4 (default 9): the pool runs N concurrent test
       # lanes against ONE shared WebKit engine (main_test.go). The default 9 is
       # tuned for a dev workstation; a hosted CI runner (~2-4 vCPU) can't service
       # 9 lanes on one engine, and starves them into failures that look like bugs
@@ -184,7 +184,7 @@ jobs:
       - name: Run tests
         shell: bash
         env:
-          JUGGLER_TEST_IFRAMES: 4
+          FACET_TEST_IFRAMES: 4
         run: |
           if [ "${RUNNER_OS}" = "Linux" ]; then
             # WebKitGTK 2.4x+ (2.52 on the runner) defaults to a DMABUF/GPU
@@ -213,10 +213,10 @@ jobs:
             go test -count=1 -race -timeout 15m ./tests/integration/...
           fi
 
-      # Diagnostics on a browser-suite failure. Each spawned bin/juggler pipes
+      # Diagnostics on a browser-suite failure. Each spawned bin/facet pipes
       # its stderr — the WebKitGTK/libEGL/WebProcess-crash output that never
-      # reaches the go-test log — to /tmp/juggler-test-logs/juggler-stderr-*.log
-      # (see startJugglerSubprocess in tests/integration/main_test.go). That
+      # reaches the go-test log — to /tmp/facet-test-logs/facet-stderr-*.log
+      # (see startFacetSubprocess in tests/integration/main_test.go). That
       # directory is a fixed path, not the run's throwaway log dir, so it
       # survives the pool shutdown. Without this, a hung WebView surfaces only as
       # an opaque "timeout polling /api/test/names" and every fix is a blind
@@ -227,9 +227,9 @@ jobs:
         shell: bash
         run: |
           shopt -s nullglob
-          logs=(/tmp/juggler-test-logs/*.log)
+          logs=(/tmp/facet-test-logs/*.log)
           if [ ${#logs[@]} -eq 0 ]; then
-            echo "no subprocess stderr logs found in /tmp/juggler-test-logs/"
+            echo "no subprocess stderr logs found in /tmp/facet-test-logs/"
             exit 0
           fi
           for f in "${logs[@]}"; do

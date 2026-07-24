@@ -163,7 +163,7 @@ export async function runTests(_ctx) {
   });
 
   // formatBindingForPlatform renders for an EXPLICIT platform, independent of
-  // the running host — the seam the About-Juggler help corpus uses to describe
+  // the running host — the seam the About-Facet help corpus uses to describe
   // shortcuts for session.platform rather than the client's navigator.
   await run('formatBindingForPlatform renders both platforms regardless of host', () => {
     const redo = keyShortcutManager.getBinding('redo');

@@ -10,8 +10,8 @@ import (
 	"runtime"
 	"testing"
 
-	"juggler/cmd/juggler/ops"
-	"juggler/tests/helpers"
+	"facet/cmd/facet/ops"
+	"facet/tests/helpers"
 )
 
 // TestCommandInjectionShell ensures shell operations sanitize input and prevent injection
@@ -71,7 +71,7 @@ func TestCommandInjectionShell(t *testing.T) {
 		},
 		{
 			name:        "Command with redirect injection",
-			command:     "echo hello > /tmp/juggler-test-should-not-exist-12345",
+			command:     "echo hello > /tmp/facet-test-should-not-exist-12345",
 			shouldError: false, // Redirect works but to a safe location
 			description: "Output redirection to /tmp is allowed but should be monitored",
 		},

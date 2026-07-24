@@ -4,7 +4,7 @@
 
 /**
  * UI Driver - DOM interaction and query utilities for UI-level integration tests.
- * Knows how to interact with Juggler UI components:
+ * Knows how to interact with Facet UI components:
  * type text and send messages, click approve/deny, wait for DOM state changes.
  * @module test/utilities/ui-driver
  */

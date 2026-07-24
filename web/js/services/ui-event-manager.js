@@ -124,7 +124,7 @@ class UIEventManager {
    * Three entry points drive the same font-size zoom:
    *   - the header bar's −/+ buttons (click),
    *   - the native View ▸ Zoom In/Out menu items, which dispatch the
-   *     `juggler:zoom-in` / `juggler:zoom-out` CustomEvents (the menu owns the
+   *     `facet:zoom-in` / `facet:zoom-out` CustomEvents (the menu owns the
    *     Cmd +/− accelerators in the desktop app), and
    *   - browser-style Cmd/Ctrl +/− keypresses, for windows with no native menu
    *     (a plain browser tab). preventDefault stops the browser's own page zoom.
@@ -147,12 +147,12 @@ class UIEventManager {
     }
 
     const zoomInEvent = () => zoomIn();
-    window.addEventListener('juggler:zoom-in', zoomInEvent);
-    this._listeners.push({ element: window, event: 'juggler:zoom-in', handler: zoomInEvent });
+    window.addEventListener('facet:zoom-in', zoomInEvent);
+    this._listeners.push({ element: window, event: 'facet:zoom-in', handler: zoomInEvent });
 
     const zoomOutEvent = () => zoomOut();
-    window.addEventListener('juggler:zoom-out', zoomOutEvent);
-    this._listeners.push({ element: window, event: 'juggler:zoom-out', handler: zoomOutEvent });
+    window.addEventListener('facet:zoom-out', zoomOutEvent);
+    this._listeners.push({ element: window, event: 'facet:zoom-out', handler: zoomOutEvent });
 
     // Cmd/Ctrl +/− keypresses (for windows with no native menu — a plain browser
     // tab). Bindings + platform handling live in the KeyShortcutManager; the
@@ -539,7 +539,7 @@ class UIEventManager {
 
   /**
    * The current session, or null before one is set. Populated via setSession()
-   * (called by JugglerApp once the session exists).
+   * (called by FacetApp once the session exists).
    * @returns {import('../model/session.js').default|null} Session instance or null if not set
    * @private
    */

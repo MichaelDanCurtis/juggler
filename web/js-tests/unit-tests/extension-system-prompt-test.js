@@ -6,7 +6,7 @@
  * Extension system-prompt contribution tests.
  *
  * Two layers:
- *  1. Gating purity — juggler-core's `system-prompt-contribution.js` default
+ *  1. Gating purity — facet-core's `system-prompt-contribution.js` default
  *     export is a pure function of the enabled-plugin set: a section appears
  *     iff its plugin id is in `enabledPluginIds`. Tested directly, so it needs
  *     no shared-config mutation (which would pollute sibling pool lanes).
@@ -16,7 +16,7 @@
  * @module unit-tests/extension-system-prompt-test
  */
 
-import systemPromptContribution from '../../extensions/juggler-core/system-prompt-contribution.js';
+import systemPromptContribution from '../../extensions/facet-core/system-prompt-contribution.js';
 import { buildExtensionSystemPromptContributions } from '../../js/services/extensions.js';
 import {
   initializeRegistries,
@@ -102,7 +102,7 @@ export async function runTests(_ctx) {
   await test('git workflow is never extension-generated (opinionated; removed)', () => {
     // Removed entirely — a git/commit convention is not neutral enough to ship.
     assert(!systemPromptContribution({ enabledPluginIds: ['execute'] }).includes('## Git Workflow'), 'git workflow must be gone even with execute');
-    assert(!systemPromptContribution({ enabledPluginIds: ['execute', 'read-file', 'memory'] }).includes('Generated with Juggler'), 'commit-message template must be gone');
+    assert(!systemPromptContribution({ enabledPluginIds: ['execute', 'read-file', 'memory'] }).includes('Generated with Facet'), 'commit-message template must be gone');
   });
 
   await test('prefer-specialized-tools lines gate on their own plugin', () => {

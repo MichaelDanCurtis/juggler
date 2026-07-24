@@ -4,7 +4,7 @@
 
 /**
  * Reconnect-policy tests — the WebSocketService applies ONE generic reconnect
- * policy to every transport (WebSocket, WebRTC-LAN, juggler.studio): a dropped
+ * policy to every transport (WebSocket, WebRTC-LAN, facet.studio): a dropped
  * link is detected, the service backs off, and it re-establishes via a single
  * transport-specific primitive (this._reestablish), looping until reconnected.
  *

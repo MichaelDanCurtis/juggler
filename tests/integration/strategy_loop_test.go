@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"juggler/cmd/juggler/worker"
-	"juggler/tests/integration/helpers"
+	"facet/cmd/facet/worker"
+	"facet/tests/integration/helpers"
 )
 
 // strategyPreamble sets up the standard prerequisites for strategy loop tests:

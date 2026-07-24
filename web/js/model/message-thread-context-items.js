@@ -55,7 +55,7 @@ function contextItemDescriptor(item, wantId) {
  * Instantiate a context item from its descriptor and wire its change handler.
  * @param {any} mt - MessageThread instance
  * @param {{id: string, type: string, data: any}} descriptor
- * @returns {import('juggler/context-item').default|null} Instantiated item, or null if creation failed
+ * @returns {import('facet/context-item').default|null} Instantiated item, or null if creation failed
  */
 function instantiateContextItem(mt, descriptor) {
   const contextItem = contextItemRegistry.createItem(descriptor, mt.conversation._session, mt.conversation, mt);
@@ -71,7 +71,7 @@ function instantiateContextItem(mt, descriptor) {
  * Read context items from the thread's items array. Instances are
  * transient wrappers around CRDT data — fresh objects on every call.
  * @param {any} mt - MessageThread instance
- * @returns {import('juggler/context-item').default[]} Context items
+ * @returns {import('facet/context-item').default[]} Context items
  */
 export function getContextItems(mt) {
   const contextItems = [];
@@ -96,7 +96,7 @@ export function getContextItems(mt) {
 /**
  * @param {any} mt
  * @param {string} itemId
- * @returns {import('juggler/context-item').default|undefined} Context item instance
+ * @returns {import('facet/context-item').default|undefined} Context item instance
  */
 export function getContextItem(mt, itemId) {
   for (const item of mt.items) {
@@ -114,7 +114,7 @@ export function getContextItem(mt, itemId) {
 
 /**
  * @param {any} mt
- * @param {import('juggler/context-item').default} contextItem
+ * @param {import('facet/context-item').default} contextItem
  */
 export function addContextItem(mt, contextItem) {
   if (!contextItem || typeof contextItem.toJSON !== 'function') {
@@ -296,7 +296,7 @@ export function ensureSystemPromptPlaceholder(mt) {
 /**
  * @param {any} mt
  * @param {string} itemId
- * @param {import('juggler/context-item').default} [changedItem]
+ * @param {import('facet/context-item').default} [changedItem]
  * @returns {Promise<void>}
  */
 export async function handleContextItemContentChanged(mt, itemId, changedItem) {

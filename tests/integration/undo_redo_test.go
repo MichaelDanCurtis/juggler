@@ -7,7 +7,7 @@ package integration_test
 import (
 	"encoding/json"
 	"fmt"
-	"juggler/cmd/juggler/worker"
+	"facet/cmd/facet/worker"
 	"strings"
 	"testing"
 	"time"

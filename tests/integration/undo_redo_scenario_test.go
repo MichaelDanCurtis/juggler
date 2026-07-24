@@ -6,7 +6,7 @@ package integration_test
 
 import (
 	"fmt"
-	"juggler/cmd/juggler/worker"
+	"facet/cmd/facet/worker"
 	"testing"
 )
 

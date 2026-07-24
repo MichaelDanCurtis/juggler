@@ -122,7 +122,7 @@ export function setupHeaderControls(session) {
     pathChip.addEventListener('click', openPicker);
   }
 
-  // Inline "open new window" button. Spawns a fresh juggler window in
+  // Inline "open new window" button. Spawns a fresh facet window in
   // no-project mode (the user then picks a folder). Only a native desktop
   // window has a host able to do this; in a remote browser tab apiService
   // .newWindow() is a no-op and the button is hidden by CSS anyway.
@@ -173,7 +173,7 @@ export function setupHeaderControls(session) {
   // Native menu (File ▸ Open…) bridges to the picker via this event, since the
   // Go side can't import the JS module directly. Same entry point as the
   // header path-display click above.
-  window.addEventListener('juggler:open-project', openPicker);
+  window.addEventListener('facet:open-project', openPicker);
 
   // Keyboard shortcuts (undo / redo) — bindings and platform handling live in the
   // KeyShortcutManager; here we only supply the behaviour. Each returns truthy

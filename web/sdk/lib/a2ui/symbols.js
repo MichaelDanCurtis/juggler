@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * The `juggler:viz/1` symbol library — the named vocabulary Diagram nodes
+ * The `facet:viz/1` symbol library — the named vocabulary Diagram nodes
  * draw with. Each symbol is a declarative shape list rendered into a 24×24
  * viewBox `<g>` with `currentColor` strokes, so the node's status tint (set
  * as a CSS color on the ancestor) colors the artwork with no per-symbol

@@ -11,7 +11,7 @@ import { getExtensionCapabilities } from '../services/extensions.js';
  * Manages context item loading and lifecycle.
  * Context items are unified plugins that can be actions (one-shot operations)
  * or refreshable content providers (like documents, rules, etc.)
- * @augments {BaseRegistry<typeof import('juggler/context-item').default>}
+ * @augments {BaseRegistry<typeof import('facet/context-item').default>}
  */
 class ContextItemRegistry extends BaseRegistry {
   /**
@@ -24,7 +24,7 @@ class ContextItemRegistry extends BaseRegistry {
      * Lazily-built tool-name → item-class map (see {@link getByToolName}).
      * `undefined` until first lookup; cleared by {@link invalidateCache} on
      * every init/reset so it never survives a plugin reload.
-     * @type {Map<string, typeof import('juggler/context-item').default>|undefined}
+     * @type {Map<string, typeof import('facet/context-item').default>|undefined}
      * @private
      */
     this._toolNameCache = undefined;
@@ -34,7 +34,7 @@ class ContextItemRegistry extends BaseRegistry {
    * Get context item capability descriptors (implements abstract method)
    *
    * Returns the context-item capabilities of every enabled extension — the
-   * `@juggler/core` builtin extension and any user/project extensions. The ID is
+   * `@facet/core` builtin extension and any user/project extensions. The ID is
    * extracted from each class's MANIFEST.id property.
    * @returns {Promise<import('../services/extensions.js').CapabilityRef[]>} Capability descriptors
    * @protected
@@ -67,7 +67,7 @@ class ContextItemRegistry extends BaseRegistry {
    * Looks up an item by the tool name the LLM uses (e.g., 'write_file')
    * rather than the internal item ID (e.g., 'write-file').
    * @param {string} toolName - Tool name from LLM (e.g., 'write_file')
-   * @returns {typeof import('juggler/context-item').default|undefined} Item class or undefined if not found
+   * @returns {typeof import('facet/context-item').default|undefined} Item class or undefined if not found
    */
   getByToolName(toolName) {
     // Build mapping if not cached
@@ -126,11 +126,11 @@ class ContextItemRegistry extends BaseRegistry {
 
   /**
    * Create a context item instance from JSON data
-   * @param {import('juggler/context-item').ItemJSON} json - Item data (plain object)
+   * @param {import('facet/context-item').ItemJSON} json - Item data (plain object)
    * @param {import('../model/session.js').default} session - Session this item belongs to
    * @param {import('../model/conversation.js').default} conversation - Conversation this item belongs to
    * @param {import('../model/message-thread.js').default} messageThread - Message thread this item belongs to
-   * @returns {import('juggler/context-item').default} Context item instance
+   * @returns {import('facet/context-item').default} Context item instance
    * @throws {Error} If item type not found
    */
   createItem(json, session, conversation, messageThread) {

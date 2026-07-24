@@ -8,7 +8,7 @@
  * gateway-viewing app paths). Requests go through the fork server's /pzx
  * same-origin proxy, so the token is the ONLY credential involved.
  *
- * Persisted in the FORK SERVER's memory (/api/pzx-context, X-Juggler-Token
+ * Persisted in the FORK SERVER's memory (/api/pzx-context, X-Facet-Token
  * gated) so the pop-out and desktop windows share it — NOT localStorage:
  * browsers partition a third-party iframe's storage, so anything the embedded
  * console wrote there would never reach a top-level fork window. Tokens are
@@ -34,8 +34,8 @@ function _notify() {
 
 /** @returns {Record<string, string>} */
 function _authHeaders() {
-  const token = /** @type {{__jugglerToken?: string}} */ (globalThis).__jugglerToken;
-  return token ? { 'X-Juggler-Token': token } : {};
+  const token = /** @type {{__facetToken?: string}} */ (globalThis).__facetToken;
+  return token ? { 'X-Facet-Token': token } : {};
 }
 
 /**

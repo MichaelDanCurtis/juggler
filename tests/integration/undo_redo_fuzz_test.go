@@ -6,8 +6,8 @@ package integration_test
 
 import (
 	"fmt"
-	"juggler/cmd/juggler/worker"
-	"juggler/tests/helpers"
+	"facet/cmd/facet/worker"
+	"facet/tests/helpers"
 	"sort"
 	"testing"
 	"time"

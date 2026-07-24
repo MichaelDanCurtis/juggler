@@ -13,7 +13,7 @@ import { makeUserCommandClass } from '../plugins/user-command-factory.js';
  * Manages command plugin loading and lookup.
  * Commands are user-initiated operations (via /command or menu) that execute
  * immediately without LLM involvement or approval flows.
- * @augments {BaseRegistry<typeof import('juggler/command-type').default>}
+ * @augments {BaseRegistry<typeof import('facet/command-type').default>}
  */
 class CommandRegistry extends BaseRegistry {
   /**
@@ -34,7 +34,7 @@ class CommandRegistry extends BaseRegistry {
    * Get command capability descriptors (implements abstract method)
    *
    * Returns the command capabilities of every enabled extension — the
-   * `@juggler/core` builtin extension and any user/project extensions. The ID is
+   * `@facet/core` builtin extension and any user/project extensions. The ID is
    * extracted from each class's MANIFEST.id property.
    * @returns {Promise<import('../services/extensions.js').CapabilityRef[]>} Capability descriptors
    * @protected
@@ -101,7 +101,7 @@ class CommandRegistry extends BaseRegistry {
    *
    * Looks up a command by its ID or alias (case-insensitive).
    * @param {string} name - Command name or alias
-   * @returns {typeof import('juggler/command-type').default|undefined} Command class or undefined
+   * @returns {typeof import('facet/command-type').default|undefined} Command class or undefined
    */
   getByNameOrAlias(name) {
     const lower = name.toLowerCase();

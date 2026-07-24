@@ -238,11 +238,11 @@ export async function runTests(_ctx) {
       source: 'user',
       capabilities: { contextItems: ['/user-extensions/pack/ci/a-context-item.js'], strategies: [], commands: [] },
       error: '',
-      manifestPath: '/abs/pack/juggler.extension.json',
+      manifestPath: '/abs/pack/facet.extension.json',
       files: { '/user-extensions/pack/ci/a-context-item.js': '/abs/pack/ci/a-context-item.js' },
     }, {
       // An embedded builtin: no manifestPath / files → paths stay null.
-      manifest: { id: '@juggler/core', name: 'Core', version: '1.0.0' },
+      manifest: { id: '@facet/core', name: 'Core', version: '1.0.0' },
       source: 'builtin',
       capabilities: { contextItems: ['/extensions/core/b-context-item.js'], strategies: [], commands: [] },
       error: '',
@@ -254,10 +254,10 @@ export async function runTests(_ctx) {
 
     const cards = buildExtensionCards(extensions, byPath, new Map(), new Set());
     const pack = cards.find((c) => c.extId === '@jules/pack');
-    assert(pack.manifestPath === '/abs/pack/juggler.extension.json', 'extension manifest path threaded');
+    assert(pack.manifestPath === '/abs/pack/facet.extension.json', 'extension manifest path threaded');
     assert(pack.caps[0].path === '/abs/pack/ci/a-context-item.js', 'capability disk path threaded from files map');
 
-    const core = cards.find((c) => c.extId === '@juggler/core');
+    const core = cards.find((c) => c.extId === '@facet/core');
     assert(core.manifestPath === null, 'embedded extension has null manifest path');
     assert(core.caps[0].path === null, 'embedded capability has null disk path');
   });
@@ -271,7 +271,7 @@ export async function runTests(_ctx) {
       source: 'user',
       capabilities: { contextItems: ['/user-extensions/pack/ci/a-context-item.js'], strategies: [], commands: [] },
       error: '',
-      manifestPath: '/abs/pack/juggler.extension.json',
+      manifestPath: '/abs/pack/facet.extension.json',
       files: { '/user-extensions/pack/ci/a-context-item.js': '/abs/pack/ci/a-context-item.js' },
     }];
     const byPath = new Map([
@@ -285,11 +285,11 @@ export async function runTests(_ctx) {
 
     // Extension detail shows the manifest file with copy + reveal controls.
     const extFile = el.querySelector('.properties-panel-filepath');
-    assert(extFile && extFile.textContent === '/abs/pack/juggler.extension.json',
+    assert(extFile && extFile.textContent === '/abs/pack/facet.extension.json',
       'extension detail shows the manifest file path');
     assert(el.querySelector('.properties-panel-filepath-row reveal-button'),
       'the file path carries our reveal-in-Finder control');
-    assert(extFile.dataset.filePath === '/abs/pack/juggler.extension.json',
+    assert(extFile.dataset.filePath === '/abs/pack/facet.extension.json',
       'the path is exposed for the right-click Open/Reveal/Copy menu');
 
     // Selecting the capability shows its module file.

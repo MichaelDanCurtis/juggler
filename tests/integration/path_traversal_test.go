@@ -11,8 +11,8 @@ import (
 	"runtime"
 	"testing"
 
-	"juggler/cmd/juggler/ops"
-	"juggler/tests/helpers"
+	"facet/cmd/facet/ops"
+	"facet/tests/helpers"
 )
 
 // absoluteOutsidePath returns a path that exists outside any project directory

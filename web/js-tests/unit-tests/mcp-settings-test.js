@@ -90,8 +90,8 @@ export async function runTests(_ctx) {
     assert(validateMcpServerName('a/b', []) !== '', 'slash accepted');
   });
 
-  await run('name validation: rejects the reserved "juggler"', () => {
-    assert(validateMcpServerName('juggler', []) !== '', 'reserved name accepted');
+  await run('name validation: rejects the reserved "facet"', () => {
+    assert(validateMcpServerName('facet', []) !== '', 'reserved name accepted');
   });
 
   await run('name validation: enforces uniqueness within scope', () => {

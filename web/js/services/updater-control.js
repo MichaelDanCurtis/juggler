@@ -55,7 +55,7 @@ export async function getUpdaterState() {
 
 /**
  * Kick (or retry) the background download+stage flow. No-op without a native
- * host. The result arrives via the pushed `juggler:updater-status` snapshot, not
+ * host. The result arrives via the pushed `facet:updater-status` snapshot, not
  * a return value.
  * @returns {Promise<void>}
  */

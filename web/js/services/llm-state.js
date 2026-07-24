@@ -179,7 +179,7 @@ class LLMState {
 
     // startTime is ENTIRELY the worker's shared anchor — never a local clock.
     // The worker writes one `startedAt` into the doc's processingState
-    // (cmd/juggler/worker/worker.go) so every client renders the same elapsed
+    // (cmd/facet/worker/worker.go) so every client renders the same elapsed
     // digit, and it removes the field while a turn is parked on a human approval
     // (so the wait isn't counted). We mirror it verbatim: present → show
     // `now - startedAt`; absent → undefined → the formatter shows no digit. We

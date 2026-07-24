@@ -84,7 +84,7 @@ function isContextItemInstance(item) {
  * when the item carries no tool name or none is registered. Shared by the icon
  * and type-name paths for both delegated threads and tool-action items.
  * @param {any} item - Yjs message item (tool-action or delegated thread).
- * @returns {typeof import('juggler/context-item').default|null} The class, or null.
+ * @returns {typeof import('facet/context-item').default|null} The class, or null.
  */
 function actionClassFor(item) {
   const toolName = item?.get?.('toolName');

@@ -23,7 +23,7 @@ import (
 // Manual cross-check with JavaScript:
 //  1. Run this test: go test -v ./tests/unit -run TestYjsCompatibility
 //  2. Copy the base64 output to web/js-tests/unit-tests/yjs-compat-test.js
-//  3. Run: bin/juggler-test --task integration-all
+//  3. Run: bin/facet-test --task integration-all
 //  4. Verify JavaScript can decode the same update
 func TestYjsCompatibility(t *testing.T) {
 	// Create a document

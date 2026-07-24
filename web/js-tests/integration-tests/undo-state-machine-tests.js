@@ -167,7 +167,7 @@ export const undoRedoRestoresPendingTest = {
  * Undoing while a tool approval is pending must not re-dispatch the LLM.
  *
  * This is the direct regression for the stale-activity bug fixed in the
- * worker's `handleUndoOrRedo` (`cmd/juggler/worker/message_handlers.go`).
+ * worker's `handleUndoOrRedo` (`cmd/facet/worker/message_handlers.go`).
  * At the approval prompt the worker is resting with activity=`awaiting_llm`:
  * once the tool resolves, the reducer should continue the LLM loop. If undo
  * rewinds the pending approval but that activity marker / queued doc-change is

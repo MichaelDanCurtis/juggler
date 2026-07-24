@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"testing"
 
-	"juggler/cmd/juggler/worker"
+	"facet/cmd/facet/worker"
 )
 
 // DocumentState represents the expected state of a ConversationDocument.

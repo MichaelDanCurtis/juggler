@@ -26,7 +26,7 @@ import { toggleFileEditing } from './file-editing-permission.js';
  * @returns {void}
  */
 export function createNewConversation() {
-  document.dispatchEvent(new CustomEvent('juggler:new-conversation'));
+  document.dispatchEvent(new CustomEvent('facet:new-conversation'));
 }
 
 /**
@@ -36,7 +36,7 @@ export function createNewConversation() {
  * @returns {void}
  */
 export function binActiveConversation() {
-  document.dispatchEvent(new CustomEvent('juggler:bin-active-conversation'));
+  document.dispatchEvent(new CustomEvent('facet:bin-active-conversation'));
 }
 
 /**

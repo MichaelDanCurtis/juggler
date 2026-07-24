@@ -19,16 +19,16 @@ import (
 // PrepareLinuxWebKit: detect the certain failure, apply the known fix, log a
 // one-line note, and respect an explicit user override.
 
-// noXvfbEnv is the user's escape hatch: set to any value to keep Juggler from
+// noXvfbEnv is the user's escape hatch: set to any value to keep Facet from
 // relaunching itself under xvfb-run (it will then fail preflight with the
 // usual diagnostic if no display can be found).
-const noXvfbEnv = "JUGGLER_NO_XVFB"
+const noXvfbEnv = "FACET_NO_XVFB"
 
 // xvfbMarkerEnv marks a process already relaunched under xvfb-run, so a child
 // that still sees no display (e.g. Xvfb itself failed to start) can never
 // re-exec in a loop. The DISPLAY xvfb-run sets is the primary stop condition;
 // this is the backstop.
-const xvfbMarkerEnv = "JUGGLER_XVFB_RELAUNCHED"
+const xvfbMarkerEnv = "FACET_XVFB_RELAUNCHED"
 
 // MaybeRelaunchUnderXvfb re-execs this process under `xvfb-run -a` when it is
 // running on a Linux host with no display and xvfb-run is installed (see
@@ -64,7 +64,7 @@ func MaybeRelaunchUnderXvfb() string {
 // xvfbRelaunchArgv decides whether this process should re-exec under xvfb-run
 // and, if so, returns the full argv to exec (argv[0] is the resolved xvfb-run
 // path). It returns nil when no relaunch should happen: not Linux, a display
-// is already available, the user opted out via JUGGLER_NO_XVFB, this process
+// is already available, the user opted out via FACET_NO_XVFB, this process
 // is already the product of a relaunch, or xvfb-run is not installed.
 func xvfbRelaunchArgv(goos, display, wayland string,
 	lookupEnv func(string) (string, bool),

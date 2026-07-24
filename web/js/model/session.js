@@ -32,8 +32,8 @@ import { BUILTIN_DEFAULT_ID } from '../../sdk/lib/system-prompt-registry.js';
  * @property {function(string, string): Promise<{name: string}>} renameConversation - Rename a conversation's on-disk folder
  * @property {function(string, object): Promise<{success: boolean}>} updateConversation - Update single conversation
  * @property {function(string, {permanent?: boolean, reason?: string}=): Promise<void>} deleteConversation - Delete single conversation
- * @property {function(string): Promise<void>} binConversation - Move single conversation to .juggler/bin/
- * @property {function(string): Promise<void>} restoreConversation - Move conversation back from .juggler/bin/
+ * @property {function(string): Promise<void>} binConversation - Move single conversation to .facet/bin/
+ * @property {function(string): Promise<void>} restoreConversation - Move conversation back from .facet/bin/
  * @property {function(): Promise<{binned: Array<{id: string, name: string, lastModifiedAt: string}>}>} listBinnedConversations - List binned conversations
  * @property {function(string): Promise<void>} deleteBinnedConversation - Permanently delete a single binned conversation
  * @property {function(): Promise<void>} emptyBin - Permanently delete every binned conversation
@@ -272,7 +272,7 @@ class Session {
     this._conversationNames = {};
 
     /**
-     * Number of conversations currently in .juggler/bin/. Sourced from
+     * Number of conversations currently in .facet/bin/. Sourced from
      * GET /api/session (server-authoritative) and adjusted optimistically
      * by bin/restore/delete/empty so the Bin button badge reacts before
      * the broadcast round-trip completes.
@@ -1538,7 +1538,7 @@ class Session {
   /**
    * Bin a conversation. Mirrors deleteConversation locally (cancels
    * loads, destroys worker, drops from the in-memory map, picks a new
-   * visible tab) but the backend moves the folder to .juggler/bin/
+   * visible tab) but the backend moves the folder to .facet/bin/
    * instead of trashing it, so the user can restore it from the Bin
    * modal at any time (the bin never auto-expires).
    * @param {string} conversationId

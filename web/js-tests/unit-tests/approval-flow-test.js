@@ -25,7 +25,7 @@ import {
 import { TOOL_STATES, ACTION_STATES, createToolActionMessage } from '../../sdk/lib/message.js';
 import { observeUntil } from '../utilities/turn-sync.js';
 import workerManager from '../../js/services/worker-manager.js';
-import ExecuteContextItem from '../../extensions/juggler-core/context-items/execute-context-item.js';
+import ExecuteContextItem from '../../extensions/facet-core/context-items/execute-context-item.js';
 import { buildApprovalButtons } from '../../js/services/approval-options.js';
 import '../../js/components/action-confirmation.js';
 
@@ -751,7 +751,7 @@ export async function runTests(_ctx) {
   // =========================================================================
   try {
     // Import ExecuteContextItem for pattern extraction test
-    const { default: ExecuteContextItem } = await import('../../extensions/juggler-core/context-items/execute-context-item.js');
+    const { default: ExecuteContextItem } = await import('../../extensions/facet-core/context-items/execute-context-item.js');
 
     // Simple command should get wildcard
     const simplePattern = ExecuteContextItem.extractDefaultPattern('npm install', 'darwin');

@@ -10,10 +10,10 @@
 # for the underlying tools by hand reintroduces the drift this wrapper removes.
 #
 # Usage (prefer the Makefile entrypoint):
-#   make lint-files FILES="cmd/juggler/worker/foo.go web/js/bar.js"
+#   make lint-files FILES="cmd/facet/worker/foo.go web/js/bar.js"
 #
 # Or directly:
-#   scripts/lint-files cmd/juggler/worker/foo.go web/js/bar.js web/css/baz.css
+#   scripts/lint-files cmd/facet/worker/foo.go web/js/bar.js web/css/baz.css
 #
 # Routing is by extension:
 #   *.go         → gofmt check + go vet + golangci-lint (on each file's package)

@@ -4,7 +4,7 @@
 
 /**
  * User-command factory — turns a declarative {@link UserCommandDef} (parsed from
- * a `.juggler/commands/*.md` file) into a runnable {@link CommandType} subclass.
+ * a `.facet/commands/*.md` file) into a runnable {@link CommandType} subclass.
  *
  * A user command is *data*: a prompt template plus a few execution options,
  * interpreted by one generic command class synthesised here. This keeps the
@@ -12,7 +12,7 @@
  * @module plugins/user-command-factory
  */
 
-import CommandType from 'juggler/command-type';
+import CommandType from 'facet/command-type';
 import providersCache from '../services/providers-cache.js';
 
 const DEFAULT_ICON = 'icon-slash';
@@ -102,7 +102,7 @@ export function makeUserCommandClass(def) {
 
     /**
      * @param {string[]} args - Invocation arguments
-     * @returns {Promise<import('juggler/command-type').CommandResult>} Result
+     * @returns {Promise<import('facet/command-type').CommandResult>} Result
      */
     async execute(args) {
       const text = expandTemplate(def.body || '', args);

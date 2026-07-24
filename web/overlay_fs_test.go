@@ -28,7 +28,7 @@ func overlayFixture() fs.FS {
 	return fstest.MapFS{
 		"pro/pro.js": {Data: []byte("// pro asset")},
 		"index.html": {Data: []byte("shadowed index")},
-		"extensions/pro-ext/juggler.extension.json": {Data: []byte(`{}`)},
+		"extensions/pro-ext/facet.extension.json": {Data: []byte(`{}`)},
 		"extensions/pro-ext/context-items/x.js":     {Data: []byte("//")},
 	}
 }
@@ -66,7 +66,7 @@ func TestOverlayFallsBackToBase(t *testing.T) {
 }
 
 // TestOverlayMergesExtensionDir is the seam extension discovery depends on:
-// listing extensions/ must show base extensions (juggler-core) and overlay
+// listing extensions/ must show base extensions (facet-core) and overlay
 // extensions (pro-ext) together.
 func TestOverlayMergesExtensionDir(t *testing.T) {
 	SetOverlay(overlayFixture())
@@ -80,12 +80,12 @@ func TestOverlayMergesExtensionDir(t *testing.T) {
 	for _, e := range entries {
 		names[e.Name()] = true
 	}
-	if !names["juggler-core"] || !names["pro-ext"] {
+	if !names["facet-core"] || !names["pro-ext"] {
 		t.Fatalf("merged listing missing entries: %v", names)
 	}
 
 	// fs.Glob routes through ReadDir and must see the merged view too.
-	matches, err := fs.Glob(Files, "extensions/*/juggler.extension.json")
+	matches, err := fs.Glob(Files, "extensions/*/facet.extension.json")
 	if err != nil {
 		t.Fatalf("Glob: %v", err)
 	}
@@ -93,8 +93,8 @@ func TestOverlayMergesExtensionDir(t *testing.T) {
 	for _, m := range matches {
 		found[m] = true
 	}
-	if !found["extensions/juggler-core/juggler.extension.json"] ||
-		!found["extensions/pro-ext/juggler.extension.json"] {
+	if !found["extensions/facet-core/facet.extension.json"] ||
+		!found["extensions/pro-ext/facet.extension.json"] {
 		t.Fatalf("Glob missed merged manifests: %v", matches)
 	}
 }

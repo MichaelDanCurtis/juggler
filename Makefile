@@ -1,7 +1,7 @@
 .PHONY: build test test-go test-full benchmark dev clean fmt lint lint-files lint-go lint-deadcode lint-js lint-types lint-css fix fix-files fix-fmt fix-go fix-js fix-css node-deps help mac-app install-mac app-icon-embed wails-runtime-embed win-icon release-build-mac mac-dmg mac-dmg-pack win-installer win-installer-pack linux-binaries linux-tarball linux-tarball-pack mac-codesign
 
 # Binary name
-BINARY_NAME=juggler
+BINARY_NAME=facet
 BUILD_DIR=bin
 
 # Platform detection (used to optionally bundle a macOS .app)
@@ -18,20 +18,20 @@ GOARCH_HOST := arm64
 else
 GOARCH_HOST := $(UNAME_M)
 endif
-MAC_APP_DIR=$(BUILD_DIR)/Juggler.app
-# The clickable bundle executable is the desktop app (juggler-app); the headless
-# server binary (juggler) sits alongside it in MacOS/ so the app's serverBinPath
+MAC_APP_DIR=$(BUILD_DIR)/Facet.app
+# The clickable bundle executable is the desktop app (facet-app); the headless
+# server binary (facet) sits alongside it in MacOS/ so the app's serverBinPath
 # finds it as a sibling.
 MAC_APP_BIN=$(MAC_APP_DIR)/Contents/MacOS/$(BINARY_NAME)
-MAC_APP_APP_BIN=$(MAC_APP_DIR)/Contents/MacOS/juggler-app
+MAC_APP_APP_BIN=$(MAC_APP_DIR)/Contents/MacOS/facet-app
 MAC_APP_RES=$(MAC_APP_DIR)/Contents/Resources
 MAC_APP_PLIST=$(MAC_APP_DIR)/Contents/Info.plist
-MAC_ICON_SRC=assets/icons/juggler.icon
-MAC_BUNDLE_ID=studio.juggler.juggler
+MAC_ICON_SRC=assets/icons/facet.icon
+MAC_BUNDLE_ID=studio.facet.facet
 # Entitlements sealed into the bundle when signing with a real Developer ID
 # identity under the hardened runtime (see mac-codesign). Unused by ad-hoc dev
 # signing. Kept minimal on purpose — see the file's own comment.
-MAC_ENTITLEMENTS=assets/macos/juggler.entitlements
+MAC_ENTITLEMENTS=assets/macos/facet.entitlements
 # Optional stable code-signing identity for local macOS builds. Go ad-hoc-signs
 # arm64 binaries, so every rebuild gets a fresh cdhash — and macOS TCC keys
 # permission grants (Downloads/Documents/etc., which WebKit's WebContent process
@@ -40,7 +40,7 @@ MAC_ENTITLEMENTS=assets/macos/juggler.entitlements
 # signing identity, so it persists across rebuilds and the prompt stops nagging.
 # Unset (default) → ad-hoc signing, unchanged behaviour and no cert dependency
 # for other devs/CI. Set it to a self-signed keychain cert's name to opt in:
-#   make build CODESIGN_IDENTITY="Juggler Dev"
+#   make build CODESIGN_IDENTITY="Facet Dev"
 # (create the cert once via Keychain Access → Certificate Assistant → Create a
 # Certificate → "Code Signing", self-signed; grant the Downloads prompt once.)
 #
@@ -54,8 +54,8 @@ CODESIGN_IDENTITY ?=
 
 # Source-of-truth raster icon used for Linux runtime window icon and as the
 # input for the Windows resource (.syso) compilation step.
-APP_ICON_PNG=assets/icons/juggler-icon.png
-APP_ICON_EMBED=cmd/juggler/app/icon.png
+APP_ICON_PNG=assets/icons/facet-icon.png
+APP_ICON_EMBED=cmd/facet/app/icon.png
 # Go's linker matches a .syso to a build by its _GOARCH suffix, so each Windows
 # target architecture needs its own resource file. We ship amd64 and arm64
 # (plus legacy 386); a missing arch silently links with no icon.
@@ -97,7 +97,7 @@ BUILD_DATE ?= $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
 # release/packaging build compile every binary identically. See mk/build-flags.mk.
 include mk/build-flags.mk
 # Windows stays a console-subsystem binary on purpose: a shell launch then runs
-# juggler in the foreground (visible output, Ctrl+C, interactive keys) because
+# facet in the foreground (visible output, Ctrl+C, interactive keys) because
 # the shell waits on console apps. An icon launch detaches the console Windows
 # allocates at startup (see launchedFromTerminal) so no terminal window lingers.
 # A GUI-subsystem build would instead detach into a hidden background process
@@ -118,22 +118,22 @@ ifeq ($(UNAME_S),Darwin)
 	@# older `make release-build-mac` isn't a plain object file, so `go build -o`
 	@# refuses to overwrite it ("already exists and is not an object file").
 	@rm -f $(MAC_APP_BIN) $(MAC_APP_APP_BIN)
-	@$(GOBUILD) -ldflags "$(LDFLAGS)" -o $(MAC_APP_BIN) ./cmd/juggler
-	@$(GOBUILD) -ldflags "$(LDFLAGS)" -o $(MAC_APP_APP_BIN) ./cmd/juggler-app
+	@$(GOBUILD) -ldflags "$(LDFLAGS)" -o $(MAC_APP_BIN) ./cmd/facet
+	@$(GOBUILD) -ldflags "$(LDFLAGS)" -o $(MAC_APP_APP_BIN) ./cmd/facet-app
 	@$(MAKE) --no-print-directory mac-app-meta
 	@$(MAKE) --no-print-directory mac-codesign
-	@ln -sfn Juggler.app/Contents/MacOS/$(BINARY_NAME) $(BUILD_DIR)/$(BINARY_NAME)
-	@ln -sfn Juggler.app/Contents/MacOS/juggler-app $(BUILD_DIR)/juggler-app
+	@ln -sfn Facet.app/Contents/MacOS/$(BINARY_NAME) $(BUILD_DIR)/$(BINARY_NAME)
+	@ln -sfn Facet.app/Contents/MacOS/facet-app $(BUILD_DIR)/facet-app
 else
-	@$(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/juggler
-	@$(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/juggler-app ./cmd/juggler-app
+	@$(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/facet
+	@$(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/facet-app ./cmd/facet-app
 endif
-	@$(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/juggler-test ./cmd/juggler-test
-	@echo "✓ built juggler, juggler-app, juggler-test ($(VERSION))"
+	@$(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/facet-test ./cmd/facet-test
+	@echo "✓ built facet, facet-app, facet-test ($(VERSION))"
 
-## release-build: Build juggler with -tags production. Excludes test handlers
-## (cmd/juggler/testing/, worker_test_support.go) so they can't be reached in
-## shipped binaries. juggler-test is intentionally not built here.
+## release-build: Build facet with -tags production. Excludes test handlers
+## (cmd/facet/testing/, worker_test_support.go) so they can't be reached in
+## shipped binaries. facet-test is intentionally not built here.
 release-build: app-icon-embed wails-runtime-embed
 	@echo "Building $(BINARY_NAME) $(VERSION) [release]..."
 	@mkdir -p $(BUILD_DIR)
@@ -142,17 +142,17 @@ ifeq ($(UNAME_S),Darwin)
 	@# See go-build: clear a possible leftover universal (fat) binary so
 	@# `go build -o` doesn't refuse to overwrite it.
 	@rm -f $(MAC_APP_BIN) $(MAC_APP_APP_BIN)
-	$(GOBUILD_RELEASE) -ldflags "$(LDFLAGS)" -o $(MAC_APP_BIN) ./cmd/juggler
-	@echo "Building juggler-app $(VERSION) [release]..."
-	$(GOBUILD_RELEASE) -ldflags "$(LDFLAGS)" -o $(MAC_APP_APP_BIN) ./cmd/juggler-app
+	$(GOBUILD_RELEASE) -ldflags "$(LDFLAGS)" -o $(MAC_APP_BIN) ./cmd/facet
+	@echo "Building facet-app $(VERSION) [release]..."
+	$(GOBUILD_RELEASE) -ldflags "$(LDFLAGS)" -o $(MAC_APP_APP_BIN) ./cmd/facet-app
 	@$(MAKE) --no-print-directory mac-app-meta
 	@$(MAKE) --no-print-directory mac-codesign
-	@ln -sfn Juggler.app/Contents/MacOS/$(BINARY_NAME) $(BUILD_DIR)/$(BINARY_NAME)
-	@ln -sfn Juggler.app/Contents/MacOS/juggler-app $(BUILD_DIR)/juggler-app
+	@ln -sfn Facet.app/Contents/MacOS/$(BINARY_NAME) $(BUILD_DIR)/$(BINARY_NAME)
+	@ln -sfn Facet.app/Contents/MacOS/facet-app $(BUILD_DIR)/facet-app
 else
-	$(GOBUILD_RELEASE) -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/juggler
-	@echo "Building juggler-app $(VERSION) [release]..."
-	$(GOBUILD_RELEASE) -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/juggler-app ./cmd/juggler-app
+	$(GOBUILD_RELEASE) -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/facet
+	@echo "Building facet-app $(VERSION) [release]..."
+	$(GOBUILD_RELEASE) -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/facet-app ./cmd/facet-app
 endif
 
 ## build-windows: Cross-compile the Windows .exe binaries from any host. Wails
@@ -163,8 +163,8 @@ endif
 ## (Linux can't be cross-compiled here — its Wails backend is cgo GTK/WebKitGTK
 ## and needs the target headers+libs; build it natively on Linux.)
 WIN_BUILD_DIR := $(BUILD_DIR)/windows
-# The Windows icon .syso files must sit in each main package dir (cmd/juggler/
-# and cmd/juggler-app/) for the Go linker to embed them (it only reads .syso
+# The Windows icon .syso files must sit in each main package dir (cmd/facet/
+# and cmd/facet-app/) for the Go linker to embed them (it only reads .syso
 # from the package dir at link time — bin/ is not an option). To keep them out
 # of the source tree during normal dev, they are generated here and removed
 # again in the same shell (trap on EXIT, so a failed link still cleans up);
@@ -173,16 +173,16 @@ build-windows: app-icon-embed wails-runtime-embed
 	@echo "Cross-building Windows binaries (amd64)..."
 	@mkdir -p $(WIN_BUILD_DIR)
 	@$(MAKE) --no-print-directory win-icon
-	@trap 'rm -f cmd/juggler/rsrc_*.syso cmd/juggler-app/rsrc_*.syso' EXIT; \
+	@trap 'rm -f cmd/facet/rsrc_*.syso cmd/facet-app/rsrc_*.syso' EXIT; \
 	if [ -n "$(SERVER_BIN)" ]; then \
 		echo "Using prebuilt server $(SERVER_BIN)"; \
 		cp "$(SERVER_BIN)" "$(WIN_BUILD_DIR)/$(BINARY_NAME).exe"; \
 	else \
-		CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GOBUILD) -ldflags "$(LDFLAGS_BASE)" -o $(WIN_BUILD_DIR)/$(BINARY_NAME).exe ./cmd/juggler; \
+		CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GOBUILD) -ldflags "$(LDFLAGS_BASE)" -o $(WIN_BUILD_DIR)/$(BINARY_NAME).exe ./cmd/facet; \
 	fi && \
-	echo "Building juggler-app.exe (windowsgui) $(VERSION)..." && \
-	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GOBUILD) -ldflags "$(LDFLAGS_BASE) -H windowsgui" -o $(WIN_BUILD_DIR)/juggler-app.exe ./cmd/juggler-app
-	@echo "→ $(WIN_BUILD_DIR)/$(BINARY_NAME).exe (console), $(WIN_BUILD_DIR)/juggler-app.exe (GUI)"
+	echo "Building facet-app.exe (windowsgui) $(VERSION)..." && \
+	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GOBUILD) -ldflags "$(LDFLAGS_BASE) -H windowsgui" -o $(WIN_BUILD_DIR)/facet-app.exe ./cmd/facet-app
+	@echo "→ $(WIN_BUILD_DIR)/$(BINARY_NAME).exe (console), $(WIN_BUILD_DIR)/facet-app.exe (GUI)"
 
 # ── Distribution: one indivisible unit per platform ─────────────────────────
 # Both binaries always travel together (the .app bundles them; the installer
@@ -190,46 +190,46 @@ build-windows: app-icon-embed wails-runtime-embed
 # resolves a server of its exact build. See docs/distribution.md.
 
 # SERVER_BIN (optional): path to a prebuilt server binary to drop into the slot
-# instead of building ./cmd/juggler. Unset = build the free server, exactly as
+# instead of building ./cmd/facet. Unset = build the free server, exactly as
 # before. A build layering extra server features sets this to its own prebuilt
 # server so the desktop app, bundle assembly, and packaging below stay this
 # repo's single implementation. The server package itself is never referenced
 # from outside this module — only the finished binary is injected.
 SERVER_BIN ?=
 
-## release-build-mac: Build the arm64 (Apple Silicon) Juggler.app for
-## distribution. Both the server (juggler) and app (juggler-app) are built for
+## release-build-mac: Build the arm64 (Apple Silicon) Facet.app for
+## distribution. Both the server (facet) and app (facet-app) are built for
 ## arm64; the bundle stays one unit. macOS only. Use `make mac-dmg` to wrap the
 ## result in a drag-to-Applications DMG. Set SERVER_BIN to inject a prebuilt
-## server into the slot instead of building ./cmd/juggler.
+## server into the slot instead of building ./cmd/facet.
 release-build-mac: app-icon-embed wails-runtime-embed
 ifneq ($(UNAME_S),Darwin)
 	@echo "release-build-mac is only supported on macOS."; exit 1
 endif
-	@echo "Building Juggler.app $(VERSION) [release, arm64]..."
+	@echo "Building Facet.app $(VERSION) [release, arm64]..."
 	@mkdir -p $(MAC_APP_DIR)/Contents/MacOS $(MAC_APP_RES)
 	@# Clear a possible leftover universal (fat) binary from an older release so
 	@# `go build -o` doesn't refuse to overwrite it (see go-build).
 	@rm -f $(MAC_APP_BIN) $(MAC_APP_APP_BIN)
 	@if [ -n "$(SERVER_BIN)" ]; then \
-		echo "  → juggler (from $(SERVER_BIN))"; \
+		echo "  → facet (from $(SERVER_BIN))"; \
 		cp "$(SERVER_BIN)" "$(MAC_APP_BIN)"; \
 	else \
-		echo "  → juggler (arm64)"; \
-		CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 $(GOBUILD_RELEASE) -ldflags "$(LDFLAGS)" -o $(MAC_APP_BIN) ./cmd/juggler || exit 1; \
+		echo "  → facet (arm64)"; \
+		CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 $(GOBUILD_RELEASE) -ldflags "$(LDFLAGS)" -o $(MAC_APP_BIN) ./cmd/facet || exit 1; \
 	fi
-	@echo "  → juggler-app (arm64)"
-	@CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 $(GOBUILD_RELEASE) -ldflags "$(LDFLAGS)" -o $(MAC_APP_APP_BIN) ./cmd/juggler-app || exit 1
+	@echo "  → facet-app (arm64)"
+	@CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 $(GOBUILD_RELEASE) -ldflags "$(LDFLAGS)" -o $(MAC_APP_APP_BIN) ./cmd/facet-app || exit 1
 	@$(MAKE) --no-print-directory mac-app-meta
 	@$(MAKE) --no-print-directory mac-codesign
-	@ln -sfn Juggler.app/Contents/MacOS/$(BINARY_NAME) $(BUILD_DIR)/$(BINARY_NAME)
-	@ln -sfn Juggler.app/Contents/MacOS/juggler-app $(BUILD_DIR)/juggler-app
+	@ln -sfn Facet.app/Contents/MacOS/$(BINARY_NAME) $(BUILD_DIR)/$(BINARY_NAME)
+	@ln -sfn Facet.app/Contents/MacOS/facet-app $(BUILD_DIR)/facet-app
 	@echo "→ $(MAC_APP_DIR) (arm64: $$(lipo -archs $(MAC_APP_APP_BIN)))"
 
-## mac-dmg: Build a distributable .dmg containing the arm64 Juggler.app with
+## mac-dmg: Build a distributable .dmg containing the arm64 Facet.app with
 ## the standard drag-to-Applications layout. Requires create-dmg
-## (brew install create-dmg). Output: bin/Juggler-$(VERSION).dmg.
-DMG_NAME=$(BUILD_DIR)/Juggler-$(VERSION).dmg
+## (brew install create-dmg). Output: bin/Facet-$(VERSION).dmg.
+DMG_NAME=$(BUILD_DIR)/Facet-$(VERSION).dmg
 mac-dmg: release-build-mac mac-dmg-pack
 
 ## mac-dmg-pack: Wrap the already-assembled $(MAC_APP_DIR) into the DMG, WITHOUT
@@ -241,14 +241,14 @@ mac-dmg-pack:
 	@[ -d "$(MAC_APP_DIR)" ] || { echo "no $(MAC_APP_DIR) to package — build the app first"; exit 1; }
 	@rm -f "$(DMG_NAME)"
 	@stage=$$(mktemp -d); \
-	cp -R "$(MAC_APP_DIR)" "$$stage/Juggler.app"; \
+	cp -R "$(MAC_APP_DIR)" "$$stage/Facet.app"; \
 	create-dmg \
-		--volname "Juggler" \
+		--volname "Facet" \
 		--window-pos 200 120 \
 		--window-size 600 360 \
 		--icon-size 100 \
-		--icon "Juggler.app" 150 180 \
-		--hide-extension "Juggler.app" \
+		--icon "Facet.app" 150 180 \
+		--hide-extension "Facet.app" \
 		--app-drop-link 450 180 \
 		"$(DMG_NAME)" "$$stage" \
 		|| { code=$$?; [ -f "$(DMG_NAME)" ] || { rm -rf "$$stage"; echo "create-dmg failed ($$code)"; exit $$code; }; }; \
@@ -265,18 +265,18 @@ mac-dmg-pack:
 ## win-installer: Build the Windows installer (Inno Setup) wrapping both .exe
 ## binaries into one install dir. Requires the Inno Setup compiler (iscc) and a
 ## prior `make build-windows`. Run on Windows (or wine). Output:
-## bin/windows/Juggler-$(VERSION)-setup.exe.
+## bin/windows/Facet-$(VERSION)-setup.exe.
 win-installer: build-windows win-installer-pack
 
 ## win-installer-pack: Run Inno Setup over the already-built binaries in
 ## $(WIN_BUILD_DIR), WITHOUT rebuilding them. win-installer = build-windows +
-## this; kept separate so a caller that has placed its own juggler.exe /
-## juggler-app.exe there can package them without a redundant build-windows.
+## this; kept separate so a caller that has placed its own facet.exe /
+## facet-app.exe there can package them without a redundant build-windows.
 win-installer-pack:
 	@command -v iscc >/dev/null 2>&1 || { echo "iscc (Inno Setup) not found"; exit 1; }
 	@[ -f "$(WIN_BUILD_DIR)/$(BINARY_NAME).exe" ] || { echo "no $(WIN_BUILD_DIR)/$(BINARY_NAME).exe to package — build the Windows binaries first"; exit 1; }
-	@MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL='*' iscc /DMyAppVersion=$(VERSION) packaging/windows/juggler.iss
-	@echo "→ $(WIN_BUILD_DIR)/Juggler-$(VERSION)-setup.exe"
+	@MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL='*' iscc /DMyAppVersion=$(VERSION) packaging/windows/facet.iss
+	@echo "→ $(WIN_BUILD_DIR)/Facet-$(VERSION)-setup.exe"
 
 # ── Linux release bundle ────────────────────────────────────────────────────
 # Linux ships the server + desktop app together as one tarball per arch — the
@@ -289,44 +289,44 @@ GOARCH ?= $(GOARCH_HOST)
 linux-binaries: app-icon-embed wails-runtime-embed
 	@mkdir -p $(BUILD_DIR)
 	@if [ -n "$(SERVER_BIN)" ]; then \
-		echo "  → juggler (from $(SERVER_BIN))"; \
+		echo "  → facet (from $(SERVER_BIN))"; \
 		cp "$(SERVER_BIN)" "$(BUILD_DIR)/$(BINARY_NAME)"; \
 	else \
-		echo "  → juggler ($(GOARCH))"; \
-		CGO_ENABLED=1 GOOS=linux GOARCH=$(GOARCH) $(GOBUILD_RELEASE) -ldflags "$(LDFLAGS_BASE)" -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/juggler; \
+		echo "  → facet ($(GOARCH))"; \
+		CGO_ENABLED=1 GOOS=linux GOARCH=$(GOARCH) $(GOBUILD_RELEASE) -ldflags "$(LDFLAGS_BASE)" -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/facet; \
 	fi
-	@echo "  → juggler-app ($(GOARCH))"
-	@CGO_ENABLED=1 GOOS=linux GOARCH=$(GOARCH) $(GOBUILD_RELEASE) -ldflags "$(LDFLAGS_BASE)" -o $(BUILD_DIR)/juggler-app ./cmd/juggler-app
+	@echo "  → facet-app ($(GOARCH))"
+	@CGO_ENABLED=1 GOOS=linux GOARCH=$(GOARCH) $(GOBUILD_RELEASE) -ldflags "$(LDFLAGS_BASE)" -o $(BUILD_DIR)/facet-app ./cmd/facet-app
 
 ## linux-tarball: linux-binaries + package them (README + checksums) into one
-## tarball. Output: bin/juggler-linux-$(GOARCH).tar.gz.
+## tarball. Output: bin/facet-linux-$(GOARCH).tar.gz.
 linux-tarball: linux-binaries linux-tarball-pack
 
-## linux-tarball-pack: Tar the already-built bin/juggler + bin/juggler-app
+## linux-tarball-pack: Tar the already-built bin/facet + bin/facet-app
 ## (no rebuild), mirroring mac-dmg-pack / win-installer-pack.
 linux-tarball-pack:
 	@[ -f "$(BUILD_DIR)/$(BINARY_NAME)" ] || { echo "no $(BUILD_DIR)/$(BINARY_NAME) to package — build the Linux binaries first"; exit 1; }
 	@stage=$$(mktemp -d); \
-	cp $(BUILD_DIR)/$(BINARY_NAME) $(BUILD_DIR)/juggler-app "$$stage/"; \
+	cp $(BUILD_DIR)/$(BINARY_NAME) $(BUILD_DIR)/facet-app "$$stage/"; \
 	printf '%s\n' \
-		"Juggler for Linux ($(GOARCH))" \
+		"Facet for Linux ($(GOARCH))" \
 		"" \
 		"Contents:" \
-		"  juggler      headless server — run this, then open the printed URL," \
-		"               or launch juggler-app which spawns it as a sibling" \
-		"  juggler-app  GTK desktop app (needs a display: X11 or Wayland)" \
+		"  facet      headless server — run this, then open the printed URL," \
+		"               or launch facet-app which spawns it as a sibling" \
+		"  facet-app  GTK desktop app (needs a display: X11 or Wayland)" \
 		"" \
-		"Keep both binaries in the SAME directory — juggler-app finds juggler" \
+		"Keep both binaries in the SAME directory — facet-app finds facet" \
 		"next to itself." \
 		"" \
 		"Runtime dependencies (Ubuntu 24.04+ / equivalent):" \
 		"  sudo apt-get install -y libgtk-4-1 libwebkitgtk-6.0-4" \
 		> "$$stage/README.txt"; \
-	( cd "$$stage" && sha256sum juggler juggler-app > checksums.txt && \
-		tar czf "$(abspath $(BUILD_DIR))/juggler-linux-$(GOARCH).tar.gz" \
-			juggler juggler-app checksums.txt README.txt ); \
+	( cd "$$stage" && sha256sum facet facet-app > checksums.txt && \
+		tar czf "$(abspath $(BUILD_DIR))/facet-linux-$(GOARCH).tar.gz" \
+			facet facet-app checksums.txt README.txt ); \
 	rm -rf "$$stage"
-	@echo "→ $(BUILD_DIR)/juggler-linux-$(GOARCH).tar.gz"
+	@echo "→ $(BUILD_DIR)/facet-linux-$(GOARCH).tar.gz"
 
 ## app-icon-embed: Sync $(APP_ICON_PNG) into the Go package so go:embed can
 ## pick it up (go:embed rejects symlinks). Both files are checked in; this
@@ -342,7 +342,7 @@ app-icon-embed:
 ## package so go:embed can pick it up (it can't follow symlinks or `..`).
 ## Served at /wails/runtime.js for every client — see wails_runtime.go.
 WAILS_RUNTIME_SRC=3rdparty/wails/v3/internal/assetserver/bundledassets/runtime.js
-WAILS_RUNTIME_EMBED=cmd/juggler/server/wails_runtime.js
+WAILS_RUNTIME_EMBED=cmd/facet/server/wails_runtime.js
 wails-runtime-embed:
 	@if [ -f "$(WAILS_RUNTIME_SRC)" ] && ! cmp -s "$(WAILS_RUNTIME_SRC)" "$(WAILS_RUNTIME_EMBED)" 2>/dev/null; then \
 		cp "$(WAILS_RUNTIME_SRC)" "$(WAILS_RUNTIME_EMBED)"; \
@@ -350,8 +350,8 @@ wails-runtime-embed:
 	fi
 
 ## win-icon: Compile $(APP_ICON_PNG) into a Windows .syso resource for BOTH the
-## server (cmd/juggler) and the desktop app (cmd/juggler-app) so each .exe shows
-## the Juggler icon in Explorer / the taskbar — the linker only embeds a .syso
+## server (cmd/facet) and the desktop app (cmd/facet-app) so each .exe shows
+## the Facet icon in Explorer / the taskbar — the linker only embeds a .syso
 ## found in the package it builds, so each main package needs its own. Uses
 ## github.com/tc-hib/go-winres (auto-installed). Skipped silently if the tool
 ## can't be installed (e.g. no network); the binaries still build, just without
@@ -375,24 +375,24 @@ win-icon:
 		go install github.com/tc-hib/go-winres@latest >/dev/null 2>&1 || { \
 			echo "warning: could not install go-winres; skipping Windows icon"; exit 0; }; \
 	fi
-	@for pkg in juggler juggler-app; do \
+	@for pkg in facet facet-app; do \
 		"$(GO_WINRES)" simply \
 			--arch $(WIN_SYSO_ARCHES) \
 			--icon "$(APP_ICON_PNG)" \
 			--manifest gui \
-			--product-name Juggler \
-			--file-description Juggler \
+			--product-name Facet \
+			--file-description Facet \
 			--out cmd/$$pkg/rsrc >/dev/null || { \
 				echo "warning: go-winres failed for cmd/$$pkg; skipping Windows icon"; exit 0; }; \
 	done; \
-	echo "Compiled Windows icon resources ($(WIN_SYSO_ARCHES)) → cmd/{juggler,juggler-app}/rsrc_windows_*.syso"
+	echo "Compiled Windows icon resources ($(WIN_SYSO_ARCHES)) → cmd/{facet,facet-app}/rsrc_windows_*.syso"
 
 ## mac-app-meta: Generate Info.plist and AppIcon.icns (macOS only).
 ## The .icon bundle ($(MAC_ICON_SRC)) is the source of truth, but Xcode's
 ## `actool` can't compile a standalone .icon to .icns outside an Xcode build
 ## graph. We rasterize the bundle's SVG asset with qlmanage and feed the
 ## standard sizes to iconutil. If anything in that pipeline fails we fall
-## back to assets/icons/juggler-logo.png; if that's missing too we leave the bundle
+## back to assets/icons/facet-logo.png; if that's missing too we leave the bundle
 ## iconless rather than failing the build.
 mac-app-meta:
 ifeq ($(UNAME_S),Darwin)
@@ -401,13 +401,13 @@ ifeq ($(UNAME_S),Darwin)
 		'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' \
 		'<plist version="1.0"><dict>' \
 		'  <key>CFBundleDevelopmentRegion</key><string>en</string>' \
-		'  <key>CFBundleExecutable</key><string>juggler-app</string>' \
+		'  <key>CFBundleExecutable</key><string>facet-app</string>' \
 		'  <key>CFBundleIconFile</key><string>AppIcon</string>' \
-		'  <key>CFBundleIconName</key><string>juggler</string>' \
+		'  <key>CFBundleIconName</key><string>facet</string>' \
 		'  <key>CFBundleIdentifier</key><string>$(MAC_BUNDLE_ID)</string>' \
 		'  <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>' \
-		'  <key>CFBundleName</key><string>Juggler</string>' \
-		'  <key>CFBundleDisplayName</key><string>Juggler</string>' \
+		'  <key>CFBundleName</key><string>Facet</string>' \
+		'  <key>CFBundleDisplayName</key><string>Facet</string>' \
 		'  <key>CFBundlePackageType</key><string>APPL</string>' \
 		'  <key>CFBundleShortVersionString</key><string>$(VERSION)</string>' \
 		'  <key>CFBundleVersion</key><string>$(VERSION)</string>' \
@@ -519,7 +519,7 @@ test-full: lint test
 ## benchmark: Run LLM benchmarks (requires API keys, e.g. ARGS="--task bugfix-001")
 benchmark: build
 	@echo "Running LLM benchmarks..."
-	@$(BUILD_DIR)/juggler-test $(ARGS)
+	@$(BUILD_DIR)/facet-test $(ARGS)
 
 ## dev: Run in development mode with hot reload
 dev: build
@@ -531,7 +531,7 @@ clean:
 	@echo "Cleaning..."
 	@$(GOCLEAN)
 	@rm -rf $(BUILD_DIR) $(MAC_APP_DIR)
-	@rm -f cmd/juggler/rsrc_*.syso cmd/juggler-app/rsrc_*.syso
+	@rm -f cmd/facet/rsrc_*.syso cmd/facet-app/rsrc_*.syso
 # golangci-lint caches parsed typecheck data keyed by absolute file paths, so a
 # repo move (or a stale build) leaves it pointing at paths that no longer exist
 # — at which point it can no longer read the source to honor //nolint directives
@@ -542,17 +542,17 @@ clean:
 		golangci-lint cache clean &> /dev/null; \
 	fi
 
-## install-mac: Install Juggler.app to /Applications and symlink the CLI.
+## install-mac: Install Facet.app to /Applications and symlink the CLI.
 ## Run after `make build`. Sudo may be required depending on permissions.
 install-mac:
 ifeq ($(UNAME_S),Darwin)
 	@if [ ! -d "$(MAC_APP_DIR)" ]; then echo "Run 'make build' first."; exit 1; fi
-	@echo "Installing Juggler.app to /Applications..."
-	@rm -rf "/Applications/Juggler.app"
-	@cp -R "$(MAC_APP_DIR)" "/Applications/Juggler.app"
+	@echo "Installing Facet.app to /Applications..."
+	@rm -rf "/Applications/Facet.app"
+	@cp -R "$(MAC_APP_DIR)" "/Applications/Facet.app"
 	@mkdir -p /usr/local/bin
-	@ln -sfn "/Applications/Juggler.app/Contents/MacOS/$(BINARY_NAME)" "/usr/local/bin/$(BINARY_NAME)"
-	@echo "Installed. Run 'juggler' in a terminal or launch Juggler from Finder."
+	@ln -sfn "/Applications/Facet.app/Contents/MacOS/$(BINARY_NAME)" "/usr/local/bin/$(BINARY_NAME)"
+	@echo "Installed. Run 'facet' in a terminal or launch Facet from Finder."
 else
 	@echo "install-mac is only supported on macOS."; exit 1
 endif
@@ -577,7 +577,7 @@ lint: lint-fmt lint-go lint-deadcode lint-types lint-js lint-css
 ## lint-files: Lint ONLY the named files, using the same linters/configs as
 ## `make lint`, routed by extension (.go/.js/.css). Use this to lint a subset
 ## instead of reaching for the underlying tools directly.
-##   make lint-files FILES="cmd/juggler/worker/foo.go web/js/bar.js"
+##   make lint-files FILES="cmd/facet/worker/foo.go web/js/bar.js"
 ## Go files pull in the embed prerequisites so package typechecks don't fail on
 ## a stale generated embed (same reason lint-go depends on them).
 lint-files: app-icon-embed wails-runtime-embed
@@ -706,7 +706,7 @@ fix-css: node-deps
 ## fix-files: Auto-fix ONLY the named files, routed by extension to the same
 ## fixers as `make fix` (the write-mode counterpart to lint-files). Whole-program
 ## checks with no per-file fix (deadcode, type errors) are not run here.
-##   make fix-files FILES="cmd/juggler/worker/foo.go web/css/bar.css"
+##   make fix-files FILES="cmd/facet/worker/foo.go web/css/bar.css"
 fix-files: app-icon-embed wails-runtime-embed
 	@GOLANGCI_LINT_VERSION="$(GOLANGCI_LINT_VERSION)" FIX=1 scripts/lint-files $(FILES)
 

@@ -59,7 +59,7 @@
 // ============================================================================
 
 /**
- * CommandType - Base class for Juggler command plugins
+ * CommandType - Base class for Facet command plugins
  *
  * Commands are **user-initiated operations** invoked via `/command` or the menu.
  * Unlike actions, they have no LLM tool definitions and no approval flow.
@@ -75,12 +75,12 @@
  * ## Creating a Command
  *
  * Commands ship inside an **extension** (a directory with a
- * `juggler.extension.json` manifest). Scaffold one with `juggler ext init` and
- * link it with `juggler ext link`; see `docs/extension_guide.md`.
+ * `facet.extension.json` manifest). Scaffold one with `facet ext init` and
+ * link it with `facet ext link`; see `docs/extension_guide.md`.
  *
  * 1. Add a file named `*-command-type.js` under the extension's `commands/`
  *    directory — the manifest's `provides` glob registers it automatically.
- * 2. Import and extend CommandType: `import CommandType from 'juggler/command-type';`
+ * 2. Import and extend CommandType: `import CommandType from 'facet/command-type';`
  * 3. Define static MANIFEST with required fields (id, name, version, description)
  * 4. Implement execute()
  * 5. Save — a linked extension hot-reloads in connected viewers; no restart.
@@ -95,7 +95,7 @@
  * ## Quick Start
  *
  * ```javascript
- * import CommandType from 'juggler/command-type';
+ * import CommandType from 'facet/command-type';
  *
  * class MyCommandType extends CommandType {
  *   static MANIFEST = {

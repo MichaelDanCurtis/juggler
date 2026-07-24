@@ -274,7 +274,7 @@ export function registerOpenPopup({ id, onClose, insideSelectors }) {
 // that pops it as a dismissal. One entry per overlay LAYER, not per popup: a
 // modal stacked over a menu still costs a single Back press to clear.
 
-const OVERLAY_HISTORY_MARKER = 'jugglerOverlay';
+const OVERLAY_HISTORY_MARKER = 'facetOverlay';
 
 /** @type {boolean} Whether our sentinel history entry is currently on top. */
 let overlayStatePushed = false;

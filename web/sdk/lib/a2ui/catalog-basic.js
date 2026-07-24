@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * The `a2ui.org/basic` catalog subset Juggler renders natively: the
+ * The `a2ui.org/basic` catalog subset Facet renders natively: the
  * structural chrome (Text, Row, Column, Card, List, Divider, Image) plus the
  * one interactive component every surface needs (Button).
  *

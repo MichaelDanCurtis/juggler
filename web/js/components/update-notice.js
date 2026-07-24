@@ -48,7 +48,7 @@ const TEXT_NODE = 3;
 const ELEMENT_NODE = 1;
 
 /** Generic heading used when the manifest doesn't author its own title. */
-const DEFAULT_TITLE = 'New Juggler Version Available';
+const DEFAULT_TITLE = 'New Facet Version Available';
 
 /**
  * Tags allowed in a server-authored notice body, each mapped to the attributes
@@ -347,7 +347,7 @@ class UpdateNotice extends HTMLElement {
     if (this._hasServerSkew(vm)) {
       const warn = document.createElement('p');
       warn.className = 'update-notice__skew';
-      warn.textContent = `You're connected to a Juggler server started outside the app`
+      warn.textContent = `You're connected to a Facet server started outside the app`
         + ` (v${vm.currentVersion}). Updating the app won't update that server —`
         + ` restart it to update.`;
       body.appendChild(warn);

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Juggler Sandbox</title>
+    <title>Facet Sandbox</title>
 </head>
 <body>
     <script nonce="{{.CSPNonce}}">
@@ -279,7 +279,7 @@ self.addEventListener('message', (event) => {
 
         const SANDBOX_WORKER_BLOB = URL.createObjectURL(new Blob([SANDBOX_WORKER_SRC], { type: 'text/javascript' }));
 
-        // The host (juggler/sandbox, sandbox-runner.js) posts {type:
+        // The host (facet/sandbox, sandbox-runner.js) posts {type:
         // 'sandbox-execute', code, timeoutMs, capabilities} plus a MessagePort
         // on this iframe's first 'message'. We spawn the worker, hand it the
         // request + a private channel, and relay that channel to/from the host

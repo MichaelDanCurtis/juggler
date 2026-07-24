@@ -15,9 +15,9 @@ import (
 	"slices"
 	"testing"
 
-	"juggler/cmd/juggler/core"
-	"juggler/cmd/juggler/server/handlers"
-	"juggler/tests/helpers"
+	"facet/cmd/facet/core"
+	"facet/cmd/facet/server/handlers"
+	"facet/tests/helpers"
 
 	"github.com/gorilla/mux"
 )
@@ -81,7 +81,7 @@ func TestConversationRoundTrip(t *testing.T) {
 
 	// === STEP 2: VERIFY session.json has conversationOrder ===
 	t.Log("STEP 2: Verify session.json has conversationOrder")
-	sessionJSONPath := filepath.Join(projectDir, ".juggler", "session.json")
+	sessionJSONPath := filepath.Join(projectDir, ".facet", "session.json")
 	sessionJSON, err := os.ReadFile(sessionJSONPath)
 	helpers.AssertNoError(t, err)
 

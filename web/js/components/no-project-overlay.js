@@ -81,9 +81,9 @@ class NoProjectOverlay extends HTMLElement {
     this.innerHTML = `
       <section class="no-project-onboarding" aria-label="Welcome to Facet">
         <div class="no-project-logo" role="img" aria-label="Facet"></div>
-        <h1>Welcome to Juggler</h1>
+        <h1>Welcome to Facet</h1>
         <p>
-          Juggler is an AI coding agent designed around transparency, control, and fast iteration.
+          Facet is an AI coding agent designed around transparency, control, and fast iteration.
         </p>
         <p>
           Click <button type="button" class="no-project-inline-link no-project-project-link">'Set project folder'</button>
@@ -98,7 +98,7 @@ class NoProjectOverlay extends HTMLElement {
           <button type="button" class="no-project-inline-link no-project-shortcuts-link">keyboard shortcuts</button>.
         </p>
         <p class="no-project-settings-note">
-          Once you've opened a project, you can ask Juggler about itself -
+          Once you've opened a project, you can ask Facet about itself -
           it can explain its own tools, shortcuts, and features.
         </p>
       </section>

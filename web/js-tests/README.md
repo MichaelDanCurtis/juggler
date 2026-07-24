@@ -1,4 +1,4 @@
-# Juggler Integration Tests
+# Facet Integration Tests
 
 ## Overview
 
@@ -86,5 +86,5 @@ If you find yourself wanting to skip a test:
 ## Running Tests
 
 ```bash
-bin/juggler-test --task integration-all
+bin/facet-test --task integration-all
 ```

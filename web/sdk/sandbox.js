@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * `juggler/sandbox` — host-provided sandboxed code execution.
+ * `facet/sandbox` — host-provided sandboxed code execution.
  *
  * `runInSandbox(code, { capabilities, timeoutMs })` runs an untrusted
  * JavaScript string in an isolated iframe (opaque origin, no DOM access to the

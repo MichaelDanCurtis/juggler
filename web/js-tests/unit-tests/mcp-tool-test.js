@@ -17,7 +17,7 @@ import {
   mcpRuleValues,
   mcpApprovalSuggestions,
   mcpIsPermitted
-} from '../../extensions/juggler-mcp/context-items/mcp-tool-context-item.js';
+} from '../../extensions/facet-mcp/context-items/mcp-tool-context-item.js';
 
 /**
  * @typedef {object} TestResult
@@ -52,7 +52,7 @@ export async function runTests(_ctx) {
 
   /**
    * @param {boolean} ro - Read-only flag
-   * @returns {import('../../extensions/juggler-mcp/context-items/mcp-tool-context-item.js').McpToolInfo} A discovered-tool fixture
+   * @returns {import('../../extensions/facet-mcp/context-items/mcp-tool-context-item.js').McpToolInfo} A discovered-tool fixture
    */
   const tool = (ro) => ({
     server: 'github', name: 'create_issue', title: 'Create Issue',

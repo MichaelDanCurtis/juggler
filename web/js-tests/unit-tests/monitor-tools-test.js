@@ -3,10 +3,10 @@
 //   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   AGPL-3.0-or-later - see LICENSE
 
 /**
- * Tests for Juggler's background-monitoring tools (Monitor / TaskOutput /
+ * Tests for Facet's background-monitoring tools (Monitor / TaskOutput /
  * TaskStop). This suite pins:
  *   1. all three tools are registered and resolve by name (exact,
- *      case-insensitive, and through the `mcp__juggler__` prefix);
+ *      case-insensitive, and through the `mcp__facet__` prefix);
  *   2. they appear in generateToolDefinitions() with the expected schema;
  *   3. approval policy: Monitor (shell exec) requires approval; TaskOutput /
  *      TaskStop do not;
@@ -64,9 +64,9 @@ export async function runTests(_ctx) {
     // Case-insensitive fallback (model may lowercase).
     assert(contextItemRegistry.getByToolName('monitor') !== undefined, 'monitor (lowercase) should resolve');
 
-    // The `mcp__juggler__` prefix the Claude CLI adds must strip back to the tool.
-    assert(resolveToolName('mcp__juggler__Monitor') === 'Monitor', 'mcp prefix should strip to Monitor');
-    assert(contextItemRegistry.getByToolName(resolveToolName('mcp__juggler__TaskOutput')) !== undefined,
+    // The `mcp__facet__` prefix the Claude CLI adds must strip back to the tool.
+    assert(resolveToolName('mcp__facet__Monitor') === 'Monitor', 'mcp prefix should strip to Monitor');
+    assert(contextItemRegistry.getByToolName(resolveToolName('mcp__facet__TaskOutput')) !== undefined,
       'prefixed TaskOutput should resolve after resolveToolName');
 
     passed++;

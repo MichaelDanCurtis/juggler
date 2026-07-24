@@ -3,7 +3,7 @@
 //   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   AGPL-3.0-or-later - see LICENSE
 
 // Package jlog is the exported logging facade for code that composes with the
-// juggler module from outside it — a wrapping distribution's ops, providers,
+// facet module from outside it — a wrapping distribution's ops, providers,
 // routes, and tunnel modes log here and their lines land in the same sinks,
 // with the same formatting, as the core's own.
 //
@@ -13,7 +13,7 @@
 // initialisation (messages go to the console path only).
 package jlog
 
-import "juggler/internal/jlog"
+import "facet/internal/jlog"
 
 // Info logs at info level (always shown on the console).
 func Info(format string, args ...any) { jlog.Info(format, args...) }

@@ -6,7 +6,7 @@
  * engineApi semver parity test.
  *
  * `satisfiesEngineApi` (JS, web/sdk/version.js) and `SatisfiesEngineAPI` (Go,
- * cmd/juggler/extmanifest) are parallel implementations of the same range check.
+ * cmd/facet/extmanifest) are parallel implementations of the same range check.
  * Both consume this ONE fixture (web/js-tests/fixtures/engineapi-vectors.json);
  * if either implementation drifts, its test fails. This is the JS half.
  * @module unit-tests/engineapi-vectors-test

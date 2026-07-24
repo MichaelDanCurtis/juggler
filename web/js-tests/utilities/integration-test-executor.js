@@ -153,7 +153,7 @@ import {
 // We tag each detail with conversationId and only redispatch events whose
 // conversation we host — otherwise sibling tests' tool executions would
 // count toward this test's per-tool exec counters.
-const __apChan = new BroadcastChannel('juggler-action-progress');
+const __apChan = new BroadcastChannel('facet-action-progress');
 const __inIframePool = window.parent && window.parent !== window;
 __apChan.onmessage = (/** @type {MessageEvent} */ e) => {
   const detail = e.data;

@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"juggler/cmd/juggler/worker"
+	"facet/cmd/facet/worker"
 )
 
 // TestYjsSyncTriggersObserver is a regression test for the critical bug:

@@ -14,7 +14,7 @@ import { coerceToolInputToSchema } from './coerce-schema-types.js';
 //
 // The context-item type vocabulary lives in ./context-item-types.js. These
 // aliases re-export it from this module so both this file's JSDoc and external
-// `import('juggler/context-item').TypeName` references keep resolving.
+// `import('facet/context-item').TypeName` references keep resolving.
 
 /**
  * @typedef {import('./context-item-types.js').ItemSummary} ItemSummary
@@ -57,12 +57,12 @@ import { coerceToolInputToSchema } from './coerce-schema-types.js';
  * ## Creating a Context Item
  *
  * Context items ship inside an **extension** (a directory with a
- * `juggler.extension.json` manifest). Scaffold one with `juggler ext init` and
- * link it with `juggler ext link`; see `docs/extension_guide.md`.
+ * `facet.extension.json` manifest). Scaffold one with `facet ext init` and
+ * link it with `facet ext link`; see `docs/extension_guide.md`.
  *
  * 1. Add a file named `*-context-item.js` under the extension's `context-items/`
  *    directory — the manifest's `provides` glob registers it automatically.
- * 2. Import and extend ContextItem: `import ContextItem from 'juggler/context-item';`
+ * 2. Import and extend ContextItem: `import ContextItem from 'facet/context-item';`
  * 3. Define static MANIFEST with required fields (id, name, version, description)
  * 4. Implement static `getToolDefinitions()`, `execute()`, and `getSummary()`
  * 5. Save — a linked extension hot-reloads in connected viewers; no restart.
@@ -70,7 +70,7 @@ import { coerceToolInputToSchema } from './coerce-schema-types.js';
  * ## Quick Start — Minimal Context Item
  *
  * ```javascript
- * import ContextItem from 'juggler/context-item';
+ * import ContextItem from 'facet/context-item';
  *
  * class WordCountContextItem extends ContextItem {
  *   static MANIFEST = {
@@ -153,7 +153,7 @@ import { coerceToolInputToSchema } from './coerce-schema-types.js';
  * The `METHOD_CONTEXT` static property declares these assignments and can be
  * overridden by subclasses that add custom context-exclusive methods.
  *
- * In dev mode (`window.__jugglerDevMode`), context-exclusive methods are
+ * In dev mode (`window.__facetDevMode`), context-exclusive methods are
  * wrapped with guards that throw if called in the wrong instance.
  *
  * For rare cases where a method needs context-specific behavior, import
@@ -298,7 +298,7 @@ class ContextItem {
 
     // Dev-mode: wrap context-exclusive methods with guards that throw
     // a clear error when called in the wrong browser instance.
-    if (typeof window !== 'undefined' && /** @type {any} */ (window).__jugglerDevMode) {
+    if (typeof window !== 'undefined' && /** @type {any} */ (window).__facetDevMode) {
       const contexts = /** @type {any} */ (this.constructor).METHOD_CONTEXT || {};
       /** @type {any} */ const self = this;
       for (const [method, ctx] of Object.entries(contexts)) {

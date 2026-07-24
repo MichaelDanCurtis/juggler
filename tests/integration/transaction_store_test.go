@@ -16,8 +16,8 @@ import (
 	"testing"
 	"time"
 
-	"juggler/cmd/juggler/worker"
-	"juggler/tests/integration/helpers"
+	"facet/cmd/facet/worker"
+	"facet/tests/integration/helpers"
 )
 
 // runWithTimeout enforces a hard per-test deadline. Tests in this file are

@@ -10,8 +10,8 @@ import (
 	"sort"
 	"testing"
 
-	"juggler/cmd/juggler/core"
-	"juggler/tests/helpers"
+	"facet/cmd/facet/core"
+	"facet/tests/helpers"
 )
 
 // TestConversationName_FolderIsSourceOfTruth pins the architectural invariant
@@ -41,7 +41,7 @@ func TestConversationName_FolderIsSourceOfTruth(t *testing.T) {
 	helpers.AssertNoError(t, err)
 	t.Cleanup(func() { manager.Shutdown() })
 
-	jugglerDir := filepath.Join(projectDir, ".juggler")
+	facetDir := filepath.Join(projectDir, ".facet")
 
 	// 1. Create three conversations.
 	idA, nameA, err := manager.CreateConversation("Alpha")
@@ -55,7 +55,7 @@ func TestConversationName_FolderIsSourceOfTruth(t *testing.T) {
 		t.Fatalf("canonical names: got (%q,%q,%q)", nameA, nameB, nameC)
 	}
 
-	assertNamesMatchDisk(t, manager, jugglerDir, map[string]string{
+	assertNamesMatchDisk(t, manager, facetDir, map[string]string{
 		idA: "Alpha", idB: "Bravo", idC: "Charlie",
 	})
 
@@ -63,7 +63,7 @@ func TestConversationName_FolderIsSourceOfTruth(t *testing.T) {
 	if _, err := manager.RenameConversation(idB, "Bravo Renamed"); err != nil {
 		t.Fatalf("rename: %v", err)
 	}
-	assertNamesMatchDisk(t, manager, jugglerDir, map[string]string{
+	assertNamesMatchDisk(t, manager, facetDir, map[string]string{
 		idA: "Alpha", idB: "Bravo Renamed", idC: "Charlie",
 	})
 
@@ -71,7 +71,7 @@ func TestConversationName_FolderIsSourceOfTruth(t *testing.T) {
 	if err := manager.DeleteConversation(idA, true); err != nil {
 		t.Fatalf("delete: %v", err)
 	}
-	assertNamesMatchDisk(t, manager, jugglerDir, map[string]string{
+	assertNamesMatchDisk(t, manager, facetDir, map[string]string{
 		idB: "Bravo Renamed", idC: "Charlie",
 	})
 
@@ -82,20 +82,20 @@ func TestConversationName_FolderIsSourceOfTruth(t *testing.T) {
 	if nameDup == "Charlie" {
 		t.Fatalf("expected case-folded collision to mint a new name, got %q", nameDup)
 	}
-	assertNamesMatchDisk(t, manager, jugglerDir, map[string]string{
+	assertNamesMatchDisk(t, manager, facetDir, map[string]string{
 		idB: "Bravo Renamed", idC: "Charlie", idDup: nameDup,
 	})
 }
 
 // assertNamesMatchDisk asserts that manager.ConvNames() and a fresh
-// ScanConvDirs of jugglerDir produce identical id→name maps, and that
+// ScanConvDirs of facetDir produce identical id→name maps, and that
 // both equal the expected set. Three-way equality means no cache can
 // drift from disk and no expected entry is missing.
-func assertNamesMatchDisk(t *testing.T, m *core.SessionManager, jugglerDir string, expected map[string]string) {
+func assertNamesMatchDisk(t *testing.T, m *core.SessionManager, facetDir string, expected map[string]string) {
 	t.Helper()
 
 	mgrNames := m.ConvNames()
-	idx, err := core.ScanConvDirs(jugglerDir)
+	idx, err := core.ScanConvDirs(facetDir)
 	helpers.AssertNoError(t, err)
 	diskNames := idx.Names
 

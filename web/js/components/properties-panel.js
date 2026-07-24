@@ -30,7 +30,7 @@ import './facet-browser-pane.js';
 /**
  * @typedef {import('../model/conversation.js').default} Conversation
  * @typedef {import('../../sdk/lib/message.js').Message} Message
- * @typedef {import('juggler/context-item').default} ContextItemType
+ * @typedef {import('facet/context-item').default} ContextItemType
  */
 
 // Magnifying-glass + sigil glyph used on the inline View-Transaction button
@@ -349,7 +349,7 @@ class PropertiesPanel extends HTMLElement {
     } catch {
       /* default expanded */
     }
-    setupColumnResize(this, 'juggler-properties-panel-width');
+    setupColumnResize(this, 'facet-properties-panel-width');
   }
 
   /**

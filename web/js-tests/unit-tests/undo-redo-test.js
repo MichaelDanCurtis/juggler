@@ -101,7 +101,7 @@ function assertUndoRedoState(conversation, canUndo, canRedo, context) {
  * @param {string} id - Context item ID
  * @param {import('../../model/session.js').default} session - Session instance
  * @param {import('../../model/conversation.js').default} conversation - Conversation instance
- * @returns {Promise<import('juggler/context-item').default>} Context item instance
+ * @returns {Promise<import('facet/context-item').default>} Context item instance
  */
 async function createTestContextItem(id, session, conversation) {
   const contextItemRegistry = (await import('../../js/registries/context-item-registry.js')).default;
@@ -592,7 +592,7 @@ async function testContextItemAdditionSingleUndo(session) {
   // Record user-controllable context-item count before. The SYSTEM_1
   // placeholder is no longer counted here — it's a UI affordance, managed
   // by the worker (see ConversationDocument.EnsureSystemPromptPlaceholder
-  // in cmd/juggler/worker/document.go). The user only ever adds/removes
+  // in cmd/facet/worker/document.go). The user only ever adds/removes
   // real context items; SYSTEM_1 floats in/out as a side effect.
   const contextItemCountBefore = getContextItemCount(conversation);
 

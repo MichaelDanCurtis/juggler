@@ -49,7 +49,7 @@ export const clearPreservesSystemPromptTest = {
  * createConversation (Session.seedConversationAutoItems).
  *
  * The default harness conversation is created BEFORE setupFiles writes
- * `.juggler/MEMORY.md`, so it carries no memory item up front; the re-seed on
+ * `.facet/MEMORY.md`, so it carries no memory item up front; the re-seed on
  * /clear is what brings it in. Touches the fixed project-root memory path, so it
  * is scheduled alone via pollutesFixtureRoot.
  * @type {import('../utilities/integration-test-runner.js').IntegrationTestDefinition}
@@ -60,7 +60,7 @@ export const clearReseedsAutoItemsTest = {
   fixture: 'unit-test-fixture',
   pollutesFixtureRoot: true,
 
-  setupFiles: { '.juggler/MEMORY.md': '# Memory\n\n- [2026-06-14] Seeded fact\n' },
+  setupFiles: { '.facet/MEMORY.md': '# Memory\n\n- [2026-06-14] Seeded fact\n' },
 
   llmResponses: [
     textResponse('Hello back.')
@@ -89,7 +89,7 @@ export const clearReseedsAutoItemsTest = {
  * exact pre-clear document (turn back, seeded memory gone).
  *
  * The default harness conversation is created BEFORE setupFiles writes
- * `.juggler/MEMORY.md`, so the pre-clear state carries no memory item; the
+ * `.facet/MEMORY.md`, so the pre-clear state carries no memory item; the
  * single undo therefore lands precisely on [system-prompt, user, assistant].
  * Touches the fixed project-root memory path → scheduled alone via
  * pollutesFixtureRoot.
@@ -101,7 +101,7 @@ export const clearUndoesAsSingleGroupTest = {
   fixture: 'unit-test-fixture',
   pollutesFixtureRoot: true,
 
-  setupFiles: { '.juggler/MEMORY.md': '# Memory\n\n- [2026-06-14] Seeded fact\n' },
+  setupFiles: { '.facet/MEMORY.md': '# Memory\n\n- [2026-06-14] Seeded fact\n' },
 
   llmResponses: [
     textResponse('Hello back.')

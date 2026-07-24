@@ -12,14 +12,14 @@
  *    property that keeps every full-document golden untouched (memory only
  *    appears once a project actually has memory).
  *
- * The "file present → seeded" symmetric case writes the real `.juggler/MEMORY.md`
+ * The "file present → seeded" symmetric case writes the real `.facet/MEMORY.md`
  * at the project root, so it lives in an integration test (pollutesFixtureRoot),
  * not here.
  * @module unit-tests/memory-seed-test
  */
 
-import MemoryContextItem from '../../extensions/juggler-core/context-items/memory-context-item.js';
-import GlobContextItem from '../../extensions/juggler-core/context-items/glob-context-item.js';
+import MemoryContextItem from '../../extensions/facet-core/context-items/memory-context-item.js';
+import GlobContextItem from '../../extensions/facet-core/context-items/glob-context-item.js';
 import { writeFileOp } from '../../js/services/ops-api.js';
 import {
   initializeRegistries,
@@ -95,7 +95,7 @@ export async function runTests(ctx) {
 
   await test('a fresh conversation has NO memory item when the project has no memory file', () => {
     // createTestConversation routes through session.createConversation, which
-    // calls seedAutoContextItems. With the default .juggler/MEMORY.md absent,
+    // calls seedAutoContextItems. With the default .facet/MEMORY.md absent,
     // gating must keep memory out — this is what protects every full-document
     // golden from gaining a phantom item.
     const memItems = conversation.rootMessageThread.contextItems.filter((/** @type {any} */ i) => i.type === 'memory');

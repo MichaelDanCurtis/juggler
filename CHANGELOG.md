@@ -1,11 +1,11 @@
 # Changelog
 
-All notable changes to Juggler are recorded here. Each release is a tight list
+All notable changes to Facet are recorded here. Each release is a tight list
 of changes; this project follows semantic versioning.
 
 ## [Unreleased]
 
-- Extensions can render declarative UI via the new juggler/a2ui SDK module
+- Extensions can render declarative UI via the new facet/a2ui SDK module
 - A2UI surfaces now animate: value pulses, entry effects, and flow/heartbeat motion
 - Added A2UI charts, metric tiles, and network diagrams with a built-in symbol set
 - A2UI surfaces are now interactive: clicks flow back to the model as action events
@@ -44,7 +44,7 @@ of changes; this project follows semantic versioning.
 ## [0.3.4] - 2026-07-11
 
 - Added user-defined slash commands with a UI editor and sub-thread execution
-- Made juggler able to explain how to use itself
+- Made facet able to explain how to use itself
 - Clear per-OS error with fix-it steps when no display or webview runtime is available, instead of a silent exit.
 - Fixed some UTF16 handling issues
 - Reviewed and updated some command-line args

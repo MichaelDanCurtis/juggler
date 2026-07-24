@@ -1603,13 +1603,13 @@ export class IntegrationTestHarness {
     // Tool execution actually happens in the engine WebviewWindow
     // (executeToolAction short-circuits in viewers — see conversation.js).
     // The engine's toolExecutor.executeToolCall sends an engine-bridge WS
-    // envelope on channel 'juggler-tool-exec'; subscribe to wsService
+    // envelope on channel 'facet-tool-exec'; subscribe to wsService
     // 'engine-bridge' (NOT the same-window BroadcastChannel) so each
     // iframe in the multi-iframe test pool counts the engine's emit
     // exactly once. The BC path multiplies events across sibling iframes.
     const counts = this._toolExecCounts;
     const handler = (/** @type {any} */ ev) => {
-      if (!ev || ev.channel !== 'juggler-tool-exec') return;
+      if (!ev || ev.channel !== 'facet-tool-exec') return;
       const { toolUseId: id, phase, conversationId } = ev.payload || {};
       if (phase !== 'start') return;
       // Reused toolUseIds across sibling tests (e.g. 'call_1' in multiple

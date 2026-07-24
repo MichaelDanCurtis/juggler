@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"testing"
 
-	"juggler/cmd/juggler/worker"
+	"facet/cmd/facet/worker"
 )
 
 // =============================================================================

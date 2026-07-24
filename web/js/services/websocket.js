@@ -5,7 +5,7 @@
 import { recordTape } from '../utils/event-tape.js';
 import { isEngine } from '../../sdk/lib/client-role.js';
 
-const WEBRTC_CHUNK_TYPE = '__juggler_dc_chunk';
+const WEBRTC_CHUNK_TYPE = '__facet_dc_chunk';
 const WEBRTC_CHUNK_SIZE = 16 * 1024;
 
 /**
@@ -37,7 +37,7 @@ const WEBRTC_CHUNK_SIZE = 16 * 1024;
  */
 
 /**
- * WebSocket service for real-time communication with Juggler backend
+ * WebSocket service for real-time communication with Facet backend
  * @class
  */
 class WebSocketService {
@@ -62,7 +62,7 @@ class WebSocketService {
      * this one primitive.
      *   - WebSocket / WebRTC-LAN: reopen the socket; its own open/close events
      *     re-drive the loop.
-     *   - juggler.studio: reload the page (the only way to re-run the external
+     *   - facet.studio: reload the page (the only way to re-run the external
      *     bootstrap's WebRTC handshake), gated on a server reachability probe
      *     so a still-dead link can't cause a reload storm.
      * @type {(() => void)|null} @private
@@ -106,15 +106,15 @@ class WebSocketService {
     // an external bootstrap that only a full page reload can re-run).
     this._reestablish = () => this.connect();
 
-    // juggler.studio remote path: the bootstrap page has already established a
-    // WebRTC DataChannel and published window.__jugglerStudio, then injected
+    // facet.studio remote path: the bootstrap page has already established a
+    // WebRTC DataChannel and published window.__facetStudio, then injected
     // the app into this same page without navigating. Adopt that channel as the
     // realtime transport instead of opening our own. This MUST precede the
     // LAN-https WebRTC/WS branch below: studio is the remote transport and has
     // no WS-relay fallback (there is no relay reachable from a remote browser —
     // recovery is a full page reload, which re-runs bootstrap). The LAN/local
     // case keeps the _connectWebRTC → _connectWebSocket relay fallback intact.
-    if (role === 'viewer' && typeof globalThis.window !== 'undefined' && /** @type {any} */ (window).__jugglerStudio) {
+    if (role === 'viewer' && typeof globalThis.window !== 'undefined' && /** @type {any} */ (window).__facetStudio) {
       this._adoptStudioChannel();
       return;
     }
@@ -142,10 +142,10 @@ class WebSocketService {
     const loc = globalThis.location;
     const protocol = loc.protocol === 'https:' ? 'wss:' : 'ws:';
     // Replay the per-instance session token (embedded in the served page) so the
-    // server accepts the viewer upgrade (see cmd/juggler/server/api_auth.go). The
+    // server accepts the viewer upgrade (see cmd/facet/server/api_auth.go). The
     // engine worker has no token global and is exempt server-side, so it simply
     // omits the param.
-    const token = /** @type {{__jugglerToken?: string}} */ (globalThis).__jugglerToken;
+    const token = /** @type {{__facetToken?: string}} */ (globalThis).__facetToken;
     const tokenParam = token ? `&token=${encodeURIComponent(token)}` : '';
     const wsUrl = `${protocol}//${loc.host}/api/ws?role=${role}${tokenParam}`;
     this._transport = new WebSocket(wsUrl);
@@ -162,7 +162,7 @@ class WebSocketService {
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
     });
     try {
-      const dc = pc.createDataChannel('juggler', { ordered: true });
+      const dc = pc.createDataChannel('facet', { ordered: true });
       /** @type {RTCDataChannel & {__pc?: RTCPeerConnection}} */ (dc).__pc = pc;
       this._transport = /** @type {any} */ (dc);
       this._configureTransport(/** @type {any} */ (dc), 'WebRTC');
@@ -203,18 +203,18 @@ class WebSocketService {
   }
 
   /**
-   * Adopt the WebRTC DataChannel that the juggler.studio bootstrap page already
-   * opened (published on window.__jugglerStudio), using it as the realtime
+   * Adopt the WebRTC DataChannel that the facet.studio bootstrap page already
+   * opened (published on window.__facetStudio), using it as the realtime
    * transport. The channel is already OPEN, so we mark connected synchronously
    * and fire the open path rather than waiting on an onopen event.
    * @private
    */
   _adoptStudioChannel() {
     /** @type {{dc: RTCDataChannel, sendFrame: (text: string) => void, setRealtimeHandler: (fn: (raw: string) => void) => void}} */
-    const studio = /** @type {any} */ (window).__jugglerStudio;
+    const studio = /** @type {any} */ (window).__facetStudio;
 
     // Use a minimal send-adapter, NOT the raw RTCDataChannel, as this._transport.
-    // studio.sendFrame already applies the __juggler_dc_chunk envelope, and
+    // studio.sendFrame already applies the __facet_dc_chunk envelope, and
     // _sendTransport only chunks when this._transport is `instanceof RTCDataChannel` —
     // so routing through this plain object correctly skips our chunker and
     // avoids double-chunking the same payload.
@@ -309,7 +309,7 @@ class WebSocketService {
 
   /**
    * Single transport-death handler for EVERY transport (WebSocket, WebRTC-LAN,
-   * juggler.studio). Marks the link down, notifies listeners, and — unless this
+   * facet.studio). Marks the link down, notifies listeners, and — unless this
    * was an intentional teardown or an expected failed-probe close — enters the
    * shared backoff reconnect loop. The loop is transport-agnostic; HOW the link
    * is actually re-established is the per-transport this._reestablish thunk.
@@ -423,7 +423,7 @@ class WebSocketService {
         // turns a large-output tool run into a memory bomb.
         {
           const p = /** @type {any} */ (data.payload) || {};
-          recordTape('engine:' + data.channel.replace(/^juggler-/, ''),
+          recordTape('engine:' + data.channel.replace(/^facet-/, ''),
             p.conversationId ?? null, {
               toolUseId: p.toolUseId,
               toolName: p.toolName,
@@ -797,7 +797,7 @@ class WebSocketService {
    * Bridge a cross-window event from the engine to every viewer via the
    * server. Viewer-side WS handler replays the payload into a local
    * BroadcastChannel(channel) so in-page subscribers fire.
-   * @param {string} channel - BroadcastChannel name (e.g. 'juggler-action-progress')
+   * @param {string} channel - BroadcastChannel name (e.g. 'facet-action-progress')
    * @param {unknown} payload - Payload to deliver to viewers
    * @returns {boolean} True if sent
    */
@@ -855,7 +855,7 @@ class WebSocketService {
    * @private
    */
   _shouldReloadOnReconnect() {
-    const KEY = 'jugglerLastReconnectReload';
+    const KEY = 'facetLastReconnectReload';
     const RELOAD_THROTTLE_MS = 60000;
     let last = 0;
     try {

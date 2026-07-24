@@ -6,7 +6,7 @@
  * User-command factory tests.
  *
  * `user-command-factory.js` turns a declarative command definition (parsed from
- * a `.juggler/commands/*.md` file) into a runnable CommandType subclass. This
+ * a `.facet/commands/*.md` file) into a runnable CommandType subclass. This
  * covers the two pure pieces — placeholder expansion and MANIFEST synthesis —
  * plus the per-run-mode behaviour of `execute()` against a minimal fake thread.
  * @module unit-tests/user-command-factory-test
@@ -85,7 +85,7 @@ export async function runTests(_ctx) {
     const Cls = makeUserCommandClass({
       name: 'review-pr',
       scope: 'project',
-      path: '/x/.juggler/commands/review-pr.md',
+      path: '/x/.facet/commands/review-pr.md',
       frontmatter: { description: 'Review a PR', argsHint: '<n>', run: 'subthread', icon: 'icon-eye' },
       body: 'Review $1',
     });

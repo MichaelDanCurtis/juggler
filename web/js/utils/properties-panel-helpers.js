@@ -196,7 +196,7 @@ registerContextMenuProvider({
       { label: 'Copy path', onClick: () => { void copyToClipboard(path).catch(() => {}); } },
     ];
     const host = subject.closest('[data-context-item-id]');
-    const unpin = host && /** @type {any} */ (host)._jugglerRemoveFromContext;
+    const unpin = host && /** @type {any} */ (host)._facetRemoveFromContext;
     if (typeof unpin === 'function') {
       items.push({ separator: true });
       items.push({ label: 'Remove from context', danger: true, onClick: () => unpin() });

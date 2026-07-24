@@ -2,11 +2,11 @@
 //     ██ ██ ██ ██ ▄▄ ██ ▄▄ ██    ██▄▄  ██▄█▄   Copyright (c) 2026 Julian Storer
 //   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   AGPL-3.0-or-later - see LICENSE
 
-// Package enginehost decides which host runs Juggler's agent engine, and
+// Package enginehost decides which host runs Facet's agent engine, and
 // probes the host facts that decision depends on.
 //
 // Historically the engine only ever ran inside a hidden WebKit webview (see
-// cmd/juggler/app/engine_lifecycle.go). That is still the default and the only
+// cmd/facet/app/engine_lifecycle.go). That is still the default and the only
 // production path on macOS/Windows, but on a headless Linux host — a container,
 // a CI runner, an SSH session with no desktop — no webview can come up. This
 // package selects a Node.js host as an alternative when one is available, so
@@ -27,7 +27,7 @@ import (
 // EnvVar selects the engine host explicitly. Accepted values: "auto" (the
 // default when unset or empty), "webview", and "node". Anything else is
 // reported as an error by Choose rather than silently ignored.
-const EnvVar = "JUGGLER_ENGINE_HOST"
+const EnvVar = "FACET_ENGINE_HOST"
 
 // MinNodeMajor is the lowest Node.js major version the node host accepts.
 // Node 22 is the first release where WebSocket is a stable global, so the

@@ -8,7 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"juggler/cmd/juggler/worker"
+	"facet/cmd/facet/worker"
 	"sync"
 	"testing"
 	"time"

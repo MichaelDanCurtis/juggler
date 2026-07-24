@@ -33,7 +33,7 @@ import logger from './test-logger.js';
 
 /**
  * Test Scorer - Implements scoring logic for different test types
- * Uses real Juggler context item APIs to check results
+ * Uses real Facet context item APIs to check results
  * @class
  */
 class TestScorer {

@@ -14,7 +14,7 @@ const SPINNER_ONLY_MS = 5000;
  * DisconnectionOverlay
  *
  * Full-page overlay shown when WebSocket connection is lost. For the
- * first few seconds it shows only the Juggler spinner; after that it
+ * first few seconds it shows only the Facet spinner; after that it
  * reveals a "Reconnecting..." message with the retry countdown and the
  * server URL it is trying to reach.
  */
@@ -44,7 +44,7 @@ class DisconnectionOverlay {
     this._element.className = 'disconnection-overlay';
     this._element.innerHTML = `
             <div class="disconnection-overlay__content">
-                <juggler-spinner style="--size: 3rem"></juggler-spinner>
+                <facet-spinner style="--size: 3rem"></facet-spinner>
                 <div class="disconnection-overlay__info">
                     <div class="disconnection-overlay__message">Reconnecting...</div>
                     <div class="disconnection-overlay__url"></div>

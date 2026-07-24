@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * Juggler Extension SDK — A2UI (https://a2ui.org) declarative UI rendering.
+ * Facet Extension SDK — A2UI (https://a2ui.org) declarative UI rendering.
  *
  * Declarative component JSON in, inert DOM out: extensions describe UI as an
  * A2UI surface (a flat adjacency list of components plus a JSON-Pointer-bound
@@ -16,7 +16,7 @@
  * ## Quick start
  *
  * ```javascript
- * import { renderSurface } from 'juggler/a2ui';
+ * import { renderSurface } from 'facet/a2ui';
  *
  * const el = renderSurface({
  *   surfaceId: 'demo',
@@ -44,13 +44,13 @@
  * `prefers-reduced-motion`.
  *
  * All named exports of this facade are covered by the `engineApi` version
- * promise (see `juggler/version`). The `@juggler/a2ui` extension builds its
+ * promise (see `facet/version`). The `@facet/a2ui` extension builds its
  * surface tools on exactly this surface — it is the reference consumer.
  *
  * This module is worker-safe: nothing touches the DOM at import time, so the
  * engine can import it (rendering functions are only callable where a
  * `document` exists).
- * @module juggler/a2ui
+ * @module facet/a2ui
  */
 
 export { renderSurface, normalizeComponent } from './lib/a2ui/renderer.js';

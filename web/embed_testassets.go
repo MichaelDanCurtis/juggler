@@ -4,8 +4,8 @@
 
 // Test-harness assets, embedded separately from the production Files so the
 // `production` build tag can exclude them from shipped binaries — mirroring the
-// `//go:build !production` handler gating in cmd/juggler/testing and
-// cmd/juggler/worker. These assets are served only when RegisterTestRoutes
+// `//go:build !production` handler gating in cmd/facet/testing and
+// cmd/facet/worker. These assets are served only when RegisterTestRoutes
 // wires the headless test runner. The empty production-build variant lives in
 // embed_testassets_production.go.
 

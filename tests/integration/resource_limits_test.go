@@ -11,8 +11,8 @@ import (
 	"strings"
 	"testing"
 
-	"juggler/cmd/juggler/ops"
-	"juggler/tests/helpers"
+	"facet/cmd/facet/ops"
+	"facet/tests/helpers"
 )
 
 // TestLargeFileHandling ensures operations handle large files safely (DoS prevention)

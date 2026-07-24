@@ -25,7 +25,7 @@
  * Use these instead of raw strings: `MESSAGE_TYPES.USER` instead of `'user'`
  *
  * Keep this list in sync with the worker's ItemType constants
- * (cmd/juggler/worker/messages.go): every conversational item the worker
+ * (cmd/facet/worker/messages.go): every conversational item the worker
  * may write must have a corresponding entry here, otherwise filters like
  * the compaction sweep will leave it behind at the parent level.
  * @type {{
@@ -62,7 +62,7 @@ export const MESSAGE_TYPES = Object.freeze({
  * context item (system-prompt, memory, file-content, rule, plan, …).
  *
  * Mirrors the worker's `isConversationalItemType`
- * (cmd/juggler/worker/messages.go): keep the two in sync. Used to bound the
+ * (cmd/facet/worker/messages.go): keep the two in sync. Used to bound the
  * *leading run* of starting-context items — the auto-seeded standing items
  * (agents files, project memory) that sit at the top of a conversation before
  * the first message. Both the worker's sub-thread inheritance

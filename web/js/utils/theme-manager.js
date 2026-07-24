@@ -10,7 +10,7 @@
 import { postWindowControl } from '../../sdk/lib/window-control.js';
 import { onDocumentReady } from './document-ready.js';
 
-const THEME_KEY = 'juggler-theme';
+const THEME_KEY = 'facet-theme';
 const THEMES = {
   DARK: 'dark',
   LIGHT: 'light'
@@ -80,7 +80,7 @@ function applyTheme(theme) {
   // Tell the Go side so it can repaint the NSWindow chrome (background,
   // opacity, titlebar appearance). Without this the NSWindow stays at its
   // load-time colour and a light page on a dark window flashes dark during
-  // every live resize. Handled in cmd/juggler/window_chrome_darwin.go.
+  // every live resize. Handled in cmd/facet/window_chrome_darwin.go.
   //
   // Only the desktop app that owns this native window can repaint it, via its
   // loopback nativeCtl endpoint. windowControlURL is null for a browser tab or

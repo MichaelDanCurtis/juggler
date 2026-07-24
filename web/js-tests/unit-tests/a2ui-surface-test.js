@@ -22,7 +22,7 @@ import {
   createTestConversation,
   assert
 } from '../utilities/test-helpers.js';
-import A2uiSurfaceContextItem from '../../extensions/juggler-a2ui/context-items/a2ui-surface-context-item.js';
+import A2uiSurfaceContextItem from '../../extensions/facet-a2ui/context-items/a2ui-surface-context-item.js';
 import '../../js/components/context-item-message.js';
 
 /**

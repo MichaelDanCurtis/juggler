@@ -77,10 +77,10 @@ func TestComputeStatus(t *testing.T) {
 
 func TestCheckOnce(t *testing.T) {
 	const manifest = `{
-		"schema": "juggler-version",
+		"schema": "facet-version",
 		"schemaVersion": 1,
 		"latest": "v0.1.0",
-		"notice": {"id": "upgrade-0.1.0", "severity": "recommended", "title": "Juggler 0.1.0"},
+		"notice": {"id": "upgrade-0.1.0", "severity": "recommended", "title": "Facet 0.1.0"},
 		"downloads": {"darwin/arm64": {"url": "https://example.com/x.dmg"}}
 	}`
 
@@ -155,7 +155,7 @@ func TestCheckOnceRejectsBadSchema(t *testing.T) {
 }
 
 func TestCheckOnceNotModified(t *testing.T) {
-	const manifest = `{"schema":"juggler-version","schemaVersion":1,"latest":"v0.1.0",
+	const manifest = `{"schema":"facet-version","schemaVersion":1,"latest":"v0.1.0",
 		"notice":{"id":"n1","severity":"info"}}`
 	hits := 0
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

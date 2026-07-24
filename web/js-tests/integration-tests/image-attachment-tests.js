@@ -12,7 +12,7 @@
  *
  * The provider-request-carries-the-image and asset-GC properties are covered
  * by deterministic Go tests (tests/integration/image_attachment_test.go and
- * cmd/juggler/worker/asset_gc_test.go) where the captured request and the
+ * cmd/facet/worker/asset_gc_test.go) where the captured request and the
  * sweep are inspectable directly.
  *  2. Rewind restores attachments — sending a user message that carries an
  *     image attachment, then rewinding to it, must restore the attachment into

@@ -39,9 +39,9 @@ import { hasPendingApprovalInTree } from '../model/thread-navigation.js';
 import { playChime, unlockAudio, rearmAudio, CHIME_DEFAULTS, chimePatterns, chimeSounds } from './chime-synth.js';
 import { isDesktopWindow, postWindowControl } from '../../sdk/lib/window-control.js';
 
-const PREFS_KEY = 'juggler-attention';
+const PREFS_KEY = 'facet-attention';
 /** Fired on window whenever prefs change, so the bell + settings stay in sync. */
-export const ATTENTION_PREFS_EVENT = 'juggler:attention-prefs-changed';
+export const ATTENTION_PREFS_EVENT = 'facet:attention-prefs-changed';
 
 /** @typedef {import('./chime-synth.js').ChimeParams} ChimeParams */
 /**

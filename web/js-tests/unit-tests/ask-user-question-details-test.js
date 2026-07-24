@@ -14,7 +14,7 @@
  */
 
 import { assert } from '../utilities/test-helpers.js';
-import AskUserQuestionContextItem from '../../extensions/juggler-core/context-items/ask-user-question-context-item.js';
+import AskUserQuestionContextItem from '../../extensions/facet-core/context-items/ask-user-question-context-item.js';
 
 /**
  * @typedef {object} TestResult

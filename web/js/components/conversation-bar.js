@@ -121,7 +121,7 @@ class ConversationBar extends HTMLElement {
       this._llmStateUnsubscribe = null;
     }
     if (this._focusTabListHandler) {
-      document.removeEventListener('juggler:focus-tab-list', this._focusTabListHandler);
+      document.removeEventListener('facet:focus-tab-list', this._focusTabListHandler);
       this._focusTabListHandler = null;
     }
     if (this._keydownHandler) {
@@ -133,15 +133,15 @@ class ConversationBar extends HTMLElement {
       this._focusOutHandler = null;
     }
     if (this._cycleTabHandler) {
-      window.removeEventListener('juggler:cycle-tab', this._cycleTabHandler);
+      window.removeEventListener('facet:cycle-tab', this._cycleTabHandler);
       this._cycleTabHandler = null;
     }
     if (this._newConversationHandler) {
-      document.removeEventListener('juggler:new-conversation', this._newConversationHandler);
+      document.removeEventListener('facet:new-conversation', this._newConversationHandler);
       this._newConversationHandler = null;
     }
     if (this._binActiveHandler) {
-      document.removeEventListener('juggler:bin-active-conversation', this._binActiveHandler);
+      document.removeEventListener('facet:bin-active-conversation', this._binActiveHandler);
       this._binActiveHandler = null;
     }
   }
@@ -218,12 +218,12 @@ class ConversationBar extends HTMLElement {
       if (id) void this._binConversation(id);
     };
 
-    document.addEventListener('juggler:focus-tab-list', this._focusTabListHandler);
+    document.addEventListener('facet:focus-tab-list', this._focusTabListHandler);
     document.addEventListener('keydown', this._keydownHandler);
     this.addEventListener('focusout', this._focusOutHandler);
-    window.addEventListener('juggler:cycle-tab', this._cycleTabHandler);
-    document.addEventListener('juggler:new-conversation', this._newConversationHandler);
-    document.addEventListener('juggler:bin-active-conversation', this._binActiveHandler);
+    window.addEventListener('facet:cycle-tab', this._cycleTabHandler);
+    document.addEventListener('facet:new-conversation', this._newConversationHandler);
+    document.addEventListener('facet:bin-active-conversation', this._binActiveHandler);
   }
 
   /** @private */
@@ -267,7 +267,7 @@ class ConversationBar extends HTMLElement {
 
   /**
    * Handle the Ctrl+Tab / Ctrl+Shift+Tab accelerator, dispatched from the
-   * native window as a `juggler:cycle-tab` event (WKWebView eats the keystroke
+   * native window as a `facet:cycle-tab` event (WKWebView eats the keystroke
    * before page JS, so the round-trip through Wails is required; in a browser
    * the event never fires). Unlike arrow-key navigation within the tab list,
    * cycling commits like a click: it leaves tab-list-focus mode and gives the
@@ -495,7 +495,7 @@ class ConversationBar extends HTMLElement {
         }
       }, true);
 
-      setupColumnResize(this, 'juggler-tab-sidebar-width', 8);
+      setupColumnResize(this, 'facet-tab-sidebar-width', 8);
     }
 
     // Get or create tabs menu container (only created once, preserves scroll position)
@@ -822,7 +822,7 @@ class ConversationBar extends HTMLElement {
   }
 
   /**
-   * Move a conversation to the bin (.juggler/bin/). No confirmation:
+   * Move a conversation to the bin (.facet/bin/). No confirmation:
    * binning is reversible from the Bin modal at any time. Plays a
    * brief fly-into-Bin animation in parallel with the backend call,
    * honoring prefers-reduced-motion.
@@ -1350,7 +1350,7 @@ class ConversationBar extends HTMLElement {
       )
     );
 
-    applyColumnWidthPx(this, 'juggler-tab-sidebar-width', target, 8);
+    applyColumnWidthPx(this, 'facet-tab-sidebar-width', target, 8);
   }
 }
 

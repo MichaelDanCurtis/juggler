@@ -160,7 +160,7 @@ export function paintThreadSummary(el, text, opts) {
     ? `<div class="thread-status-goal">${renderMarkdownWrapped(stripLLMTags(status.goal), { escapeXml: true })}</div>`
     : '';
   const spinnerEl = status.spinner
-    ? '<juggler-spinner class="thread-status-spinner" style="--size: 0.9em"></juggler-spinner>'
+    ? '<facet-spinner class="thread-status-spinner" style="--size: 0.9em"></facet-spinner>'
     : '';
   const msgLine = `<div class="thread-status-message">${spinnerEl}<span>${escapeHtml(status.message || '')}</span></div>`;
   el.innerHTML = `${goalLine}${msgLine}`;
@@ -196,7 +196,7 @@ function renderGoalInto(goalEl, goalSrc) {
 
 /**
  * Update only the text content of an already-painted status block (goal +
- * message). Leaves the `<juggler-spinner>` element and the surrounding
+ * message). Leaves the `<facet-spinner>` element and the surrounding
  * structure untouched so CSS animations (spinner rotation, parent icon-box
  * pulse) don't restart. Caller must ensure the block was previously painted
  * by `paintThreadSummary` with a non-closed `status`.

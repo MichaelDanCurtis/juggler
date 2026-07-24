@@ -8,11 +8,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	"juggler/cmd/juggler/core"
+	"facet/cmd/facet/core"
 )
 
 // convDirByID resolves a conversation id to its on-disk folder under the
-// project's `.juggler/`. Resolution order:
+// project's `.facet/`. Resolution order:
 //
 //  1. core.ScanConvDirs (production layout `<name>--<conv_<id>>/`)
 //  2. helpers.TestPathProvider's `test--<convID>/` (test layout)
@@ -22,13 +22,13 @@ import (
 //     "state file not created" message).
 func convDirByID(t *testing.T, projectDir, convID string) string {
 	t.Helper()
-	jugglerDir := filepath.Join(projectDir, ".juggler")
-	if idx, err := core.ScanConvDirs(jugglerDir); err == nil {
+	facetDir := filepath.Join(projectDir, ".facet")
+	if idx, err := core.ScanConvDirs(facetDir); err == nil {
 		if dir, ok := idx.ByID[convID]; ok {
 			return dir
 		}
 	}
-	return filepath.Join(jugglerDir, "test--"+convID)
+	return filepath.Join(facetDir, "test--"+convID)
 }
 
 // convDocPath returns the absolute path to a conversation's doc.yjs file.

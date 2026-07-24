@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"juggler/cmd/juggler/worker"
+	"facet/cmd/facet/worker"
 )
 
 // TestSession represents a fully initialized test session with worker and manager.
@@ -59,11 +59,11 @@ func SetupTestSession(t *testing.T) *TestSession {
 }
 
 // TestPathProvider returns a worker.PathProviderFunc that maps every
-// conversation id to `<tmpDir>/.juggler/test--<id>/`. Used by tests that
+// conversation id to `<tmpDir>/.facet/test--<id>/`. Used by tests that
 // don't drive a full SessionManager.
 func TestPathProvider(tmpDir string) worker.PathProviderFunc {
 	return func(convID string) (string, bool) {
-		return filepath.Join(tmpDir, ".juggler", "test--"+convID), true
+		return filepath.Join(tmpDir, ".facet", "test--"+convID), true
 	}
 }
 

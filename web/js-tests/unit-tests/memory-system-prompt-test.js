@@ -17,7 +17,7 @@
  */
 
 import { assembleSystemPrompt } from '../../js/services/system-prompt-builder.js';
-import MemoryContextItem from '../../extensions/juggler-core/context-items/memory-context-item.js';
+import MemoryContextItem from '../../extensions/facet-core/context-items/memory-context-item.js';
 import {
   initializeRegistries,
   createTestSession,

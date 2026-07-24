@@ -19,9 +19,9 @@
  * @module unit-tests/bash-command-approval-unit-test
  */
 
-import { isCommandAutoApproved, suggestApprovalPatterns, tokenize, posixNormalize, matchesGlob, isGrantableRoot, isPathInsideAllowedRoots } from '../../extensions/juggler-core/context-items/execute/command-approval.js';
+import { isCommandAutoApproved, suggestApprovalPatterns, tokenize, posixNormalize, matchesGlob, isGrantableRoot, isPathInsideAllowedRoots } from '../../extensions/facet-core/context-items/execute/command-approval.js';
 
-const PROJECT_ROOT = '/Users/jules/code/juggler';
+const PROJECT_ROOT = '/Users/jules/code/facet';
 const TEST_HOME = '/Users/jules';
 
 /**
@@ -43,11 +43,11 @@ const TEST_INTERPRETERS = new Set(['bash', 'sh', 'zsh', 'python', 'python3', 'no
 const CASES = [
   // === Plan table 1–18 ===
   { name: 'cd into project + make build matches make *',
-    command: 'cd ~/code/juggler && make build', patterns: ['make *'], platform: 'darwin', expected: true },
+    command: 'cd ~/code/facet && make build', patterns: ['make *'], platform: 'darwin', expected: true },
   { name: 'npm install 2>&1 matches npm *',
     command: 'npm install 2>&1', patterns: ['npm *'], platform: 'darwin', expected: true },
   { name: 'go test piped through dash-leading grep pattern matches go test *',
-    command: 'cd ~/code/juggler && go test -count=1 -run \'TestBrowser/integration:explore\' ./tests/integration 2>&1 | grep -iE "--- FAIL|--- PASS|^ok |result=\\{" | grep -ivE "items-change|yjs-apply|ws-in|ws-out" | head -40', patterns: ['go test *'], platform: 'darwin', expected: true },
+    command: 'cd ~/code/facet && go test -count=1 -run \'TestBrowser/integration:explore\' ./tests/integration 2>&1 | grep -iE "--- FAIL|--- PASS|^ok |result=\\{" | grep -ivE "items-change|yjs-apply|ws-in|ws-out" | head -40', patterns: ['go test *'], platform: 'darwin', expected: true },
   { name: 'grep sink with dash-leading pattern is accepted as read-only tail',
     command: 'go test ./... 2>&1 | grep -E "--- FAIL|^ok"', patterns: ['go test *'], platform: 'darwin', expected: true },
   { name: 'grep sink still rejects pattern-from-file',
@@ -77,7 +77,7 @@ const CASES = [
   { name: 'make build with 2>&1 and tail sink matches make *',
     command: 'make build 2>&1 | tail -50', patterns: ['make *'], platform: 'darwin', expected: true },
   { name: 'cd + git status with head + 2>&1 sinks matches git *',
-    command: 'cd ~/code/juggler && git status | head -20 2>&1', patterns: ['git *'], platform: 'darwin', expected: true },
+    command: 'cd ~/code/facet && git status | head -20 2>&1', patterns: ['git *'], platform: 'darwin', expected: true },
   { name: 'ls of escaping relative path prompts',
     command: 'ls ../..', patterns: [], platform: 'darwin', expected: false },
   { name: 'windows posix-shaped git status auto-approves',
@@ -96,17 +96,17 @@ const CASES = [
   // the roots must still be rejected (a forward-slash C:/ path must not be
   // mistaken for a relative in-project path).
   { name: 'windows: leading cd to /c/ project + make build 2>&1|tail matches make * (the reported command)',
-    command: 'cd /c/Users/jules/code/juggler && make build 2>&1 | tail -40', patterns: ['make *'], platform: 'windows',
-    allowedRoots: ['C:\\Users\\jules\\code\\juggler'], expected: true },
+    command: 'cd /c/Users/jules/code/facet && make build 2>&1 | tail -40', patterns: ['make *'], platform: 'windows',
+    allowedRoots: ['C:\\Users\\jules\\code\\facet'], expected: true },
   { name: 'windows: git-bash /c/ path inside a native C:\\ root auto-approves',
-    command: 'ls /c/Users/jules/code/juggler/web', patterns: [], platform: 'windows',
-    allowedRoots: ['C:\\Users\\jules\\code\\juggler'], expected: true },
+    command: 'ls /c/Users/jules/code/facet/web', patterns: [], platform: 'windows',
+    allowedRoots: ['C:\\Users\\jules\\code\\facet'], expected: true },
   { name: 'windows: forward-slash C:/ command path inside native root auto-approves',
-    command: 'cat C:/Users/jules/code/juggler/README.md', patterns: [], platform: 'windows',
-    allowedRoots: ['C:\\Users\\jules\\code\\juggler'], expected: true },
+    command: 'cat C:/Users/jules/code/facet/README.md', patterns: [], platform: 'windows',
+    allowedRoots: ['C:\\Users\\jules\\code\\facet'], expected: true },
   { name: 'windows: forward-slash C:/ path OUTSIDE roots prompts (no relative-path over-approval)',
     command: 'ls C:/Windows/System32', patterns: [], platform: 'windows',
-    allowedRoots: ['C:\\Users\\jules\\code\\juggler'], expected: false },
+    allowedRoots: ['C:\\Users\\jules\\code\\facet'], expected: false },
   { name: 'linux git log matches git *',
     command: 'git log', patterns: ['git *'], platform: 'linux', expected: true },
 
@@ -270,7 +270,7 @@ const CASES = [
   { name: 'escaped double-quote inside double quotes tokenizes safely',
     command: 'echo "a\\"b"', patterns: [], platform: 'darwin', expected: true },
   { name: 'cat dotfile + echo + grep-with-escaped-pattern compound auto-approves',
-    command: 'cd ~/code/juggler && cat .stylelintrc.json; echo "=== bg check ==="; grep -nE "\\-\\-bg-(hover|active)\\s*:" web/css/styles.css | head', patterns: [], platform: 'darwin', expected: true },
+    command: 'cd ~/code/facet && cat .stylelintrc.json; echo "=== bg check ==="; grep -nE "\\-\\-bg-(hover|active)\\s*:" web/css/styles.css | head', patterns: [], platform: 'darwin', expected: true },
   { name: 'grep chained to tail is safe',
     command: 'grep -rn TODO | tail -n 20', patterns: [], platform: 'darwin', expected: true },
   { name: 'grep -d skip (--directories, value as next arg) is safe',
@@ -298,13 +298,13 @@ const CASES = [
   { name: 'sort as sink with a file arg prompts',
     command: 'grep x web/css/components.css | sort /etc/passwd', patterns: [], platform: 'darwin', expected: false },
   { name: 'big wails compound: grep -oE | sort -u | head auto-approves',
-    command: 'cd ~/code/juggler && grep -oE "(Minimise|Maximise|Close|Hide)[A-Za-z]*" 3rdparty/wails/v3/internal/assetserver/bundledassets/runtime.js | sort -u | head -40', patterns: [], platform: 'darwin', expected: true },
+    command: 'cd ~/code/facet && grep -oE "(Minimise|Maximise|Close|Hide)[A-Za-z]*" 3rdparty/wails/v3/internal/assetserver/bundledassets/runtime.js | sort -u | head -40', patterns: [], platform: 'darwin', expected: true },
 
   // === sed ===
   { name: 'sed -n line-range print of in-project file is safe',
     command: "sed -n '3975,3990p' web/css/components.css", patterns: [], platform: 'darwin', expected: true },
   { name: 'cd ~/project + sed -n line-range is safe',
-    command: "cd ~/code/juggler && sed -n '3975,3990p' web/css/components.css", patterns: [], platform: 'darwin', expected: true },
+    command: "cd ~/code/facet && sed -n '3975,3990p' web/css/components.css", patterns: [], platform: 'darwin', expected: true },
   { name: 'sed -i (in-place) prompts',
     command: "sed -i 's/foo/bar/' web/css/components.css", patterns: [], platform: 'darwin', expected: false },
   { name: 'sed with `w` write-file command prompts',
@@ -318,7 +318,7 @@ const CASES = [
   { name: 'sed on out-of-project file prompts',
     command: "sed -n '1p' /etc/passwd", patterns: [], platform: 'darwin', expected: false },
   { name: 'sed multi-command script (semicolon-separated) is safe',
-    command: "cd ~/code/juggler && sed -n '131,132p;245,260p' 3rdparty/y-crdt/undo_manager.go", patterns: [], platform: 'darwin', expected: true },
+    command: "cd ~/code/facet && sed -n '131,132p;245,260p' 3rdparty/y-crdt/undo_manager.go", patterns: [], platform: 'darwin', expected: true },
   { name: 'sed s/// with `;` inside body is not mis-split',
     command: "sed -n 's/a;b/c/g' web/css/components.css", patterns: [], platform: 'darwin', expected: true },
   { name: 'sed multi-command with an unsafe `w` piece prompts',
@@ -337,7 +337,7 @@ const CASES = [
   { name: 'mismatched done / fi prompts',
     command: 'for i in 1; do echo "$i"; fi', patterns: [], platform: 'darwin', expected: false },
   { name: 'big developer compound: cd && make && for-loop go test auto-approves with make */go * patterns',
-    command: `cd ~/code/juggler && make go-build 2>&1 | tail -2 && for i in 1 2 3 4 5; do echo "=== $i ==="; JUGGLER_TEST_LOGS=1 go test -count=1 -run 'TestBrowser/integration:duplicate-conversation' ./tests/integration 2>&1 | tail -4; done`,
+    command: `cd ~/code/facet && make go-build 2>&1 | tail -2 && for i in 1 2 3 4 5; do echo "=== $i ==="; FACET_TEST_LOGS=1 go test -count=1 -run 'TestBrowser/integration:duplicate-conversation' ./tests/integration 2>&1 | tail -4; done`,
     patterns: ['make *', 'go *'], platform: 'darwin', expected: true },
 
   // === $VAR / ${VAR} expansions inside double quotes ===
@@ -360,7 +360,7 @@ const CASES = [
 
   // === `cd <in-project>` as a non-leading segment ===
   { name: 'cd to project as a NON-leading segment (after echo &&) auto-approves',
-    command: 'echo alive && cd ~/code/juggler && tail -12 web/js-tests/integration-tests/read-file-tests.js',
+    command: 'echo alive && cd ~/code/facet && tail -12 web/js-tests/integration-tests/read-file-tests.js',
     patterns: [], platform: 'darwin', expected: true },
   { name: 'mid-sequence cd into in-project subdir then ls auto-approves',
     command: 'echo hi; cd web/js && ls', patterns: [], platform: 'darwin', expected: true },
@@ -371,7 +371,7 @@ const CASES = [
   { name: 'cd - (→ $OLDPWD) prompts',
     command: 'echo hi && cd - && ls', patterns: [], platform: 'darwin', expected: false },
   { name: 'cd into project then absolute out-of-project read still prompts',
-    command: 'cd ~/code/juggler && cat /etc/passwd', patterns: [], platform: 'darwin', expected: false },
+    command: 'cd ~/code/facet && cat /etc/passwd', patterns: [], platform: 'darwin', expected: false },
   { name: 'cd into subdir then a .. escape still prompts',
     command: 'cd web && cat ../../etc/passwd', patterns: [], platform: 'darwin', expected: false },
 
@@ -381,20 +381,20 @@ const CASES = [
   // validates as a non-leading segment (section above), so `;`/newline must not
   // hard-reject it while `&&` is accepted.
   { name: 'leading cd into project + `;` + make matches make *',
-    command: 'cd ~/code/juggler; make build', patterns: ['make *'], platform: 'darwin', expected: true },
+    command: 'cd ~/code/facet; make build', patterns: ['make *'], platform: 'darwin', expected: true },
   { name: 'leading cd into project + newline + make matches make *',
-    command: 'cd ~/code/juggler\nmake build', patterns: ['make *'], platform: 'darwin', expected: true },
+    command: 'cd ~/code/facet\nmake build', patterns: ['make *'], platform: 'darwin', expected: true },
   { name: 'leading cd into project + `;` + trivially-safe builtin auto-approves',
-    command: 'cd ~/code/juggler; ls web/js', patterns: [], platform: 'darwin', expected: true },
+    command: 'cd ~/code/facet; ls web/js', patterns: [], platform: 'darwin', expected: true },
   { name: 'multi-line leading cd then `;`-joined lint pipeline with PIPESTATUS echo auto-approves',
-    command: `cd ~/code/juggler
+    command: `cd ~/code/facet
 echo "== js =="; make lint-js 2>&1 | tail -12; echo "js_rc=\${PIPESTATUS[0]}"`,
     patterns: ['make *'], platform: 'darwin', expected: true },
   // Guards: the relaxation must not approve an out-of-root or unsafe leading-cd chain.
   { name: 'leading cd OUTSIDE project + `;` + make still prompts',
     command: 'cd /tmp; make build', patterns: ['make *'], platform: 'darwin', expected: false },
   { name: 'leading cd into project + `;` + rm still prompts',
-    command: 'cd ~/code/juggler; rm -rf /', patterns: [], platform: 'darwin', expected: false },
+    command: 'cd ~/code/facet; rm -rf /', patterns: [], platform: 'darwin', expected: false },
   { name: 'bare leading cd (→ $HOME) + `;` still prompts',
     command: 'cd; ls', patterns: [], platform: 'darwin', expected: false },
 
@@ -408,7 +408,7 @@ echo "== js =="; make lint-js 2>&1 | tail -12; echo "js_rc=\${PIPESTATUS[0]}"`,
   { name: 'literal $ does not unlock command substitution "$(id)" — still prompts',
     command: 'echo "x$(id)"', patterns: [], platform: 'darwin', expected: false },
   { name: 'maketest log grep|tail compound with FAIL$ anchor auto-approves with /tmp root',
-    command: 'cd ~/code/juggler && grep -nE "^ok|^FAIL|FAIL$|--- FAIL" /tmp/maketest3.log | tail; echo "=== x ==="; grep "unit:bash-command-approval" /tmp/maketest3.log | tail -2',
+    command: 'cd ~/code/facet && grep -nE "^ok|^FAIL|FAIL$|--- FAIL" /tmp/maketest3.log | tail; echo "=== x ==="; grep "unit:bash-command-approval" /tmp/maketest3.log | tail -2',
     patterns: [], allowedRoots: [PROJECT_ROOT, '/tmp'], platform: 'darwin', expected: true },
 
   // === $((...)) arithmetic expansion inside double quotes ===
@@ -421,7 +421,7 @@ echo "== js =="; make lint-js 2>&1 | tail -12; echo "js_rc=\${PIPESTATUS[0]}"`,
   { name: 'command substitution inside arithmetic "$(( $(id) ))" still prompts',
     command: 'echo "$(( $(id) ))"', patterns: [], platform: 'darwin', expected: false },
   { name: 'for-loop with sed range using $((...)) arithmetic auto-approves',
-    command: 'cd ~/code/juggler && for ln in 405 530 616 700; do echo "=== around $ln ==="; sed -n "${ln},$((ln+12))p" cmd/juggler/ops/shell_ops.go; done',
+    command: 'cd ~/code/facet && for ln in 405 530 616 700; do echo "=== around $ln ==="; sed -n "${ln},$((ln+12))p" cmd/facet/ops/shell_ops.go; done',
     patterns: [], platform: 'darwin', expected: true },
   { name: 'sed range script with ${VAR} and $((...)) over in-project file auto-approves',
     command: 'sed -n "${ln},$((ln+12))p" web/css/components.css', patterns: [], platform: 'darwin', expected: true },
@@ -445,16 +445,16 @@ echo "== js =="; make lint-js 2>&1 | tail -12; echo "js_rc=\${PIPESTATUS[0]}"`,
   // in roots), echo safe, and the `|| ( … )` failure-branch subshell of
   // echo + tail-of-/tmp-file all reduce to safe. With make * enabled → approve.
   { name: 'build && echo OK || (echo FAIL; tail /tmp/log) auto-approves with /tmp+write+make*',
-    command: 'cd ~/code/juggler && make go-build >/tmp/gobuild.log 2>&1 && echo "BUILD OK" || (echo "BUILD FAIL"; tail -20 /tmp/gobuild.log)',
+    command: 'cd ~/code/facet && make go-build >/tmp/gobuild.log 2>&1 && echo "BUILD OK" || (echo "BUILD FAIL"; tail -20 /tmp/gobuild.log)',
     patterns: ['make *'], allowedRoots: [PROJECT_ROOT, '/tmp'], writeEnabled: true, platform: 'darwin', expected: true },
   { name: 'same build with brace-group failure branch auto-approves',
-    command: 'cd ~/code/juggler && make go-build >/tmp/gobuild.log 2>&1 && echo "BUILD OK" || { echo "BUILD FAIL"; tail -20 /tmp/gobuild.log; }',
+    command: 'cd ~/code/facet && make go-build >/tmp/gobuild.log 2>&1 && echo "BUILD OK" || { echo "BUILD FAIL"; tail -20 /tmp/gobuild.log; }',
     patterns: ['make *'], allowedRoots: [PROJECT_ROOT, '/tmp'], writeEnabled: true, platform: 'darwin', expected: true },
   { name: 'same build with a different /tmp logfile name auto-approves',
-    command: 'cd ~/code/juggler && make go-build >/tmp/gb.log 2>&1 && echo "BUILD OK" || { echo "BUILD FAIL"; tail -20 /tmp/gb.log; }',
+    command: 'cd ~/code/facet && make go-build >/tmp/gb.log 2>&1 && echo "BUILD OK" || { echo "BUILD FAIL"; tail -20 /tmp/gb.log; }',
     patterns: ['make *'], allowedRoots: [PROJECT_ROOT, '/tmp'], writeEnabled: true, platform: 'darwin', expected: true },
   { name: 'build group WITHOUT /tmp in roots prompts (redirect + tail not strippable)',
-    command: 'cd ~/code/juggler && make go-build >/tmp/gb.log 2>&1 && echo "BUILD OK" || { echo "BUILD FAIL"; tail -20 /tmp/gb.log; }',
+    command: 'cd ~/code/facet && make go-build >/tmp/gb.log 2>&1 && echo "BUILD OK" || { echo "BUILD FAIL"; tail -20 /tmp/gb.log; }',
     patterns: ['make *'], platform: 'darwin', expected: false },
   { name: 'find with backslash-escaped grouping parens auto-approves',
     command: 'find . \\( -name "*.js" -o -name "*.css" \\) -type f', patterns: [], platform: 'darwin', expected: true },
@@ -470,43 +470,43 @@ echo "== js =="; make lint-js 2>&1 | tail -12; echo "js_rc=\${PIPESTATUS[0]}"`,
     command: 'DYLD_INSERT_LIBRARIES=/tmp/x.dylib ls', patterns: ['ls *'], platform: 'darwin', expected: false },
 
   { name: 'sed -n with `:` typo in address (harmless malformed script) auto-approves',
-    command: "cd ~/code/juggler && sed -n '7:18p' cmd/juggler/worker/worker.go; sed -n '7,18p' cmd/juggler/worker/worker.go", patterns: [], platform: 'darwin', expected: true },
+    command: "cd ~/code/facet && sed -n '7:18p' cmd/facet/worker/worker.go; sed -n '7,18p' cmd/facet/worker/worker.go", patterns: [], platform: 'darwin', expected: true },
   { name: 'sed regex-range address //,// is safe',
     command: "sed -n '/start/,/end/p' web/css/components.css", patterns: [], platform: 'darwin', expected: true },
   { name: 'sed -e `r FILE` (read-file command) prompts',
     command: "sed -e 'r /etc/passwd' web/css/components.css", patterns: [], platform: 'darwin', expected: false },
   { name: 'sed -n with ~/project-inside path is safe',
-    command: "sed -n '748,758p' ~/code/juggler/web/extensions/juggler-core/context-items/execute/command-approval.js", patterns: [], platform: 'darwin', expected: true },
+    command: "sed -n '748,758p' ~/code/facet/web/extensions/facet-core/context-items/execute/command-approval.js", patterns: [], platform: 'darwin', expected: true },
   { name: 'sed with ~/<other-project> outside allowed roots prompts',
     command: "sed -n '1,5p' ~/code/other-project/file.js", patterns: [], platform: 'darwin', expected: false },
   // Regression: the previous lexical "longest tail of root equals head of
   // suffix" rule mis-approved this — root tail [secret] matched suffix head
-  // [secret] for root /Users/jules/code/juggler/secret. ~ expands to $HOME =
+  // [secret] for root /Users/jules/code/facet/secret. ~ expands to $HOME =
   // /Users/jules, so the real path is /Users/jules/secret/etc/passwd which is
   // NOT inside that root. With `home` plumbed in we resolve before matching.
   { name: 'sed with ~/secret/... must NOT match a root ending in /secret',
     command: "sed -n '1,5p' ~/secret/etc/passwd", patterns: [], platform: 'darwin',
-    allowedRoots: ['/Users/jules/code/juggler/secret'], expected: false },
+    allowedRoots: ['/Users/jules/code/facet/secret'], expected: false },
   // Allowed roots are stored verbatim as the user types them, so a root may be
   // in `~`-form. Matching must canonicalise BOTH the command's path and each
   // stored root before comparing — otherwise a `~`-form root never matches an
   // absolute (or `~`-form) path inside it, and the suggester offers to add a
   // folder that is already permitted.
   { name: 'absolute path inside a ~-form allowed root auto-approves',
-    command: 'ls /Users/jules/Library/Logs/Juggler', patterns: [], platform: 'darwin',
-    allowedRoots: ['~/Library/Logs/Juggler'], expected: true },
+    command: 'ls /Users/jules/Library/Logs/Facet', patterns: [], platform: 'darwin',
+    allowedRoots: ['~/Library/Logs/Facet'], expected: true },
   { name: 'tilde path inside a ~-form allowed root auto-approves',
-    command: 'cat ~/Library/Logs/Juggler/host.log', patterns: [], platform: 'darwin',
-    allowedRoots: ['~/Library/Logs/Juggler'], expected: true },
+    command: 'cat ~/Library/Logs/Facet/host.log', patterns: [], platform: 'darwin',
+    allowedRoots: ['~/Library/Logs/Facet'], expected: true },
   { name: 'tilde path inside an absolute allowed root auto-approves',
-    command: 'cat ~/Library/Logs/Juggler/host.log', patterns: [], platform: 'darwin',
-    allowedRoots: ['/Users/jules/Library/Logs/Juggler'], expected: true },
+    command: 'cat ~/Library/Logs/Facet/host.log', patterns: [], platform: 'darwin',
+    allowedRoots: ['/Users/jules/Library/Logs/Facet'], expected: true },
   { name: 'path outside a ~-form allowed root still prompts',
     command: 'cat ~/Library/Other/x.log', patterns: [], platform: 'darwin',
-    allowedRoots: ['~/Library/Logs/Juggler'], expected: false },
+    allowedRoots: ['~/Library/Logs/Facet'], expected: false },
   { name: 'trailing-slash ~-form root still matches a path inside it',
-    command: 'cat /Users/jules/Library/Logs/Juggler/host.log', patterns: [], platform: 'darwin',
-    allowedRoots: ['~/Library/Logs/Juggler/'], expected: true },
+    command: 'cat /Users/jules/Library/Logs/Facet/host.log', patterns: [], platform: 'darwin',
+    allowedRoots: ['~/Library/Logs/Facet/'], expected: true },
   { name: 'sed as a pipeline sink is safe',
     command: "awk '/foo/' web/css/components.css | sed -n '1,30p'", patterns: [], platform: 'darwin', expected: true },
   { name: 'sed as a sink rejects -i',
@@ -516,7 +516,7 @@ echo "== js =="; make lint-js 2>&1 | tail -12; echo "js_rc=\${PIPESTATUS[0]}"`,
   { name: 'awk range pattern over in-project file is safe',
     command: "awk '/^func PopStackItem/,/^}/' 3rdparty/y-crdt/undo_manager.go", patterns: [], platform: 'darwin', expected: true },
   { name: 'full compound awk|grep|head ; echo ; awk|sed is safe',
-    command: "cd ~/code/juggler && awk '/^func PopStackItem/,/^}/' 3rdparty/y-crdt/undo_manager.go | grep -n 'Transact' | head; echo ---; awk '/PopStackItem/,/^}/' 3rdparty/y-crdt/undo_manager.go | sed -n '1,30p'",
+    command: "cd ~/code/facet && awk '/^func PopStackItem/,/^}/' 3rdparty/y-crdt/undo_manager.go | grep -n 'Transact' | head; echo ---; awk '/PopStackItem/,/^}/' 3rdparty/y-crdt/undo_manager.go | sed -n '1,30p'",
     patterns: [], platform: 'darwin', expected: true },
   { name: 'awk -F separator + print is safe',
     command: "awk -F: '{print $1}' web/css/components.css", patterns: [], platform: 'darwin', expected: true },
@@ -537,13 +537,13 @@ echo "== js =="; make lint-js 2>&1 | tail -12; echo "js_rc=\${PIPESTATUS[0]}"`,
   { name: 'git diff --name-only of in-project file is safe',
     command: 'git diff --name-only web/css/components.css', patterns: [], platform: 'darwin', expected: true },
   { name: 'cd ~/project + git diff --name-only is safe',
-    command: 'cd ~/code/juggler && git diff --name-only web/css/components.css', patterns: [], platform: 'darwin', expected: true },
+    command: 'cd ~/code/facet && git diff --name-only web/css/components.css', patterns: [], platform: 'darwin', expected: true },
   { name: 'git status -s is safe',
     command: 'git status -s', patterns: [], platform: 'darwin', expected: true },
   { name: 'git log --oneline -n 10 is safe',
     command: 'git log --oneline -n 10', patterns: [], platform: 'darwin', expected: true },
   { name: 'git log -S pickaxe (glued) | head is safe',
-    command: 'cd ~/code/juggler && git log --oneline -S"isLoopbackAddr" --all | head -10', patterns: [], platform: 'darwin', expected: true },
+    command: 'cd ~/code/facet && git log --oneline -S"isLoopbackAddr" --all | head -10', patterns: [], platform: 'darwin', expected: true },
   { name: 'git log -G pickaxe-regex (glued) is safe',
     command: 'git log -Gfoo --pickaxe-regex', patterns: [], platform: 'darwin', expected: true },
   { name: 'git show HEAD is safe',
@@ -799,7 +799,7 @@ echo "== js =="; make lint-js 2>&1 | tail -12; echo "js_rc=\${PIPESTATUS[0]}"`,
   { name: 'find | xargs grep -l | head is safe',
     command: 'find tests/integration -name "*.go" | xargs grep -l "undo" | head', patterns: [], platform: 'darwin', expected: true },
   { name: 'compound: cd + find|xargs grep|head ; grep -rn|head',
-    command: 'cd ~/code/juggler && find tests/integration -name "*.go" | xargs grep -l "undo\\|Undo" | head; grep -rn "pending\\|PENDING\\|reconcile\\|approval" tests/integration | head -30',
+    command: 'cd ~/code/facet && find tests/integration -name "*.go" | xargs grep -l "undo\\|Undo" | head; grep -rn "pending\\|PENDING\\|reconcile\\|approval" tests/integration | head -30',
     patterns: [], platform: 'darwin', expected: true },
   { name: 'xargs with unsafe sub-command prompts',
     command: 'find . -name "*.tmp" | xargs rm', patterns: [], platform: 'darwin', expected: false },
@@ -812,7 +812,7 @@ echo "== js =="; make lint-js 2>&1 | tail -12; echo "js_rc=\${PIPESTATUS[0]}"`,
   { name: 'inline 2>/dev/null between args is safe',
     command: 'grep -l "x" web/js 2>/dev/null -r | head', patterns: [], platform: 'darwin', expected: true },
   { name: 'compound grep|head && echo && grep 2>/dev/null -r|head is safe',
-    command: 'cd ~/code/juggler && grep -rln "MANIFEST\\s*=\\|MANIFEST:" web/js | head -10 && echo --- && grep -l "foo" web/js 2>/dev/null -r | head',
+    command: 'cd ~/code/facet && grep -rln "MANIFEST\\s*=\\|MANIFEST:" web/js | head -10 && echo --- && grep -l "foo" web/js 2>/dev/null -r | head',
     patterns: [], platform: 'darwin', expected: true },
   { name: 'inline >/dev/null between args is safe',
     command: 'grep -l "x" web/js >/dev/null -r', patterns: [], platform: 'darwin', expected: true },
@@ -827,7 +827,7 @@ echo "== js =="; make lint-js 2>&1 | tail -12; echo "js_rc=\${PIPESTATUS[0]}"`,
   { name: 'sleep with unit suffix (5m, 2h) is safe',
     command: 'sleep 5m', patterns: [], platform: 'darwin', expected: true },
   { name: 'cd + sleep + go test * with pattern is safe',
-    command: "cd ~/code/juggler && sleep 3 && go test -v -count=1 -timeout 60s -run 'TestBrowser/integration:selection-auto-selects-next-pending-after-approve' ./tests/integration 2>&1 | tail -10",
+    command: "cd ~/code/facet && sleep 3 && go test -v -count=1 -timeout 60s -run 'TestBrowser/integration:selection-auto-selects-next-pending-after-approve' ./tests/integration 2>&1 | tail -10",
     patterns: ['go test *'], platform: 'darwin', expected: true },
   { name: 'sleep with no arg prompts',
     command: 'sleep', patterns: [], platform: 'darwin', expected: false },
@@ -848,7 +848,7 @@ echo "== js =="; make lint-js 2>&1 | tail -12; echo "js_rc=\${PIPESTATUS[0]}"`,
   { name: 'echo 2> err.log stderr redirect with write enabled auto-approves',
     command: 'echo hi 2> err.log', writeEnabled: true, expected: true },
   { name: 'redirect to absolute path inside roots with write enabled auto-approves',
-    command: 'echo hi > ~/code/juggler/build.log', writeEnabled: true, expected: true },
+    command: 'echo hi > ~/code/facet/build.log', writeEnabled: true, expected: true },
   { name: 'redirect to /tmp outside roots stays blocked even with write enabled',
     command: 'echo hi > /tmp/out.log', writeEnabled: true, expected: false },
   { name: 'redirect to /tmp WHEN /tmp is an allowed root + write enabled auto-approves',
@@ -865,7 +865,7 @@ echo "== js =="; make lint-js 2>&1 | tail -12; echo "js_rc=\${PIPESTATUS[0]}"`,
   // === scoped command substitution `NAME=$(producer)` + `"$NAME"` consumer ===
   // The target idiom: grep -l lists in-project files into a var, sed reads it.
   { name: 'find-then-sed via $(grep -l) into "$f" auto-approves',
-    command: 'cd ~/code/juggler && grep -rn "func.*BindPort" cmd/juggler/server/ && f=$(grep -rln "func.*BindPort" cmd/juggler/server/); sed -n "/func.*BindPort/,/^}/p" "$f"',
+    command: 'cd ~/code/facet && grep -rn "func.*BindPort" cmd/facet/server/ && f=$(grep -rln "func.*BindPort" cmd/facet/server/); sed -n "/func.*BindPort/,/^}/p" "$f"',
     patterns: [], expected: true },
   // Similar idioms with each output-path producer.
   { name: 'f=$(grep -rln) then sed reads "$f"',
@@ -914,7 +914,7 @@ echo "== js =="; make lint-js 2>&1 | tail -12; echo "js_rc=\${PIPESTATUS[0]}"`,
 
   // === uniq as a read-only pipeline filter / sink ===
   { name: 'grep | sort | uniq -c | sort -rn | head pipeline auto-approves',
-    command: 'cd ~/code/juggler && echo "=== imports ===" && grep -rhn "^import" web/extensions/juggler-core/context-items/*.js | grep -v "plugins" | sort | uniq -c | sort -rn | head -40',
+    command: 'cd ~/code/facet && echo "=== imports ===" && grep -rhn "^import" web/extensions/facet-core/context-items/*.js | grep -v "plugins" | sort | uniq -c | sort -rn | head -40',
     patterns: [], expected: true },
   { name: 'uniq -c as a sink auto-approves',
     command: 'grep -rn foo web | sort | uniq -c', patterns: [], expected: true },
@@ -938,7 +938,7 @@ echo "== js =="; make lint-js 2>&1 | tail -12; echo "js_rc=\${PIPESTATUS[0]}"`,
 
   // === cut as a read-only column/field filter / sink ===
   { name: 'grep | sed | sed | cut | sort | uniq | sort pipeline auto-approves',
-    command: 'cd ~/code/juggler && echo "=== targets ===" && grep -rhoE "from \'(\\.\\./)+[^\']+\'" web/extensions/juggler-core/context-items | sed -E "s/from \'//; s/\'//" | sed -E \'s#^(\\.\\./)+##\' | cut -d/ -f1-2 | sort | uniq -c | sort -rn',
+    command: 'cd ~/code/facet && echo "=== targets ===" && grep -rhoE "from \'(\\.\\./)+[^\']+\'" web/extensions/facet-core/context-items | sed -E "s/from \'//; s/\'//" | sed -E \'s#^(\\.\\./)+##\' | cut -d/ -f1-2 | sort | uniq -c | sort -rn',
     patterns: [], expected: true },
   { name: 'cut -d/ -f1-2 as a sink auto-approves',
     command: 'grep -rn foo web | cut -d/ -f1-2', patterns: [], expected: true },
@@ -960,7 +960,7 @@ echo "== js =="; make lint-js 2>&1 | tail -12; echo "js_rc=\${PIPESTATUS[0]}"`,
 
   // === tr as a read-only character filter / sink (never touches files) ===
   { name: 'grep | sed | tr | sed import-collecting pipeline auto-approves',
-    command: 'cd ~/code/juggler && grep -rhn "from \'\\.\\./\\.\\?\\.\\?/\\?js/" web/extensions/juggler-core --include="*.js" -B3 | grep -E "import|from \'" | grep -v "^--" | sed "s/^[0-9]*[:-]//" | tr \'\\n\' \' \' | sed \'s/import/\\nimport/g\'',
+    command: 'cd ~/code/facet && grep -rhn "from \'\\.\\./\\.\\?\\.\\?/\\?js/" web/extensions/facet-core --include="*.js" -B3 | grep -E "import|from \'" | grep -v "^--" | sed "s/^[0-9]*[:-]//" | tr \'\\n\' \' \' | sed \'s/import/\\nimport/g\'',
     patterns: [], expected: true },
   { name: 'tr translating newlines to spaces as a sink auto-approves',
     command: 'grep -rn foo web | tr "\\n" " "', patterns: [], expected: true },
@@ -994,21 +994,21 @@ echo "== js =="; make lint-js 2>&1 | tail -12; echo "js_rc=\${PIPESTATUS[0]}"`,
   { name: 'line ending in | continues a pipeline across the newline',
     command: 'grep -rn foo web |\nhead -20', patterns: [], platform: 'darwin', expected: true },
   { name: 'reported multi-line grep survey auto-approves',
-    command: `cd ~/code/juggler && echo "=== AnyActive exposure + any cancel-all endpoint ===" && grep -rn "AnyActive\\|active.*conversation\\|/api/health/instance\\|activeConversations\\|cancelAll" cmd/juggler/server/*.go cmd/juggler/server/handlers/*.go | head -15
+    command: `cd ~/code/facet && echo "=== AnyActive exposure + any cancel-all endpoint ===" && grep -rn "AnyActive\\|active.*conversation\\|/api/health/instance\\|activeConversations\\|cancelAll" cmd/facet/server/*.go cmd/facet/server/handlers/*.go | head -15
 echo ""
 echo "=== frontend: any 'stop all' / iterate active convs ===" && grep -rn "cancelAndSettle\\|isProcessing\\|stopAll\\|for .*conversations" web/js/model/session.js web/js/services/*.js | grep -i 'cancel\\|processing\\|stop' | head`,
     patterns: [], platform: 'darwin', expected: true },
 
   // === test / [ conditional (read-only predicate, in-project paths only) ===
   { name: 'reported test -x guard auto-approves',
-    command: 'cd ~/code/juggler && test -x bin/juggler && echo "bin/juggler exists" || echo "need go-build"',
+    command: 'cd ~/code/facet && test -x bin/facet && echo "bin/facet exists" || echo "need go-build"',
     patterns: [], platform: 'darwin', expected: true },
   { name: 'test -f of in-project file is safe',
     command: 'test -f web/js/app.js', patterns: [], platform: 'darwin', expected: true },
   { name: 'test -d of in-project dir is safe',
     command: 'test -d web', patterns: [], platform: 'darwin', expected: true },
   { name: 'bracket form [ -x PATH ] of in-project file is safe',
-    command: '[ -x bin/juggler ]', patterns: [], platform: 'darwin', expected: true },
+    command: '[ -x bin/facet ]', patterns: [], platform: 'darwin', expected: true },
   { name: 'leading ! negation of an in-project file test is safe',
     command: 'test ! -f web/js/app.js', patterns: [], platform: 'darwin', expected: true },
   { name: 'test -z of empty string is safe (no FS)',
@@ -1060,7 +1060,7 @@ const SUGGEST_CASES = [
     expected: [['git push origin main'], ['git push *'], ['git *']] },
   // Leading `cd <in-project> &&` is stripped before analysis.
   { name: 'cd project + make build → make tiers',
-    command: 'cd ~/code/juggler && make build',
+    command: 'cd ~/code/facet && make build',
     expected: [['make build'], ['make *']] },
   // Trailing sinks are stripped before analysis.
   { name: 'make build 2>&1 | tail → make tiers',
@@ -1104,7 +1104,7 @@ const SUGGEST_CASES = [
   // redirect is also unstrippable without write perms, so the segment loop
   // bails before the group anyway; either way → no suggestion.)
   { name: 'subshell group in || branch → no suggestion (not (echo *)',
-    command: 'cd ~/code/juggler && make go-build >/tmp/gobuild.log 2>&1 && echo "BUILD OK" || (echo "BUILD FAIL"; tail -20 /tmp/gobuild.log)',
+    command: 'cd ~/code/facet && make go-build >/tmp/gobuild.log 2>&1 && echo "BUILD OK" || (echo "BUILD FAIL"; tail -20 /tmp/gobuild.log)',
     patterns: ['make *'], expected: [] },
   { name: 'non-null write redirect leaves an op → no pattern can cover it',
     command: 'echo hi > local-file', expected: [] },
@@ -1136,7 +1136,7 @@ const SUGGEST_CASES = [
   // reduced past `2>&1 | grep | tail` sinks, trailing `echo "...${PIPESTATUS[0]}"`
   // segment is already safe. Only cmake needs a pattern.
   { name: 'cd project && cmake | grep | tail ; echo ${PIPESTATUS} → cmake tiers',
-    command: 'cd ~/code/juggler && cmake --build --preset xcode_Release --target Waveform14 --config Debug -- -quiet 2>&1 | grep -E "error:|BUILD FAILED" | tail -30; echo "EXIT=${PIPESTATUS[0]}"',
+    command: 'cd ~/code/facet && cmake --build --preset xcode_Release --target Waveform14 --config Debug -- -quiet 2>&1 | grep -E "error:|BUILD FAILED" | tail -30; echo "EXIT=${PIPESTATUS[0]}"',
     expected: [
       ['cmake --build --preset xcode_Release --target Waveform14 --config Debug -- -quiet'],
       ['cmake *']
@@ -1185,24 +1185,24 @@ const SUGGEST_CASES = [
     ] },
   // `ls` of an out-of-root folder offers the folder grant first (not just `ls *`).
   { name: 'ls of an out-of-root folder → grant the folder first',
-    command: 'ls -la ~/.juggler/ 2>/dev/null',
+    command: 'ls -la ~/.facet/ 2>/dev/null',
     expected: [
-      { allowedPaths: ['/Users/jules/.juggler'] }
+      { allowedPaths: ['/Users/jules/.facet'] }
     ] },
   // Compound listing of several out-of-root folders: the path-grant tier unions
   // every listed folder so one grant covers the whole command (echo segments are
   // already safe and contribute nothing).
-  { name: 'echo + multiple ls into ~/.juggler subdirs → union folder grant first',
-    command: 'echo "=== ~/.juggler tree (logs + app) ===" && ls -la ~/.juggler/ 2>/dev/null && echo "--- logs/ ---" && ls -la ~/.juggler/logs/ 2>/dev/null && echo "--- app/ ---" && ls -la ~/.juggler/app/ 2>/dev/null',
+  { name: 'echo + multiple ls into ~/.facet subdirs → union folder grant first',
+    command: 'echo "=== ~/.facet tree (logs + app) ===" && ls -la ~/.facet/ 2>/dev/null && echo "--- logs/ ---" && ls -la ~/.facet/logs/ 2>/dev/null && echo "--- app/ ---" && ls -la ~/.facet/app/ 2>/dev/null',
     expected: [
-      { allowedPaths: ['/Users/jules/.juggler', '/Users/jules/.juggler/logs', '/Users/jules/.juggler/app'] }
+      { allowedPaths: ['/Users/jules/.facet', '/Users/jules/.facet/logs', '/Users/jules/.facet/app'] }
     ] },
 
   // Read-only file readers reach the same path-grant tier: a command rejected
   // ONLY because the file it reads sits outside the allowed roots offers to
   // grant that file/folder first, not just a `<cmd> *` wildcard.
   { name: 'sed -n reading an out-of-root file → grant the file first',
-    command: "cd ~/code/juggler && sed -n '120,230p' /Users/jules/go/pkg/mod/github.com/mdp/qrterminal/v3@v3.2.1/qrterminal.go",
+    command: "cd ~/code/facet && sed -n '120,230p' /Users/jules/go/pkg/mod/github.com/mdp/qrterminal/v3@v3.2.1/qrterminal.go",
     expected: [
       { allowedPaths: ['/Users/jules/go/pkg/mod/github.com/mdp/qrterminal/v3@v3.2.1/qrterminal.go'] }
     ] },
@@ -1366,7 +1366,7 @@ export async function runTests() {
     ['/Users', false],                         // ancestor of home (all users)
     ['/Users/jules', false],                   // the home dir itself
     ['/Users/jules/code', true],               // a folder inside home
-    ['/Users/jules/code/juggler/web', true],   // deeper still
+    ['/Users/jules/code/facet/web', true],   // deeper still
     ['/opt/sdk/windows', true],                // unrelated deep absolute path
     ['/Users/jules2', true],                   // a different user's home (depth 2, not ours)
     ['relative/path', false],                  // not absolute
@@ -1386,22 +1386,22 @@ export async function runTests() {
   /** @type {Array<[string, string[], string, boolean]>} p, roots, platform, expected-inside */
   const WIN_PATH_CASES = [
     // git-bash /c/ command path vs the three root spellings — all the same place
-    ['/c/Users/jules/code/juggler/web', ['C:\\Users\\jules\\code\\juggler'], 'windows', true],
-    ['/c/Users/jules/code/juggler/web', ['C:/Users/jules/code/juggler'], 'windows', true],
-    ['/c/Users/jules/code/juggler/web', ['/c/Users/jules/code/juggler'], 'windows', true],
+    ['/c/Users/jules/code/facet/web', ['C:\\Users\\jules\\code\\facet'], 'windows', true],
+    ['/c/Users/jules/code/facet/web', ['C:/Users/jules/code/facet'], 'windows', true],
+    ['/c/Users/jules/code/facet/web', ['/c/Users/jules/code/facet'], 'windows', true],
     // forward-slash C:/ command path vs native root
-    ['C:/Users/jules/code/juggler/README.md', ['C:\\Users\\jules\\code\\juggler'], 'windows', true],
+    ['C:/Users/jules/code/facet/README.md', ['C:\\Users\\jules\\code\\facet'], 'windows', true],
     // native backslash command path vs native root (both need folding)
-    ['C:\\Users\\jules\\code\\juggler\\web', ['C:\\Users\\jules\\code\\juggler'], 'windows', true],
+    ['C:\\Users\\jules\\code\\facet\\web', ['C:\\Users\\jules\\code\\facet'], 'windows', true],
     // /cygdrive/c/ Cygwin spelling
-    ['/cygdrive/c/Users/jules/code/juggler/web', ['C:\\Users\\jules\\code\\juggler'], 'windows', true],
+    ['/cygdrive/c/Users/jules/code/facet/web', ['C:\\Users\\jules\\code\\facet'], 'windows', true],
     // drive-letter + path case-insensitivity (Windows FS is case-insensitive)
-    ['/c/users/JULES/code/juggler/web', ['C:\\Users\\jules\\code\\juggler'], 'windows', true],
+    ['/c/users/JULES/code/facet/web', ['C:\\Users\\jules\\code\\facet'], 'windows', true],
     // OUTSIDE the roots — must stay out, every spelling
-    ['C:/Windows/System32', ['C:\\Users\\jules\\code\\juggler'], 'windows', false],
-    ['/c/Windows/System32', ['C:\\Users\\jules\\code\\juggler'], 'windows', false],
+    ['C:/Windows/System32', ['C:\\Users\\jules\\code\\facet'], 'windows', false],
+    ['/c/Windows/System32', ['C:\\Users\\jules\\code\\facet'], 'windows', false],
     // a different drive is never inside a C: root
-    ['/d/Users/jules/code/juggler/web', ['C:\\Users\\jules\\code\\juggler'], 'windows', false],
+    ['/d/Users/jules/code/facet/web', ['C:\\Users\\jules\\code\\facet'], 'windows', false],
     // POSIX guard: `/c/` is a literal path, no drive reinterpretation, and
     // comparison stays case-sensitive.
     ['/c/Users/x/file', ['/c/Users/x'], 'linux', true],

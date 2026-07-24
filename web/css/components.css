@@ -1075,7 +1075,7 @@ conversation-tab .conversation-tab-loading-content {
     color: var(--text-muted, #888);
 }
 
-conversation-tab .conversation-tab-loading-content juggler-spinner {
+conversation-tab .conversation-tab-loading-content facet-spinner {
     --size: 5rem;
 }
 
@@ -2675,7 +2675,7 @@ input-box .model-selector-button {
 }
 
 /* ===================================================================
-   Juggler busy spinner
+   Facet busy spinner
 
    Three clubs (same shapes as the logo) orbit a central point while
    flipping on their own axis — a stylised juggling cascade. Each
@@ -2687,7 +2687,7 @@ input-box .model-selector-button {
    Sized via `--size` on the host. Coloured via `color` (the SVG fills
    from `currentColor`).
    ================================================================== */
-juggler-spinner {
+facet-spinner {
     --size: 2rem;
     --duration: 1.5s;
     --js-radius: calc(var(--size) * 0.28);
@@ -2703,45 +2703,45 @@ juggler-spinner {
     contain: layout style;
 }
 
-juggler-spinner .js-pivot {
+facet-spinner .js-pivot {
     position: absolute;
     left: 50%;
     top: 50%;
     width: 0;
     height: 0;
-    animation: juggler-spinner-orbit var(--duration) linear infinite;
+    animation: facet-spinner-orbit var(--duration) linear infinite;
 }
 
-juggler-spinner .js-pivot:nth-child(2) { animation-delay: calc(var(--duration) / -3); }
-juggler-spinner .js-pivot:nth-child(3) { animation-delay: calc(var(--duration) * -2 / 3); }
+facet-spinner .js-pivot:nth-child(2) { animation-delay: calc(var(--duration) / -3); }
+facet-spinner .js-pivot:nth-child(3) { animation-delay: calc(var(--duration) * -2 / 3); }
 
-juggler-spinner .js-club {
+facet-spinner .js-club {
     position: absolute;
     width: var(--js-club-w);
     height: var(--js-club-h);
     left: calc(var(--js-club-w) / -2);
     top: calc((var(--js-radius) + var(--js-club-h) / 2) * -1);
-    animation: juggler-spinner-spin var(--duration) linear infinite;
+    animation: facet-spinner-spin var(--duration) linear infinite;
 }
 
-juggler-spinner .js-pivot:nth-child(2) .js-club { animation-delay: calc(var(--duration) / -3); }
-juggler-spinner .js-pivot:nth-child(3) .js-club { animation-delay: calc(var(--duration) * -2 / 3); }
+facet-spinner .js-pivot:nth-child(2) .js-club { animation-delay: calc(var(--duration) / -3); }
+facet-spinner .js-pivot:nth-child(3) .js-club { animation-delay: calc(var(--duration) * -2 / 3); }
 
-/* Scoped through .js-club (not a bare `juggler-spinner svg`) on purpose: it
+/* Scoped through .js-club (not a bare `facet-spinner svg`) on purpose: it
    raises specificity to (0,1,2) so a container's own icon rule can't reach in
    and resize the clubs. Notably `.message-action-btn svg { width:1rem }` is
    (0,1,1) and WOULD otherwise win when the spinner sits inside such a button
    (e.g. the footer Pause button), blowing every club up to a full 1rem square
    and piling them in the centre. The svg always lives inside .js-club, so this
    still matches all three. */
-juggler-spinner .js-club svg {
+facet-spinner .js-club svg {
     display: block;
     width: 100%;
     height: 100%;
     fill: currentcolor;
 }
 
-@keyframes juggler-spinner-orbit {
+@keyframes facet-spinner-orbit {
     from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
 }
@@ -2752,7 +2752,7 @@ juggler-spinner .js-club svg {
    slow-zone with its position at the bottom of the orbit, so all
    three clubs visibly decelerate as they fall and accelerate as
    they rise. */
-@keyframes juggler-spinner-spin {
+@keyframes facet-spinner-spin {
     0%   { transform: rotate(0deg); }
     12%  { transform: rotate(80deg); }
     25%  { transform: rotate(140deg); }
@@ -6567,12 +6567,12 @@ path-input .path-input-field:focus {
 }
 
 /* ============================================================================
-   Juggler context menu (right-click popup)
+   Facet context menu (right-click popup)
    Rendered by web/js/services/context-menu-service.js. Positioned at the
    cursor in viewport coords; --z-toast keeps it above modals/dropdowns since a
    right-click can originate from within either.
    ========================================================================== */
-.juggler-context-menu {
+.facet-context-menu {
     position: fixed;
     min-width: 11rem;
     max-width: 22rem;
@@ -6586,7 +6586,7 @@ path-input .path-input-field:focus {
     font-size: 0.8125rem;
 }
 
-.juggler-context-menu-item {
+.facet-context-menu-item {
     display: block;
     width: 100%;
     box-sizing: border-box;
@@ -6603,29 +6603,29 @@ path-input .path-input-field:focus {
     cursor: pointer;
 }
 
-.juggler-context-menu-item:hover:not(:disabled),
-.juggler-context-menu-item:focus-visible:not(:disabled) {
+.facet-context-menu-item:hover:not(:disabled),
+.facet-context-menu-item:focus-visible:not(:disabled) {
     background: var(--accent-blue);
     color: #fff;
     outline: none;
 }
 
-.juggler-context-menu-item.danger {
+.facet-context-menu-item.danger {
     color: var(--accent-red);
 }
 
-.juggler-context-menu-item.danger:hover:not(:disabled),
-.juggler-context-menu-item.danger:focus-visible:not(:disabled) {
+.facet-context-menu-item.danger:hover:not(:disabled),
+.facet-context-menu-item.danger:focus-visible:not(:disabled) {
     background: var(--accent-red);
     color: #fff;
 }
 
-.juggler-context-menu-item:disabled {
+.facet-context-menu-item:disabled {
     opacity: 0.4;
     cursor: default;
 }
 
-.juggler-context-menu-separator {
+.facet-context-menu-separator {
     height: 0.0625rem;
     margin: 0.25rem 0.375rem;
     background: var(--border-color);

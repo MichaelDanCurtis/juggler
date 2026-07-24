@@ -6,16 +6,16 @@
  * Tool-name resolution unit tests.
  *
  * `resolveToolName` is the single point at which the frontend turns a raw
- * tool-call name (as received from any provider) into the canonical Juggler
+ * tool-call name (as received from any provider) into the canonical Facet
  * tool key used by the registry. It must:
  *
- *   1. Strip the `mcp__juggler__` prefix the Claude CLI adds to MCP tools,
+ *   1. Strip the `mcp__facet__` prefix the Claude CLI adds to MCP tools,
  *      in case a tool_use block reached us without the provider-side strip
  *      having run (history replay, a non-streaming path, a malformed event).
  *   2. Map capitalised native names (Bash, Read, BatchGrep, …) to their
- *      lowercase Juggler equivalents.
+ *      lowercase Facet equivalents.
  *   3. Compose those two: a prefixed-and-capitalised name like
- *      `mcp__juggler__BatchGrep` must canonicalise all the way to
+ *      `mcp__facet__BatchGrep` must canonicalise all the way to
  *      `batch_grep`.
  *   4. Be a no-op on names that are already canonical.
  * @module unit-tests/tool-name-resolution-test
@@ -55,26 +55,26 @@ export async function runTests(_ctx) {
     }
   };
 
-  run('strips mcp__juggler__ prefix from a registered tool', () => {
-    assert(resolveToolName('mcp__juggler__batch_grep') === 'batch_grep',
-      `expected batch_grep, got ${resolveToolName('mcp__juggler__batch_grep')}`);
+  run('strips mcp__facet__ prefix from a registered tool', () => {
+    assert(resolveToolName('mcp__facet__batch_grep') === 'batch_grep',
+      `expected batch_grep, got ${resolveToolName('mcp__facet__batch_grep')}`);
   });
 
-  run('strips mcp__juggler__ prefix when name is also a capitalized alias', () => {
+  run('strips mcp__facet__ prefix when name is also a capitalized alias', () => {
     // Pre-strip the name would alias-lookup miss; post-strip it must hit.
-    assert(resolveToolName('mcp__juggler__bash') === 'bash',
-      `expected bash, got ${resolveToolName('mcp__juggler__bash')}`);
+    assert(resolveToolName('mcp__facet__bash') === 'bash',
+      `expected bash, got ${resolveToolName('mcp__facet__bash')}`);
   });
 
   run('strips prefix AND applies capitalised alias', () => {
     // `BatchGrep` aliases to `batch_grep`; prefix must come off first.
-    assert(resolveToolName('mcp__juggler__BatchGrep') === 'batch_grep',
-      `expected batch_grep, got ${resolveToolName('mcp__juggler__BatchGrep')}`);
+    assert(resolveToolName('mcp__facet__BatchGrep') === 'batch_grep',
+      `expected batch_grep, got ${resolveToolName('mcp__facet__BatchGrep')}`);
   });
 
   run('strips prefix AND applies Read→read alias', () => {
-    assert(resolveToolName('mcp__juggler__Read') === 'read',
-      `expected read, got ${resolveToolName('mcp__juggler__Read')}`);
+    assert(resolveToolName('mcp__facet__Read') === 'read',
+      `expected read, got ${resolveToolName('mcp__facet__Read')}`);
   });
 
   run('idempotent on already-canonical names', () => {
@@ -89,20 +89,20 @@ export async function runTests(_ctx) {
       `expected pass-through, got ${resolveToolName('some_unknown_tool')}`);
   });
 
-  run('leaves bare server name `mcp__juggler` alone (not our tool)', () => {
-    // `mcp__juggler` (no trailing __ + name) is not a valid CLI emission
+  run('leaves bare server name `mcp__facet` alone (not our tool)', () => {
+    // `mcp__facet` (no trailing __ + name) is not a valid CLI emission
     // — but if it ever shows up, we must NOT silently truncate it to ''
     // and then look up the empty string.
-    assert(resolveToolName('mcp__juggler') === 'mcp__juggler',
-      `expected pass-through, got ${resolveToolName('mcp__juggler')}`);
+    assert(resolveToolName('mcp__facet') === 'mcp__facet',
+      `expected pass-through, got ${resolveToolName('mcp__facet')}`);
   });
 
   run('handles a doubly-prefixed name safely', () => {
     // If a past bug ever advertised tools pre-prefixed, the CLI would
     // add its own prefix on top. Strip both so the registry lookup wins
-    // rather than reporting "Unknown tool" for `mcp__juggler__bash`.
-    assert(resolveToolName('mcp__juggler__mcp__juggler__bash') === 'bash',
-      `expected bash, got ${resolveToolName('mcp__juggler__mcp__juggler__bash')}`);
+    // rather than reporting "Unknown tool" for `mcp__facet__bash`.
+    assert(resolveToolName('mcp__facet__mcp__facet__bash') === 'bash',
+      `expected bash, got ${resolveToolName('mcp__facet__mcp__facet__bash')}`);
   });
 
   return { passed, failed, errors };

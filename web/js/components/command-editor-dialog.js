@@ -6,7 +6,7 @@
  * Command editor dialog — the editing surface for user-defined slash commands.
  *
  * Opened from the slash menu's "New command…" row, the `/commands` manager, or
- * a "Save as slash command" action. It writes a `.juggler/commands/*.md` file
+ * a "Save as slash command" action. It writes a `.facet/commands/*.md` file
  * via the backend (the same validation path `define_command` uses) and triggers
  * a registry hot-reload so the command appears in the menu immediately.
  * @module components/command-editor-dialog
@@ -130,7 +130,7 @@ export function openCommandEditor(options = {}) {
     };
 
     const updatePathHint = () => {
-      const dir = currentScope() === 'user' ? '~/.juggler/commands' : '<project>/.juggler/commands';
+      const dir = currentScope() === 'user' ? '~/.facet/commands' : '<project>/.facet/commands';
       const nm = nameInput.value.trim() || 'name';
       pathHint.textContent = `Stored in ${dir}/${nm}.md`;
     };

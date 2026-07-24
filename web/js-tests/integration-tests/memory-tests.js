@@ -6,7 +6,7 @@
  * Integration Tests: Project Memory
  *
  * Verifies the `autoInstantiate` seeding wiring end-to-end: when a project's
- * `.juggler/MEMORY.md` exists, a newly-created conversation auto-instantiates
+ * `.facet/MEMORY.md` exists, a newly-created conversation auto-instantiates
  * the singleton `memory` context item (system position) so its entries inject
  * into the system prompt. The symmetric "absent → not seeded" case is covered
  * by unit:memory-seed (and implicitly by every other test's golden, which would
@@ -59,25 +59,25 @@ function dumpMemoryItems(conversation) {
 
 /**
  * Memory file present at the project root → a new conversation gains a memory
- * context item. Touches the fixed `.juggler/MEMORY.md` at the project root
+ * context item. Touches the fixed `.facet/MEMORY.md` at the project root
  * (a fixed path no per-test prefix can hide behind), so it is scheduled alone
  * via pollutesFixtureRoot, exactly like the CLAUDE.md auto-detection test.
  * @type {import('../utilities/integration-test-runner.js').IntegrationTestDefinition}
  */
 export const memorySeededWhenFileExistsTest = {
   name: 'memory-seeded-when-file-exists',
-  description: 'A new conversation auto-instantiates the memory item when .juggler/MEMORY.md exists',
+  description: 'A new conversation auto-instantiates the memory item when .facet/MEMORY.md exists',
   fixture: 'unit-test-fixture',
   pollutesFixtureRoot: true,
 
   llmResponses: [],
 
   operations: [
-    { type: 'write-fixture-file', path: '.juggler/MEMORY.md', content: '# Memory\n\n- [2026-06-14] Build is `make build`\n' },
+    { type: 'write-fixture-file', path: '.facet/MEMORY.md', content: '# Memory\n\n- [2026-06-14] Build is `make build`\n' },
     // Created AFTER the file exists → seedAutoContextItems gates true → memory seeded.
     // create-conversation switches the active conversation to the new one.
     { type: 'create-conversation', name: 'MemSeed' },
-    { type: 'delete-fixture-file', path: '.juggler/MEMORY.md' }
+    { type: 'delete-fixture-file', path: '.facet/MEMORY.md' }
   ],
 
   // The new conversation carries the seeded memory item alongside the system prompt.
@@ -105,7 +105,7 @@ export const memorySeededWhenFileExistsTest = {
  * memory through the context-item path (and thus could double-render) trips this
  * test rather than silently regressing cache stability.
  *
- * Touches the fixed `.juggler/MEMORY.md` at the project root, so it is
+ * Touches the fixed `.facet/MEMORY.md` at the project root, so it is
  * scheduled alone via pollutesFixtureRoot.
  * @type {import('../utilities/integration-test-runner.js').IntegrationTestDefinition}
  */
@@ -124,7 +124,7 @@ export const memorySystemPromptStableAcrossRememberTest = {
   // item in sync for the follow-up turn's context-render — a brand-new
   // conversation would race that sync and stall the render-context request.)
   // The runner deletes this path in cleanup, so the appended fact never leaks.
-  setupFiles: { '.juggler/MEMORY.md': '# Memory\n\n- [2026-06-14] Seeded fact\n' },
+  setupFiles: { '.facet/MEMORY.md': '# Memory\n\n- [2026-06-14] Seeded fact\n' },
 
   // The model calls the memory tool to remember a new fact, then replies.
   llmResponses: [

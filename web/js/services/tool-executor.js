@@ -64,7 +64,7 @@ import { recordTape } from '../utils/event-tape.js';
 // `engine-bridge` envelope; the server forwards it to every viewer, whose
 // `websocket.js` handler replays it onto a same-window BroadcastChannel of
 // this name. One transport, one delivery per peer — no duplicate events.
-const __TOOL_EXEC_CHANNEL = 'juggler-tool-exec';
+const __TOOL_EXEC_CHANNEL = 'facet-tool-exec';
 
 /**
  * Post a tool-exec event to peer windows via the server-routed bridge.

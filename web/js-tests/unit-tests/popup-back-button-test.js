@@ -31,7 +31,7 @@ import {
   __resetPopupManagerForTests,
 } from '../../js/utils/popup-manager.js';
 
-const OVERLAY_MARKER = 'jugglerOverlay';
+const OVERLAY_MARKER = 'facetOverlay';
 
 /**
  * @param {boolean} cond

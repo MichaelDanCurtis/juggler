@@ -28,7 +28,7 @@ let reloadRequested = false;
  */
 function getLiveSessions() {
   const sessions = [];
-  const appSession = /** @type {any} */ (globalThis).jugglerApp?._connectionManager?.getSession?.();
+  const appSession = /** @type {any} */ (globalThis).facetApp?._connectionManager?.getSession?.();
   const engineSession = /** @type {any} */ (globalThis).engineApp?._connectionManager?.getSession?.();
   if (appSession) sessions.push(appSession);
   if (engineSession && engineSession !== appSession) sessions.push(engineSession);

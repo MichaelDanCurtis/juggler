@@ -7,7 +7,7 @@
  * Tests parameter validation and result formatting in isolation
  */
 
-import WebFetchContextItem from '../../extensions/juggler-core/context-items/web-fetch-context-item.js';
+import WebFetchContextItem from '../../extensions/facet-core/context-items/web-fetch-context-item.js';
 import {
   initializeRegistries,
   createTestSession,

@@ -30,7 +30,7 @@ func exists(p string) bool {
 	return err == nil
 }
 
-// SweepOldLogs removes only stale Juggler log files: fresh logs, non-log files,
+// SweepOldLogs removes only stale Facet log files: fresh logs, non-log files,
 // and sub-directories must all survive, and the returned count must match.
 func TestSweepOldLogsRemovesOnlyStaleLogs(t *testing.T) {
 	dir := t.TempDir()
@@ -108,7 +108,7 @@ func TestSweepOldLogsMissingDir(t *testing.T) {
 // bare-id and name-prefixed forms plus rotation backups — and leaves other
 // conversations' logs untouched, matching on the authoritative conv-id suffix.
 func TestRemoveConversationLogs(t *testing.T) {
-	t.Setenv("JUGGLER_LOG_DIR", t.TempDir())
+	t.Setenv("FACET_LOG_DIR", t.TempDir())
 	const proj = "/Users/jules/code/myproj"
 	const target, other = "conv_target01", "conv_other99"
 

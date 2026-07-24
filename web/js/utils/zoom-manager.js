@@ -9,7 +9,7 @@
 
 import { onDocumentReady } from './document-ready.js';
 
-const ZOOM_KEY = 'juggler-zoom';
+const ZOOM_KEY = 'facet-zoom';
 const ZOOM_STEP = 10;
 const ZOOM_MIN = 60;
 const ZOOM_MAX = 160;

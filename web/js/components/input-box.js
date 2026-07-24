@@ -79,9 +79,9 @@ function looksBinary(str) {
 /**
  * Wails' injected runtime installs a `dragover`/`drop` handler on `<html>` that
  * force-sets `dropEffect = 'none'` for file drags whenever the window's
- * `enableFileDrop` flag is off — which Juggler deliberately leaves off so WebKit
+ * `enableFileDrop` flag is off — which Facet deliberately leaves off so WebKit
  * delivers real `File` objects to the page rather than routing drops through the
- * native bridge (see `cmd/juggler-app/app_state.go`). Because `<html>` is above
+ * native bridge (see `cmd/facet-app/app_state.go`). Because `<html>` is above
  * the message box in the bubble path, that handler runs *after* the input box's
  * own `dragover` and cancels the drop after the fact: the `drop` event never
  * fires and the image is silently rejected.
@@ -491,16 +491,16 @@ class InputBox extends HTMLElement {
         // but no LLM is streaming). The old narrower check (isLLMActive ||
         // hasRunningActions) missed that, so Escape from the input cleared the
         // textarea instead of stopping the re-run.
-        // @ts-ignore - jugglerApp is added dynamically in app.js
-        if (window.jugglerApp && window.jugglerApp.shouldHandleEscape()) {
+        // @ts-ignore - facetApp is added dynamically in app.js
+        if (window.facetApp && window.facetApp.shouldHandleEscape()) {
           // Cancel from THIS box's vantage: a sub-thread box (threadItemId set)
           // interrupts that thread without closing it; the root box (null) stops
           // everything and closes open sub-threads. Shift+Escape instead requests
           // a polite stop (Pause): finish the current step, then rest at idle —
           // nothing cancelled. (Plain Escape while a Pause is pending escalates
           // to a hard cancel, per D7.)
-          // @ts-ignore - jugglerApp is added dynamically in app.js
-          window.jugglerApp.cancelLLMOperation(this.threadItemId ?? null, { polite: e.shiftKey });
+          // @ts-ignore - facetApp is added dynamically in app.js
+          window.facetApp.cancelLLMOperation(this.threadItemId ?? null, { polite: e.shiftKey });
         } else {
           // No active LLM - save draft to history before clearing
           const currentValue = textarea.value.trim();

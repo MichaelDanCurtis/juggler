@@ -14,21 +14,21 @@ import (
 	"testing"
 	"time"
 
-	"juggler/cmd/juggler/server"
-	"juggler/internal/jlog"
-	"juggler/internal/logpaths"
+	"facet/cmd/facet/server"
+	"facet/internal/jlog"
+	"facet/internal/logpaths"
 )
 
 // TestServerWritesNestedProjectLog boots a real headless server WITHOUT
 // --log-file, pointing the log directory at a throwaway temp dir via
-// JUGGLER_LOG_DIR. It proves the new per-project folder layout end-to-end: a
+// FACET_LOG_DIR. It proves the new per-project folder layout end-to-end: a
 // server with no log-file override writes its structured log to
 // <log-dir>/<slug>/server.log — inside the project's own folder, not flat in
 // the log directory — and the derived path resolves identically in-process and
 // in the spawned binary.
 func TestServerWritesNestedProjectLog(t *testing.T) {
 	if testing.Short() {
-		t.Skip("spawns the juggler binary; skipped in -short mode")
+		t.Skip("spawns the facet binary; skipped in -short mode")
 	}
 
 	root, err := server.FindProjectRoot(".")
@@ -43,7 +43,7 @@ func TestServerWritesNestedProjectLog(t *testing.T) {
 	// Point logs at a throwaway dir. t.Setenv also flows into the child via
 	// os.Environ() at spawn, so server and test agree on the derived path.
 	logDir := t.TempDir()
-	t.Setenv("JUGGLER_LOG_DIR", logDir)
+	t.Setenv("FACET_LOG_DIR", logDir)
 
 	proj := t.TempDir()
 	want := logpaths.ServerLogPath(proj) // <logDir>/<slug>/server.log
@@ -58,7 +58,7 @@ func TestServerWritesNestedProjectLog(t *testing.T) {
 	}
 
 	cmd := exec.Command(binary, "--window=false", "--port", "0", "--project", proj)
-	cmd.Env = os.Environ() // includes JUGGLER_LOG_DIR
+	cmd.Env = os.Environ() // includes FACET_LOG_DIR
 	setProcGroupAttr(cmd)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -83,7 +83,7 @@ func TestServerWritesNestedProjectLog(t *testing.T) {
 	go func() {
 		sc := bufio.NewScanner(stdout)
 		for sc.Scan() {
-			if after, ok := strings.CutPrefix(sc.Text(), "JUGGLER_ADDR="); ok {
+			if after, ok := strings.CutPrefix(sc.Text(), "FACET_ADDR="); ok {
 				addrCh <- after
 				return
 			}
@@ -92,7 +92,7 @@ func TestServerWritesNestedProjectLog(t *testing.T) {
 	select {
 	case <-addrCh:
 	case <-time.After(45 * time.Second):
-		t.Fatalf("timeout waiting for JUGGLER_ADDR")
+		t.Fatalf("timeout waiting for FACET_ADDR")
 	}
 
 	// initLogging runs before the address is printed, so the header is already
@@ -109,7 +109,7 @@ func TestServerWritesNestedProjectLog(t *testing.T) {
 // wiring that opens these sinks is exercised end-to-end by the browser suite.
 func TestPerConversationLogsAreSeparate(t *testing.T) {
 	base := t.TempDir()
-	t.Setenv("JUGGLER_LOG_DIR", base)
+	t.Setenv("FACET_LOG_DIR", base)
 
 	const proj = "/tmp/example/myproj"
 	const idA, idB = "conv_aaaaaaaaa", "conv_bbbbbbbbb"

@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"juggler/cmd/juggler/ops"
-	"juggler/tests/helpers"
+	"facet/cmd/facet/ops"
+	"facet/tests/helpers"
 )
 
 func TestStat_File(t *testing.T) {

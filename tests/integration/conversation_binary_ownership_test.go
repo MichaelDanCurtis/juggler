@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"juggler/cmd/juggler/core"
-	"juggler/tests/helpers"
+	"facet/cmd/facet/core"
+	"facet/tests/helpers"
 )
 
 // foreignConvID is a conversation id that project B never created. It stands in
@@ -23,7 +23,7 @@ const foreignConvID = "conv_foreign01"
 // conversationOrder as a phantom tab).
 func hasConvFolder(t *testing.T, projectDir, convID string) bool {
 	t.Helper()
-	idx, err := core.ScanConvDirs(filepath.Join(projectDir, ".juggler"))
+	idx, err := core.ScanConvDirs(filepath.Join(projectDir, ".facet"))
 	if err != nil {
 		t.Fatalf("scan conv dirs: %v", err)
 	}

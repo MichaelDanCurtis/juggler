@@ -38,7 +38,7 @@ func TestXvfbRelaunchArgv(t *testing.T) {
 		want             []string
 	}{
 		{"headless linux with xvfb relaunches", "linux", "", "", nil, true,
-			[]string{xvfbPath, "-a", "/opt/juggler", "--port", "7777"}},
+			[]string{xvfbPath, "-a", "/opt/facet", "--port", "7777"}},
 		{"x11 display present is a no-op", "linux", ":0", "", nil, true, nil},
 		{"wayland display present is a no-op", "linux", "", "wayland-0", nil, true, nil},
 		{"user opt-out is respected", "linux", "", "", []string{noXvfbEnv}, true, nil},
@@ -51,7 +51,7 @@ func TestXvfbRelaunchArgv(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			got := xvfbRelaunchArgv(tc.goos, tc.display, tc.wayland,
 				lookupEnv(tc.envSet...), lookPath(tc.xvfbInstalled),
-				"/opt/juggler", []string{"--port", "7777"})
+				"/opt/facet", []string{"--port", "7777"})
 			if !reflect.DeepEqual(got, tc.want) {
 				t.Errorf("xvfbRelaunchArgv = %v, want %v", got, tc.want)
 			}

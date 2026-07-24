@@ -128,7 +128,7 @@ async function handleApprovalRequest(session, request, conversationId) {
     // Find the message thread containing this tool-action (fall back to root)
     const messageThread = conv.findMessageThreadForToolUse(req.toolUseId) || conv.rootMessageThread;
 
-    /** @type {import('juggler/context-item').ItemContext} */
+    /** @type {import('facet/context-item').ItemContext} */
     const actionContext = {
       id: req.toolUseId,
       session,
@@ -341,7 +341,7 @@ export function setupWorkerCallbacks(session) {
         return;
       }
       const messageThread = conv.findMessageThreadForToolUse(req.toolUseId) || conv.rootMessageThread;
-      /** @type {import('juggler/context-item').ItemContext} */
+      /** @type {import('facet/context-item').ItemContext} */
       const itemContext = {
         id: req.toolUseId,
         session,
@@ -389,7 +389,7 @@ export function setupWorkerCallbacks(session) {
         workerManager.sendSubthreadErrorResponse(conversationId, req.requestId, '');
         return;
       }
-      /** @type {import('juggler/context-item').ItemContext} */
+      /** @type {import('facet/context-item').ItemContext} */
       const itemContext = {
         id: req.requestId,
         session,

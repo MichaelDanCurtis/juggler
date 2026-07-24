@@ -29,8 +29,8 @@ go.work
 *~
 .DS_Store
 
-# Juggler configuration and runtime
-.juggler/
+# Facet configuration and runtime
+.facet/
 *.log
 
 # Environment variables
@@ -56,7 +56,7 @@ pnpm-debug.log*
 *.wasm
 *.js.map
 cmd/*/rsrc_*.syso
-cmd/juggler/app/icon.png
+cmd/facet/app/icon.png
 
 # Web UI build output (Svelte)
 web/dist/

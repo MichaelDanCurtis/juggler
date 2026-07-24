@@ -1,6 +1,6 @@
 # Integration Test Helper Framework
 
-This directory contains the helper framework for writing integration tests in Juggler. The framework provides a clean, deterministic API for testing real system mechanics with only the LLM mocked.
+This directory contains the helper framework for writing integration tests in Facet. The framework provides a clean, deterministic API for testing real system mechanics with only the LLM mocked.
 
 ## Philosophy
 

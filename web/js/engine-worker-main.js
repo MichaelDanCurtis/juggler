@@ -105,9 +105,9 @@ worker.onerror = (/** @type {ErrorEvent} */ event) => {
 worker.postMessage({
   type: 'start',
   assetPrefix: /** @type {any} */ (window).__assetPrefix || '',
-  apiToken: /** @type {any} */ (window).__jugglerToken || ''
+  apiToken: /** @type {any} */ (window).__facetToken || ''
 });
 
-/** @type {any} */ (window).__jugglerEngineWorker = worker;
+/** @type {any} */ (window).__facetEngineWorker = worker;
 
 export {};

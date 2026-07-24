@@ -94,7 +94,7 @@ export function setupYjsObservers(c) {
       // Inter-tick gap (gapMs) surfaces the single engine WebView falling
       // behind under load — the engine-throughput hypothesis. Guarded so
       // the Date.now() bookkeeping is zero-cost when tracing is off.
-      if (/** @type {any} */ (globalThis).__jugglerTrace) {
+      if (/** @type {any} */ (globalThis).__facetTrace) {
         const nowTick = Date.now();
         const gapMs = c._lastObserverTickTs ? nowTick - c._lastObserverTickTs : 0;
         c._lastObserverTickTs = nowTick;

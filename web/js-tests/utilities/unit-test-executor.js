@@ -70,12 +70,12 @@ class UnitTestExecutor {
     this.startTime = Date.now();
 
     try {
-      // projectPath is provided by the Go test runner (juggler-test)
+      // projectPath is provided by the Go test runner (facet-test)
       const urlParams = new URLSearchParams(window.location.search);
       const projectPath = urlParams.get('projectPath');
 
       if (!projectPath) {
-        throw new Error('projectPath URL parameter is required. Tests must be run via juggler-test.');
+        throw new Error('projectPath URL parameter is required. Tests must be run via facet-test.');
       }
 
       logger.info(`Using pre-created fixture: ${projectPath}`);
@@ -254,7 +254,7 @@ class UnitTestExecutor {
 
   /**
    * Cleanup test resources
-   * Note: Fixture cleanup is handled by the Go test runner (juggler-test)
+   * Note: Fixture cleanup is handled by the Go test runner (facet-test)
    * @private
    */
   async cleanup() {

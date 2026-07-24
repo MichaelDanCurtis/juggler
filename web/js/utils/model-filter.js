@@ -279,7 +279,7 @@ function isSpecializedModel(modelId) {
     'computer-use', 'robotics', 'deep-research',
     'nano-banana', // Weird Google model
     'gemma' // Google's open-source models (not commercial API)
-    // NOT 'codex' - these are code-optimized and good for Juggler!
+    // NOT 'codex' - these are code-optimized and good for Facet!
   ];
 
   const lower = modelId.toLowerCase();

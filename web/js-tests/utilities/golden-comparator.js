@@ -182,7 +182,7 @@ export function normalizeDocumentSnapshot(conversation) {
 
   // First pass: collect all IDs from items (items are Y.Maps). Skip thread
   // items: the worker stores toolUseId/toolName/toolInput on thread Y.Maps
-  // as internal LLM-replay plumbing (cmd/juggler/worker/strategy.go), but
+  // as internal LLM-replay plumbing (cmd/facet/worker/strategy.go), but
   // the normalized output suppresses these fields, so counting them here
   // would shift $TOOL_N numbering for real tool-action items.
   const items = /** @type {RawItem[]} */ (conversation.rootItems || []);
@@ -240,7 +240,7 @@ function normalizeItem(item, normalizer) {
 
   // Tool action fields. For LLM-created thread items the worker also
   // persists toolUseId/toolName/toolInput on the Y.Map so the paired
-  // tool_use block can be replayed to the LLM (cmd/juggler/worker/strategy.go).
+  // tool_use block can be replayed to the LLM (cmd/facet/worker/strategy.go).
   // That's internal plumbing — surface it on tool-action items only, not
   // on threads, where the golden assertions express the user-visible shape.
   const toolUseId = item.get('toolUseId');

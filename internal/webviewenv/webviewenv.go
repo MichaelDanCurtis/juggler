@@ -3,12 +3,12 @@
 //   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   AGPL-3.0-or-later - see LICENSE
 
 // Package webviewenv reports whether the host can bring up the Wails/WebKit
-// webview that Juggler depends on, and builds the user-facing message shown
+// webview that Facet depends on, and builds the user-facing message shown
 // when it can't.
 //
-// Juggler runs its agent engine inside a hidden webview even in headless server
+// Facet runs its agent engine inside a hidden webview even in headless server
 // mode (the engine is the only thing that executes tools — see
-// cmd/juggler/app/engine_lifecycle.go), so a host with no display server or no
+// cmd/facet/app/engine_lifecycle.go), so a host with no display server or no
 // system webview runtime — a container, a CI runner, an SSH session with no
 // desktop — cannot run the engine at all. Without help that failure is silent:
 // the process sits for the connect timeout and then dies with a terse log line.
@@ -187,7 +187,7 @@ func DetectHost() HostInfo {
 
 // UserNamespacesRestricted reports whether this host blocks the unprivileged
 // user namespaces WebKitGTK's bwrap sandbox needs (see sandboxRestricted). It
-// is exported for `juggler doctor`; always false off Linux.
+// is exported for `facet doctor`; always false off Linux.
 func UserNamespacesRestricted() bool {
 	if runtime.GOOS != "linux" {
 		return false
@@ -243,10 +243,10 @@ func UnavailableMessage(reason string) string {
 // message is the testable core of UnavailableMessage.
 func message(goos, reason string, host linuxHost) string {
 	var b strings.Builder
-	b.WriteString("Juggler cannot start: ")
+	b.WriteString("Facet cannot start: ")
 	b.WriteString(reason)
 	b.WriteString(".\n\n")
-	b.WriteString("Juggler runs its agent engine inside a webview, so it needs a graphical\n")
+	b.WriteString("Facet runs its agent engine inside a webview, so it needs a graphical\n")
 	b.WriteString("display and a system webview runtime even when running headless (no window).\n\n")
 	b.WriteString("To fix this:\n")
 	b.WriteString(remediation(goos, host))
@@ -267,17 +267,17 @@ func remediation(goos string, host linuxHost) string {
 		case host.hasXvfb:
 			b += "" +
 				"  • On a headless machine (container, CI runner, or SSH with no desktop),\n" +
-				"    run under a virtual framebuffer: `xvfb-run -a juggler`.\n"
+				"    run under a virtual framebuffer: `xvfb-run -a facet`.\n"
 		case xvfbInstallCommand(host.pm) != "":
 			b += "" +
 				"  • On a headless machine (container, CI runner, or SSH with no desktop),\n" +
 				"    run under a virtual framebuffer — install it with\n" +
-				"    `" + xvfbInstallCommand(host.pm) + "`, then run `xvfb-run -a juggler`.\n"
+				"    `" + xvfbInstallCommand(host.pm) + "`, then run `xvfb-run -a facet`.\n"
 		default:
 			b += "" +
 				"  • On a headless machine (container, CI runner, or SSH with no desktop),\n" +
 				"    run under a virtual framebuffer — install your distro's Xvfb package\n" +
-				"    (usually called `xvfb`), then run `xvfb-run -a juggler`.\n"
+				"    (usually called `xvfb`), then run `xvfb-run -a facet`.\n"
 		}
 		return b +
 			"  • If a display exists but the webview still won't start, try setting\n" +
@@ -286,11 +286,11 @@ func remediation(goos string, host linuxHost) string {
 			"    by the kernel's unprivileged-user-namespace restriction — the tell-tale\n" +
 			"    is `bwrap: setting up uid map: Permission denied`. Either re-allow it\n" +
 			"    with `sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0`, or\n" +
-			"    start Juggler with WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1 to run\n" +
+			"    start Facet with WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1 to run\n" +
 			"    without the WebKit sandbox.\n"
 	case "darwin":
 		return "" +
-			"  • Run Juggler from a logged-in graphical (Aqua) session. macOS cannot\n" +
+			"  • Run Facet from a logged-in graphical (Aqua) session. macOS cannot\n" +
 			"    create a webview from an SSH session or a session-0 LaunchDaemon.\n" +
 			"  • To start it under launchd, use a LaunchAgent in your GUI login session,\n" +
 			"    not a LaunchDaemon.\n"
@@ -298,7 +298,7 @@ func remediation(goos string, host linuxHost) string {
 		return "" +
 			"  • Install the Microsoft Edge WebView2 Runtime (Evergreen):\n" +
 			"    https://developer.microsoft.com/microsoft-edge/webview2/\n" +
-			"  • Run Juggler in an interactive user session. Windows Server Core and\n" +
+			"  • Run Facet in an interactive user session. Windows Server Core and\n" +
 			"    session-0 services have no desktop and cannot host a webview.\n"
 	default:
 		return "  • Ensure a graphical display and a system webview runtime are available.\n"

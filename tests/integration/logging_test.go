@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"juggler/cmd/juggler/server"
-	"juggler/internal/logpaths"
+	"facet/cmd/facet/server"
+	"facet/internal/logpaths"
 )
 
 // TestServerHonorsLogFileFlagPerInstance boots two real headless servers on two
@@ -33,7 +33,7 @@ import (
 // units can't: that a spawned binary actually routes jlog through the flag.
 func TestServerHonorsLogFileFlagPerInstance(t *testing.T) {
 	if testing.Short() {
-		t.Skip("spawns the juggler binary; skipped in -short mode")
+		t.Skip("spawns the facet binary; skipped in -short mode")
 	}
 
 	root, err := server.FindProjectRoot(".")
@@ -54,7 +54,7 @@ func TestServerHonorsLogFileFlagPerInstance(t *testing.T) {
 	srvB := startHeadlessServer(t, binary, projB, logB)
 	defer srvB.stop()
 
-	// Both reached the JUGGLER_ADDR phase, which runs after initLogging — so the
+	// Both reached the FACET_ADDR phase, which runs after initLogging — so the
 	// instance header is already on disk. A short poll absorbs file-flush jitter.
 	contentA := waitForHeader(t, logA)
 	contentB := waitForHeader(t, logB)
@@ -82,8 +82,8 @@ type headlessServer struct {
 	cmd *exec.Cmd
 }
 
-// startHeadlessServer spawns `juggler --window=false --port 0 --project <proj>
-// --log-file <logFile>` and returns once it prints JUGGLER_ADDR (its deterministic
+// startHeadlessServer spawns `facet --window=false --port 0 --project <proj>
+// --log-file <logFile>` and returns once it prints FACET_ADDR (its deterministic
 // "bound and serving" signal — the same channel the desktop app reads on spawn).
 func startHeadlessServer(t *testing.T, binary, proj, logFile string) *headlessServer {
 	t.Helper()
@@ -106,7 +106,7 @@ func startHeadlessServer(t *testing.T, binary, proj, logFile string) *headlessSe
 	go func() {
 		sc := bufio.NewScanner(stdout)
 		for sc.Scan() {
-			if after, ok := strings.CutPrefix(sc.Text(), "JUGGLER_ADDR="); ok {
+			if after, ok := strings.CutPrefix(sc.Text(), "FACET_ADDR="); ok {
 				addrCh <- after
 				return
 			}
@@ -119,7 +119,7 @@ func startHeadlessServer(t *testing.T, binary, proj, logFile string) *headlessSe
 		return hs
 	case <-time.After(45 * time.Second):
 		hs.stop()
-		t.Fatalf("timeout waiting for JUGGLER_ADDR from server for %s", proj)
+		t.Fatalf("timeout waiting for FACET_ADDR from server for %s", proj)
 		return nil
 	}
 }
@@ -149,7 +149,7 @@ func waitForHeader(t *testing.T, path string) string {
 	deadline := time.Now().Add(10 * time.Second)
 	for {
 		b, err := os.ReadFile(path)
-		if err == nil && strings.Contains(string(b), "===== juggler ") {
+		if err == nil && strings.Contains(string(b), "===== facet ") {
 			return string(b)
 		}
 		if time.Now().After(deadline) {

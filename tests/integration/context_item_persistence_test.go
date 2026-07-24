@@ -8,8 +8,8 @@ import (
 	"os"
 	"testing"
 
-	"juggler/cmd/juggler/core"
-	"juggler/tests/helpers"
+	"facet/cmd/facet/core"
+	"facet/tests/helpers"
 )
 
 // TestContextItemPersistence_SaveAndLoad tests that context items persist in .yjs file

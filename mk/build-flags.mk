@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# build-flags.mk — single source of truth for how any juggler binary compiles.
+# build-flags.mk — single source of truth for how any facet binary compiles.
 #
 # Included by this repo's own Makefile (`include mk/build-flags.mk`). It is also
 # included, unmodified, by the private release/packaging build that layers extra
@@ -18,7 +18,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 GOCMD ?= go
-# Default builds are test-capable: cmd/juggler/testing/ and worker test-support
+# Default builds are test-capable: cmd/facet/testing/ and worker test-support
 # are gated by `//go:build !production`, so omitting the tag keeps them in the
 # binary. GOBUILD_RELEASE adds -tags production to exclude them from shipped
 # binaries.
@@ -49,9 +49,9 @@ endif
 
 # Version stamps. LDFLAGS_BASE is platform-neutral (reused by the Windows/Linux
 # cross-builds); LDFLAGS adds the macOS host-specific linker args.
-LDFLAGS_BASE := -X juggler/cmd/juggler/core.Version=$(VERSION)
-LDFLAGS_BASE += -X juggler/cmd/juggler/core.Commit=$(COMMIT)
-LDFLAGS_BASE += -X juggler/cmd/juggler/core.BuildDate=$(BUILD_DATE)
+LDFLAGS_BASE := -X facet/cmd/facet/core.Version=$(VERSION)
+LDFLAGS_BASE += -X facet/cmd/facet/core.Commit=$(COMMIT)
+LDFLAGS_BASE += -X facet/cmd/facet/core.BuildDate=$(BUILD_DATE)
 LDFLAGS := $(LDFLAGS_BASE)
 # Match the macOS deployment target between Go's external linker and the Wails
 # v3 cgo .o files. -no_warn_duplicate_libraries: clang's runtime + Wails's

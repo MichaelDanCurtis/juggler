@@ -5,11 +5,11 @@
 /**
  * SDK worker-façade parity unit test.
  *
- * Several `juggler/*` SDK specifiers resolve to *two* modules: the browser
+ * Several `facet/*` SDK specifiers resolve to *two* modules: the browser
  * façade used by viewers (via the document import map) and a `*-worker.js` twin
  * used by the engine worker (which can't use the import map, so
  * `serveWorkerModule` rewrites the specifier — see
- * `cmd/juggler/server/worker_module.go`). A plugin importing a symbol from such
+ * `cmd/facet/server/worker_module.go`). A plugin importing a symbol from such
  * a specifier resolves against `ui.js` in a viewer but `ui-worker.js` in the
  * engine.
  *
@@ -34,10 +34,10 @@ import * as itemUtilsBrowser from '../../sdk/item-utils.js';
 import * as itemUtilsWorker from '../../sdk/item-utils-worker.js';
 
 // Keep in sync with the `*-worker.js` entries of `workerSDKImports` in
-// cmd/juggler/server/worker_module.go — those are the specifiers with a twin.
+// cmd/facet/server/worker_module.go — those are the specifiers with a twin.
 const FACADE_PAIRS = [
-  { specifier: 'juggler/ui', browser: uiBrowser, worker: uiWorker },
-  { specifier: 'juggler/item-utils', browser: itemUtilsBrowser, worker: itemUtilsWorker },
+  { specifier: 'facet/ui', browser: uiBrowser, worker: uiWorker },
+  { specifier: 'facet/item-utils', browser: itemUtilsBrowser, worker: itemUtilsWorker },
 ];
 
 /**
@@ -84,7 +84,7 @@ export async function runTests(_ctx) {
     run(`${specifier}: worker twin mirrors every browser-façade export`, () => {
       const workerExports = new Set(exportNames(worker));
       const missing = exportNames(browser).filter((name) => !workerExports.has(name));
-      const twin = specifier.replace('juggler/', 'sdk/') + '-worker.js';
+      const twin = specifier.replace('facet/', 'sdk/') + '-worker.js';
       assert(
         missing.length === 0,
         `${twin} is missing exports present in its browser façade: ${missing.join(', ')}. `

@@ -3,7 +3,7 @@
 //   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   AGPL-3.0-or-later - see LICENSE
 
 import { extractErrorInfo } from '../../sdk/lib/error-utils.js';
-import ContextItem from 'juggler/context-item';
+import ContextItem from 'facet/context-item';
 import { OpsError } from './ops-api.js';
 import wsService from './websocket.js';
 
@@ -25,7 +25,7 @@ const _emptySummaryWarned = new Set();
  * tool_result text the model sees) comes back empty. We detect the empty summary
  * rather than guessing at execute()'s shape, so legitimate results that carry
  * their own `success` field (e.g. shell output) never false-positive.
- * @param {import('juggler/context-item').ItemSummary} rawSummary - getSummary()'s return, pre-validation
+ * @param {import('facet/context-item').ItemSummary} rawSummary - getSummary()'s return, pre-validation
  * @param {string} className - the context item class name (for the once-key)
  */
 function warnOnEmptySuccessSummary(rawSummary, className) {
@@ -111,7 +111,7 @@ function warnOnEmptySuccessSummary(rawSummary, className) {
  * Running action tracking info
  * @typedef {object} RunningAction
  * @property {AbortController} controller - Abort controller for cancellation
- * @property {import('juggler/context-item').default} action - Action instance (source of truth for accumulated output)
+ * @property {import('facet/context-item').default} action - Action instance (source of truth for accumulated output)
  * @property {string} actionId - Action type ID
  * @property {string} [toolUseId] - Tool use ID for progress event correlation
  * @property {string} [conversationId] - Conversation ID owning this action
@@ -136,7 +136,7 @@ function warnOnEmptySuccessSummary(rawSummary, className) {
 // `engine-bridge` envelope; the server forwards it to every viewer, whose
 // `websocket.js` handler replays it onto a same-window BroadcastChannel of
 // this name. One transport, one delivery per peer — no duplicate events.
-const __ACTION_PROGRESS_CHANNEL = 'juggler-action-progress';
+const __ACTION_PROGRESS_CHANNEL = 'facet-action-progress';
 
 class ActionExecutor {
   constructor() {
@@ -171,7 +171,7 @@ class ActionExecutor {
   async execute(actionId, toolInput, context) {
     const contextItemRegistry = (await import('../registries/context-item-registry.js')).default;
 
-    /** @type {typeof import('juggler/context-item').default | undefined} */
+    /** @type {typeof import('facet/context-item').default | undefined} */
     const ActionClass = /** @type {any} */ (contextItemRegistry.get(actionId));
 
     if (!ActionClass) {
@@ -195,7 +195,7 @@ class ActionExecutor {
     try {
     // Step 1: Prepare (includes validation - plugin returns valid: true/false)
     // Context is now available on the action instance (this.session, this.conversation, etc.)
-    /** @type {import('juggler/context-item').PreparedItem} */
+    /** @type {import('facet/context-item').PreparedItem} */
       const prepared = await action.prepare(toolInput);
 
       // Check validation result
@@ -229,9 +229,9 @@ class ActionExecutor {
    * Create the action instance with full execution context and register it in
    * _runningActions so it can be cancelled and correlated with progress events.
    * @param {string} actionId
-   * @param {typeof import('juggler/context-item').default} ActionClass
+   * @param {typeof import('facet/context-item').default} ActionClass
    * @param {ExecutionContext} context
-   * @returns {{controller: AbortController, action: import('juggler/context-item').default, executionId: string}} The tracked action handle.
+   * @returns {{controller: AbortController, action: import('facet/context-item').default, executionId: string}} The tracked action handle.
    * @private
    */
   _createTrackedAction(actionId, ActionClass, context) {
@@ -271,8 +271,8 @@ class ActionExecutor {
   /**
    * Format the error result for a prepare() that reported valid: false.
    * @param {string} actionId
-   * @param {import('juggler/context-item').default} action
-   * @param {import('juggler/context-item').PreparedItem} prepared
+   * @param {import('facet/context-item').default} action
+   * @param {import('facet/context-item').PreparedItem} prepared
    * @param {number} startTime
    * @returns {ActionStatus} The validation-failure result.
    * @private
@@ -300,8 +300,8 @@ class ActionExecutor {
    * Run the prepared action's execute() and shape its raw result (or a thrown
    * error) into an ActionStatus. Honours cancellation throughout.
    * @param {string} actionId
-   * @param {import('juggler/context-item').default} action
-   * @param {import('juggler/context-item').PreparedItem} prepared
+   * @param {import('facet/context-item').default} action
+   * @param {import('facet/context-item').PreparedItem} prepared
    * @param {AbortController} controller
    * @returns {Promise<ActionStatus>} The shaped execution result.
    * @private
@@ -332,8 +332,8 @@ class ActionExecutor {
    * Race action.execute() against the abort signal so a non-cooperative tool
    * still settles the instant the controller aborts. Returns the raw result, or
    * rejects with an AbortError if the abort wins.
-   * @param {import('juggler/context-item').default} action
-   * @param {import('juggler/context-item').PreparedItem} prepared
+   * @param {import('facet/context-item').default} action
+   * @param {import('facet/context-item').PreparedItem} prepared
    * @param {AbortController} controller
    * @returns {Promise<any>} The raw execute() result.
    * @private
@@ -377,8 +377,8 @@ class ActionExecutor {
    * Shape a raw execute() result into an ActionStatus: cancelled-during-execution,
    * a backend structured error, or success.
    * @param {string} actionId
-   * @param {import('juggler/context-item').default} action
-   * @param {import('juggler/context-item').PreparedItem} prepared
+   * @param {import('facet/context-item').default} action
+   * @param {import('facet/context-item').PreparedItem} prepared
    * @param {any} result
    * @returns {ActionStatus} The shaped success/error result.
    * @private
@@ -441,8 +441,8 @@ class ActionExecutor {
    * Shape a thrown error from execution into an ActionStatus, distinguishing an
    * abort (cancelled result, partial output preserved) from a genuine failure.
    * @param {string} actionId
-   * @param {import('juggler/context-item').default} action
-   * @param {import('juggler/context-item').PreparedItem} prepared
+   * @param {import('facet/context-item').default} action
+   * @param {import('facet/context-item').PreparedItem} prepared
    * @param {unknown} error
    * @returns {ActionStatus} The shaped error result.
    * @private

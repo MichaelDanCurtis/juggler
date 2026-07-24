@@ -21,12 +21,12 @@
 
 /**
  * Build the approval button list for an action that requires approval.
- * @param {{getApprovalSuggestions?: (params: Record<string, unknown>) => import('juggler/context-item').ApprovalSuggestion[]}} action - Action instance
+ * @param {{getApprovalSuggestions?: (params: Record<string, unknown>) => import('facet/context-item').ApprovalSuggestion[]}} action - Action instance
  * @param {Record<string, unknown>} [params] - Validated tool input the suggestions are derived from
  * @returns {import('../components/action-confirmation.js').ApprovalOption[]} Buttons: Yes, one per suggestion, No
  */
 export function buildApprovalButtons(action, params = {}) {
-  /** @type {import('juggler/context-item').ApprovalSuggestion[]} */
+  /** @type {import('facet/context-item').ApprovalSuggestion[]} */
   const suggestions = action.getApprovalSuggestions?.(params) || [];
 
   /** @type {import('../components/action-confirmation.js').ApprovalOption[]} */

@@ -550,7 +550,7 @@ class PermissionControls extends HTMLElement {
     } else if (d.mode === 'new') {
       row.className = 'pattern-row editing';
       row.innerHTML = `
-        <path-input dirs-only class="path-edit-input" placeholder="e.g., ~/code/juggler" data-old-path=""></path-input>
+        <path-input dirs-only class="path-edit-input" placeholder="e.g., ~/code/facet" data-old-path=""></path-input>
         <button class="pattern-save-btn path-save-btn" data-old-path="" title="Save">Save</button>
         <button class="pattern-cancel-btn path-cancel-btn" title="Cancel">Cancel</button>`;
     } else {

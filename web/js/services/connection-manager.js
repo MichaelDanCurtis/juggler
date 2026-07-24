@@ -69,7 +69,7 @@ class ConnectionManager {
    * @returns {Promise<void>} Completes after initial setup
    */
   async setup() {
-    // Register every listener BEFORE connecting. In the juggler.studio remote
+    // Register every listener BEFORE connecting. In the facet.studio remote
     // path, wsService.connect() adopts the bootstrap's already-open DataChannel
     // and flushes its buffered handoff frames SYNCHRONOUSLY — the one-shot
     // 'session' init frame and the 'open' event are emitted before connect()
@@ -257,7 +257,7 @@ class ConnectionManager {
         // The recovery here is a viewer page reload; the engine worker has
         // no page and recovers via the server reissuing session state.
         if (typeof window !== 'undefined') {
-          localStorage.removeItem('jugglerSessionId');
+          localStorage.removeItem('facetSessionId');
           window.location.reload();
           return;
         }

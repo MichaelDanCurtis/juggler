@@ -483,7 +483,7 @@ export const compactionSweepsMidConversationFileTest = {
  * item" (has itemId, no toolUseId, not a conversational type), mirroring the
  * worker's GetContextItemIDsForThread.
  *
- * Setup seeds `.juggler/MEMORY.md` then creates a fresh conversation so memory
+ * Setup seeds `.facet/MEMORY.md` then creates a fresh conversation so memory
  * auto-instantiates onto root → [system-prompt, memory]. A file-content
  * (README) is then pinned before any message, landing in the leading run but
  * AFTER memory → [system-prompt, memory, file-content]. After /compact BOTH
@@ -497,7 +497,7 @@ export const compactionPreservesMemoryTest = {
   pollutesFixtureRoot: true,
 
   setupFiles: {
-    '.juggler/MEMORY.md': '# Memory\n\n- [2026-06-14] MEMORY_MARKER_ZZZ: build with make build\n'
+    '.facet/MEMORY.md': '# Memory\n\n- [2026-06-14] MEMORY_MARKER_ZZZ: build with make build\n'
   },
 
   llmResponses: [],

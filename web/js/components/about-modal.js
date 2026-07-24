@@ -135,12 +135,12 @@ class AboutModal extends HTMLElement {
                         AI workbench over the Prizmanyx migration estate.
                     </p>
                     <p class="about-description">
-                        Facet is Prizmanyx&apos;s internal fork of Juggler,
+                        Facet is Prizmanyx&apos;s internal fork of Facet,
                         created by <a href="https://github.com/julianstorer" target="_blank" rel="noopener noreferrer" style="white-space: nowrap">Julian Storer</a>
                         (AGPL-3.0-or-later — see LICENSE).
                     </p>
                     <p class="about-link">
-                        <a href="https://juggler.studio" target="_blank" rel="noopener noreferrer">https://juggler.studio</a>
+                        <a href="https://facet.studio" target="_blank" rel="noopener noreferrer">https://facet.studio</a>
                     </p>
                 </main>
 

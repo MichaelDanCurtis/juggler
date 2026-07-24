@@ -29,14 +29,14 @@ import { readPref, writePref, notifyPrefChanged } from './ui-pref-store.js';
 const PROVIDERS = [tipsCard, gitStatusCard];
 
 /** localStorage key holding `{ overrides: { [id]: boolean } }`. */
-const STORAGE_KEY = 'juggler-info-cards';
+const STORAGE_KEY = 'facet-info-cards';
 
 /**
  * Fired on `window` whenever a card is enabled or disabled (the Settings toggle,
  * or the × on a card). The info rail and any open Settings panel listen so they
  * re-sync immediately instead of waiting for an unrelated render.
  */
-export const INFO_CARDS_CHANGED_EVENT = 'juggler:info-cards-changed';
+export const INFO_CARDS_CHANGED_EVENT = 'facet:info-cards-changed';
 
 /**
  * Read the persisted override map, tolerant of a missing/corrupt blob.

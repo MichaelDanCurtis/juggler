@@ -36,32 +36,32 @@ const TOOL_ALIASES = {
 /**
  * Prefix the Claude CLI adds to MCP tools based on our --mcp-config server
  * name. The claudecode provider normally strips this in its Go-side parser
- * (canonicalToolName in cmd/juggler/providers/claudecode/), but we strip it
+ * (canonicalToolName in cmd/facet/providers/claudecode/), but we strip it
  * again here as a belt-and-braces guard: any tool-call name reaching the
- * registry should be a pure Juggler tool key, regardless of which provider
+ * registry should be a pure Facet tool key, regardless of which provider
  * path it travelled.
  * @type {string}
  */
-const MCP_JUGGLER_PREFIX = 'mcp__juggler__';
+const MCP_FACET_PREFIX = 'mcp__facet__';
 
 /**
  * Resolve tool name to its canonical form.
  *
  * Performs two transforms in order:
- *   1. Strip the `mcp__juggler__` prefix the Claude CLI adds to MCP tools
+ *   1. Strip the `mcp__facet__` prefix the Claude CLI adds to MCP tools
  *      (looped, so a doubly-prefixed name still resolves cleanly).
  *   2. Apply the capitalised-alias map (Bash → bash, BatchGrep → batch_grep, …).
  *
  * Composing them in this order lets a prefixed-and-capitalised name like
- * `mcp__juggler__BatchGrep` canonicalise all the way to `batch_grep`. Names
+ * `mcp__facet__BatchGrep` canonicalise all the way to `batch_grep`. Names
  * that don't match either rule pass through unchanged.
  * @param {string} toolName - Tool name from LLM (may be prefixed / aliased)
  * @returns {string} Canonical tool name
  */
 export function resolveToolName(toolName) {
   let name = toolName;
-  while (name.startsWith(MCP_JUGGLER_PREFIX)) {
-    name = name.slice(MCP_JUGGLER_PREFIX.length);
+  while (name.startsWith(MCP_FACET_PREFIX)) {
+    name = name.slice(MCP_FACET_PREFIX.length);
   }
   return TOOL_ALIASES[name] || name;
 }

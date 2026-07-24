@@ -24,7 +24,7 @@ import toolExecutor from '../services/tool-executor.js';
 import { extractErrorMessage } from '../../sdk/lib/error-utils.js';
 import { isViewer } from '../../sdk/lib/client-role.js';
 import { ENGINE_DERIVED_ORIGIN } from '../utils/document-sync-manager.js';
-import { APPROVAL_POLICY } from 'juggler/strategy-type';
+import { APPROVAL_POLICY } from 'facet/strategy-type';
 
 /** @typedef {import('../../sdk/lib/message.js').Message} Message */
 

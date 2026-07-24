@@ -2,17 +2,17 @@
 //     ██ ██ ██ ██ ▄▄ ██ ▄▄ ██    ██▄▄  ██▄█▄   Copyright (c) 2026 Julian Storer
 //   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   AGPL-3.0-or-later - see LICENSE
 
-import JugglerElement from './juggler-element.js';
+import FacetElement from './facet-element.js';
 import { createCopyButton } from '../utils/properties-panel-helpers.js';
 
 /**
  * Base class for message components with shared functionality:
  * - Common attribute getters (itemId, itemIndex, content)
- * - Lifecycle management with proper cleanup (inherited from JugglerElement)
+ * - Lifecycle management with proper cleanup (inherited from FacetElement)
  * - Streaming support hooks
  * @abstract
  */
-class BaseMessage extends JugglerElement {
+class BaseMessage extends FacetElement {
   // === Lifecycle ===
 
   connectedCallback() {

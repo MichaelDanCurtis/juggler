@@ -32,7 +32,7 @@ import { addFilePath } from '../utils/properties-panel-helpers.js';
  * @property {string|null} extId - Extension id
  * @property {boolean} extDisabled - Whether the whole extension is disabled
  * @property {CapCard[]} caps - Bundled capabilities
- * @property {string|null} manifestPath - Absolute on-disk path of juggler.extension.json, or null when embedded (no revealable file)
+ * @property {string|null} manifestPath - Absolute on-disk path of facet.extension.json, or null when embedded (no revealable file)
  */
 
 /** Capability-type → response key + display type. */
@@ -343,7 +343,7 @@ class PluginCatalog extends HTMLElement {
    * @returns {import('../model/session.js').default|null} Active app session or null
    */
   _getSession() {
-    return /** @type {any} */ (window).jugglerApp?._connectionManager?.getSession?.() || null;
+    return /** @type {any} */ (window).facetApp?._connectionManager?.getSession?.() || null;
   }
 
   /**
@@ -472,7 +472,7 @@ class PluginCatalog extends HTMLElement {
 
     const right = this._createElement('div', 'catalog-header-right');
     right.appendChild(this._createElement('p', 'catalog-explanation',
-      'A Juggler extension is a bundle of strategies, context items, and commands.'));
+      'A Facet extension is a bundle of strategies, context items, and commands.'));
     header.appendChild(right);
     return header;
   }

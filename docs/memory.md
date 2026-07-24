@@ -1,9 +1,9 @@
 # Project Memory
 
-Juggler keeps a small, durable **project memory** so the assistant remembers
+Facet keeps a small, durable **project memory** so the assistant remembers
 what it learns about your project from one conversation to the next — your
 build command, a convention you corrected it on, a non-obvious constraint. It is
-the Juggler-native equivalent of the "saved memories" you may know from other
+the Facet-native equivalent of the "saved memories" you may know from other
 assistants.
 
 Memory is **per project, private, and editable**. It is not a replacement for
@@ -14,10 +14,10 @@ keeps for itself.
 ## Where it lives
 
 ```
-<your project>/.juggler/MEMORY.md
+<your project>/.facet/MEMORY.md
 ```
 
-`.juggler/` is git-ignored, so memory is **private to your checkout** — never
+`.facet/` is git-ignored, so memory is **private to your checkout** — never
 committed, never shared with your team, and per-machine. It is a plain Markdown
 file you can open and edit in your own editor at any time.
 
@@ -62,14 +62,14 @@ to curate it:
 
 1. Click the delete button on any row in the Memory panel.
 2. Ask the assistant to `remember` or `forget` something in chat.
-3. Open `.juggler/MEMORY.md` in your editor and change it by hand.
+3. Open `.facet/MEMORY.md` in your editor and change it by hand.
 
 All three stay in sync: a change made in one conversation (or by hand on disk)
 is picked up by every open conversation.
 
 ## Turning it off
 
-Memory is provided by the `memory` plugin in the Juggler Core extension. Disable
+Memory is provided by the `memory` plugin in the Facet Core extension. Disable
 that plugin in the plugin catalog and the tool, the panel, and the system-prompt
-guidance all go away; your existing `.juggler/MEMORY.md` is left untouched on
+guidance all go away; your existing `.facet/MEMORY.md` is left untouched on
 disk.

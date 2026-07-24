@@ -28,7 +28,7 @@
  * @property {string} name - Human-readable display name (e.g., 'Default Strategy')
  * @property {string} version - Semantic version (e.g., '1.0.0')
  * @property {string} description - Brief description of what the strategy does
- * @property {string} [author] - Optional author name (e.g., 'Juggler Team')
+ * @property {string} [author] - Optional author name (e.g., 'Facet Team')
  * @property {StrategyRecommendations} [recommendations] - When/why to use this strategy
  * @property {string} [color] - CSS color for visual identification (hex or CSS variable, e.g., 'var(--accent-blue)')
  * @property {string} [icon] - CSS class for icon (e.g., 'icon-lightbulb', 'icon-play'). Used in strategy selector.
@@ -159,13 +159,13 @@ export class AbortError extends Error {
 // ============================================================================
 
 /**
- * StrategyType - Base class for Juggler strategy plugins
+ * StrategyType - Base class for Facet strategy plugins
  *
  * A strategy controls **how the agentic loop runs** — which tools the model may
  * call, whether those calls need approval, and what situational guidance the
  * model sees. The built-in strategies (`read-only`, `default`, `yolo`) form one
  * autonomy axis and are the reference implementations, under
- * `web/extensions/juggler-core/strategies/`.
+ * `web/extensions/facet-core/strategies/`.
  *
  * ## How strategies actually run (read this first)
  *
@@ -190,12 +190,12 @@ export class AbortError extends Error {
  * ## Creating a strategy
  *
  * Strategies ship inside an **extension** (a directory with a
- * `juggler.extension.json` manifest). Scaffold one with `juggler ext init` and
- * link it with `juggler ext link`; see `docs/extension_guide.md`.
+ * `facet.extension.json` manifest). Scaffold one with `facet ext init` and
+ * link it with `facet ext link`; see `docs/extension_guide.md`.
  *
  * 1. Add a file named `*-strategy-type.js` under the extension's `strategies/`
  *    directory — the manifest's `provides` glob registers it automatically.
- * 2. `import StrategyType, { APPROVAL_POLICY } from 'juggler/strategy-type';`
+ * 2. `import StrategyType, { APPROVAL_POLICY } from 'facet/strategy-type';`
  * 3. Define a static MANIFEST (id, name, version, description, author).
  * 4. Override the hooks you need (`filterTools`, `getApprovalPolicy`,
  *    `onActivate`, …).
@@ -204,7 +204,7 @@ export class AbortError extends Error {
  * ## Example (production model: manifest + hooks)
  *
  * ```javascript
- * import StrategyType, { APPROVAL_POLICY } from 'juggler/strategy-type';
+ * import StrategyType, { APPROVAL_POLICY } from 'facet/strategy-type';
  *
  * // A "planning" strategy: expose only read/meta tools and auto-approve them,
  * // so the model investigates thoroughly without touching files or stopping

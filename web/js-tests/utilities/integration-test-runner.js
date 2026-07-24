@@ -71,15 +71,15 @@ function _withDeadline(promise, ms, fallback, label) {
 // Set the per-iframe trace flag so event-tape.js starts recording. The flag
 // is a single boolean test on every recordTape() call, so production page
 // loads (which never reach this module) pay nothing.
-/** @type {any} */ (window).__jugglerTrace = true;
+/** @type {any} */ (window).__facetTrace = true;
 
 // Cross-iframe event-tape correlation: when a test in this iframe fails,
-// the failure builder broadcasts a dump-request on `juggler-tape-dump`.
+// the failure builder broadcasts a dump-request on `facet-tape-dump`.
 // Sibling iframes listen and reply with their own tape entries filtered by
 // the affected conversation IDs. The replies are joined into the failure
 // block so a single scrollback shows every iframe's view of what happened
 // on the racing conversation.
-const __tapeChan = new BroadcastChannel('juggler-tape-dump');
+const __tapeChan = new BroadcastChannel('facet-tape-dump');
 __tapeChan.onmessage = (/** @type {MessageEvent} */ ev) => {
   const m = ev.data;
   if (!m || m.kind !== 'dump-request') return;
@@ -177,7 +177,7 @@ __tapeChan.onmessage = (/** @type {MessageEvent} */ ev) => {
  * @property {FileAssertion[]} [fileAssertions] - File content assertions
  * @property {UndoStateAssertion} [expectedUndoState] - Expected undo/redo state
  * @property {Record<string, any>} [expectedMetadata] - Expected metadata (partial match)
- * @property {(conversation: import('../../model/conversation.js').default, ctx?: {harness: any}) => void|Promise<void>} [customAssertions] - Custom assertions run after standard checks (throw to fail). The second argument exposes the harness so assertions can scope to this test's own conversations (avoids cross-iframe session sharing under JUGGLER_TEST_IFRAMES > 1)
+ * @property {(conversation: import('../../model/conversation.js').default, ctx?: {harness: any}) => void|Promise<void>} [customAssertions] - Custom assertions run after standard checks (throw to fail). The second argument exposes the harness so assertions can scope to this test's own conversations (avoids cross-iframe session sharing under FACET_TEST_IFRAMES > 1)
  * @property {(conversation: import('../../model/conversation.js').default, ctx: {harness: any}) => boolean} [settleUntil] - Side-effect-free predicate fenced on BEFORE the assertions run (alongside expectedItems/expectedDocument). Use it when `customAssertions` inspects state that can still be syncing into this viewer after the operations resolve — e.g. a freshly cloned/peer conversation whose Yjs doc lands a beat late, so a one-shot check would race an empty/partial doc. Re-evaluated on each doc change up to the per-test deadline; MUST NOT mutate (it is polled), and must not throw (return false instead).
  * @property {Record<string, string>} [setupFiles] - Files to write into the fixture before the test runs (e.g. { 'CLAUDE.md': '# AI instructions\n' }). The runner adds files but never wipes — safe in iframe-pool mode where sibling tests share the fixture dir. Use this in place of a custom `fixture:` declaration when only a few extra seed files are needed.
  * @property {boolean} [pollutesFixtureRoot] - Set true when the test writes a fixed-name file to the shared fixture root that production auto-detection scans (e.g. CLAUDE.md, which addAIAssistantFiles picks up on every createConversation). Such a file cannot be namespaced behind a per-test prefix, so while it exists any sibling lane's createConversation injects a phantom context item. The Go runner schedules these tests sequentially after the parallel phase, with a fixture reset around each, so no sibling test is ever in flight.
@@ -372,7 +372,7 @@ function _renderTapeEntry(prefix, e) {
 }
 
 /**
- * Broadcast a dump-request on `juggler-tape-dump` and collect replies for
+ * Broadcast a dump-request on `facet-tape-dump` and collect replies for
  * `waitMs`. Each iframe is expected to reply with its own tape filtered to
  * the affected convIds. Returns a flat list of `{prefix, entries}` blocks.
  * @param {string[]} convIds - The conversations to filter on; empty = all.
@@ -382,7 +382,7 @@ function _renderTapeEntry(prefix, e) {
 async function _collectCrossIframeTapes(convIds, waitMs = 500) {
   if (typeof BroadcastChannel === 'undefined') return [];
   const requestId = 'dump_' + Math.random().toString(36).slice(2);
-  const chan = new BroadcastChannel('juggler-tape-dump');
+  const chan = new BroadcastChannel('facet-tape-dump');
   /** @type {Array<{prefix: string, entries: any[]}>} */
   const replies = [];
   const onMsg = (/** @type {MessageEvent} */ ev) => {

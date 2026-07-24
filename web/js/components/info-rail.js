@@ -151,7 +151,7 @@ class InfoRail extends HTMLElement {
     this._reconciling = true;
     try {
       // Never intrude during automated UI tests (matches the old tip-rail).
-      if (/** @type {any} */ (window).JUGGLER_TEST_MODE) {
+      if (/** @type {any} */ (window).FACET_TEST_MODE) {
         this._teardownAll();
         this.hidden = true;
         return;

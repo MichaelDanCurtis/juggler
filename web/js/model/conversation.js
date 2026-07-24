@@ -5,7 +5,7 @@
 import ResponseHandler from '../services/response-handler.js';
 import wsService from '../services/websocket.js';
 import providersCache from '../services/providers-cache.js';
-import { AbortError } from 'juggler/strategy-type';
+import { AbortError } from 'facet/strategy-type';
 import ConversationDocument from './conversation-document.js';
 import slashCommandHandler from '../services/slash-command-handler.js';
 import workerManager from '../services/worker-manager.js';
@@ -543,7 +543,7 @@ class Conversation {
   /**
    * Monotonic count of worker turns that have completed (reached idle). The
    * worker bumps it atomically on every idle transition (see
-   * cmd/juggler/worker/worker.go sendStatus), so it is a durable fence that
+   * cmd/facet/worker/worker.go sendStatus), so it is a durable fence that
    * survives Yjs sync batching: even when a fast turn's busy→idle window
    * coalesces into a single broadcast, this value still advances. Observe
    * *this* to detect "a turn happened" — never the transient `status` edge,
@@ -1368,7 +1368,7 @@ class Conversation {
     }
 
     // Refuse to start an LLM turn when no strategy is enabled. Every strategy
-    // ships in `@juggler/core`; with it (or all strategy plugins) disabled
+    // ships in `@facet/core`; with it (or all strategy plugins) disabled
     // there is nothing to drive a turn, so the worker/engine would otherwise
     // spin the inert fallback to no effect. Tell the user — at the moment
     // they try to send — and leave their message in the box. Slash commands
@@ -2105,7 +2105,7 @@ class Conversation {
    * Handle declarative side-effects returned by command plugins.
    * This is the single point where commands' declared intents are dispatched
    * to the host application (UI, session, etc.).
-   * @param {import('juggler/command-type').CommandSideEffect[]} sideEffects
+   * @param {import('facet/command-type').CommandSideEffect[]} sideEffects
    * @private
    */
   async _handleCommandSideEffects(sideEffects) {

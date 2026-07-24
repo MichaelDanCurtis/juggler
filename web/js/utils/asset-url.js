@@ -39,7 +39,7 @@ export function resolveAssetUrl(url) {
 /**
  * Dynamic-import a resolved module URL, routing through the server's
  * /worker-module loader when running without a document (the engine worker).
- * A module worker has no import map, so the bare `juggler/*` SDK specifiers
+ * A module worker has no import map, so the bare `facet/*` SDK specifiers
  * inside capability modules only resolve when the server rewrites them; the
  * loader does that rewrite. In the viewer/WebView (document present) the URL is
  * imported directly. Both registry and system-prompt capability loaders go

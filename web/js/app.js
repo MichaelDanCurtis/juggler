@@ -34,13 +34,13 @@ import { normalizeAttachments } from './utils/attachments.js';
 
 
 /**
- * Main Juggler Application
+ * Main Facet Application
  *
  * Slim coordinator that delegates to specialized services.
  * Each service handles a single responsibility.
  * @class
  */
-class JugglerApp {
+class FacetApp {
   constructor() {
     /** @type {HTMLElement|null} @private */
     this.conversationBar = null;
@@ -144,7 +144,7 @@ class JugglerApp {
       this._handleDuplicateConversation();
     });
 
-    window.addEventListener('juggler:window-close-requested', () => {
+    window.addEventListener('facet:window-close-requested', () => {
       this.flushComposerDrafts();
     });
 
@@ -299,7 +299,7 @@ class JugglerApp {
 
   /**
    * Show the first-run walkthrough whenever no AI provider is configured yet.
-   * An unconfigured Juggler can't do anything, so we prompt on every launch until
+   * An unconfigured Facet can't do anything, so we prompt on every launch until
    * a provider exists — provider presence IS the completion signal, so there's no
    * persisted flag. Reuses the existing confirm dialog + Provider Settings panel
    * rather than a bespoke UI.
@@ -309,7 +309,7 @@ class JugglerApp {
     // The integration harness never broadcasts a providers-update (RefreshProviders
     // is a no-op in test mode), so onboarding has no meaningful signal and a modal
     // would only interfere with tests. Skip it entirely.
-    if (/** @type {any} */ (window).JUGGLER_TEST_MODE) return;
+    if (/** @type {any} */ (window).FACET_TEST_MODE) return;
     try {
       // Wait for the SETTLED provider list, not the connect seed: the seed arrives
       // before the server has computed availability, so gating on it would misread a
@@ -317,7 +317,7 @@ class JugglerApp {
       // at startup, so this resolves shortly after launch.
       await providersCache.waitForReady();
 
-      // A provider is configured — Juggler is usable, nothing to prompt.
+      // A provider is configured — Facet is usable, nothing to prompt.
       if (providersCache.hasAvailableProvider()) return;
 
       const showConfirm = /** @type {any} */ (window).showConfirm;
@@ -935,13 +935,13 @@ class JugglerApp {
 }
 
 // Initialize app when script loads
-const app = new JugglerApp();
+const app = new FacetApp();
 
 // Export for debugging
-window.jugglerApp = app;
+window.facetApp = app;
 
 // Test mode: poll for pending tests and navigate to headless-test.html to run them
-if (window.JUGGLER_TEST_MODE) {
+if (window.FACET_TEST_MODE) {
   setInterval(async () => {
     try {
       const resp = await fetch('/api/test/pending');

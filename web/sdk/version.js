@@ -4,22 +4,22 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * Juggler Extension SDK — version.
+ * Facet Extension SDK — version.
  *
  * The single source of truth for the public SDK version. An extension declares
- * the range it is built against via `engineApi` in its `juggler.extension.json`;
+ * the range it is built against via `engineApi` in its `facet.extension.json`;
  * the host refuses to load an extension whose range excludes this version, with a
  * clear diagnostic instead of a mystery `import` failure.
  *
  * Bump rules (semver):
  * - PATCH: doc/typo, internal change with no surface effect.
  * - MINOR: additive — new exports, new optional fields. Existing extensions keep working.
- * - MAJOR: a removal or breaking change to any `juggler/*` export.
+ * - MAJOR: a removal or breaking change to any `facet/*` export.
  *
  * ## What the version covers (the compat surface)
  *
  * IN scope — changes here follow the bump rules above:
- * - The named exports of each `juggler/*` facade (`context-item`, `strategy-type`,
+ * - The named exports of each `facet/*` facade (`context-item`, `strategy-type`,
  *   `command-type`, `ops`, `ui`, `registry`, `version`, `a2ui`).
  * - The documented `static MANIFEST` fields for each capability type, and the
  *   `provides` manifest fields (see `docs/extension_guide.md`).
@@ -31,10 +31,10 @@
  *   Y.Map objects returned by `messageThread.items` / `CommandType.items` beyond
  *   the documented `@plugin-api` surface.
  * - Members tagged `@internal` / `@deprecated` in the SDK JSDoc (e.g. the
- *   `juggler/registry` default export, core-only MANIFEST fields).
+ *   `facet/registry` default export, core-only MANIFEST fields).
  * Reaching past the documented surface works today but can break at any release.
  */
-// 1.1.0: added the `juggler/a2ui` facade (declarative A2UI surface rendering).
+// 1.1.0: added the `facet/a2ui` facade (declarative A2UI surface rendering).
 export const ENGINE_API_VERSION = '1.1.0';
 
 /**

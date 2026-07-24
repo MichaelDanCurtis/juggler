@@ -166,7 +166,7 @@ Tool-produced context items use `type: 'tool-action'` with
 The `data` payload is type-specific and owned by the providing plugin; it must
 only be written through `addContextItem`/`updateContextItem` (never raw Yjs).
 One shape worth naming because its item is long-lived and tool-mutated across
-turns: **`a2ui-surface`** (from `@juggler/a2ui`) stores
+turns: **`a2ui-surface`** (from `@facet/a2ui`) stores
 `{surfaceId, catalogId, rootId, components, dataModel, deleted}` — the
 `a2ui_*` tools upsert it by its deterministic itemId (`A2UI_<surfaceId>`), and
 `context-item-message` re-renders the surface live when `data` changes.
@@ -229,7 +229,7 @@ schema drift here without that step.
 - `web/js-tests/utilities/test-harness.js` builds docs end-to-end. Every key
   the harness writes should appear in §1/§2 above; if you add a new key in
   production code, add it here AND to a harness scenario.
-- `cmd/juggler/worker/document.go` is the Go-side mirror. The same key names
+- `cmd/facet/worker/document.go` is the Go-side mirror. The same key names
   are used; if you rename here, rename there in the same change.
 - Run the unit suites under `web/js-tests/unit-tests/` (especially
   `yjs-compat-test.js`, `item-accessor-test.js`, `thread-nested-array-test.js`)

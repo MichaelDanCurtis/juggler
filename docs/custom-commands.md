@@ -2,7 +2,7 @@
 
 Custom slash commands let you save a prompt you use often as `/name`, with no
 code. A command is a small markdown file — a prompt template plus a few options —
-that Juggler turns into a real slash command in the menu. They hot-reload the
+that Facet turns into a real slash command in the menu. They hot-reload the
 moment you save, and you can share the project-scoped ones through git.
 
 For commands that need real logic (call an API, transform the document, add a
@@ -76,8 +76,8 @@ A command lives in one of two places:
 
 | Scope       | Location                          | Applies to        |
 | ----------- | --------------------------------- | ----------------- |
-| **Project** | `<project>/.juggler/commands/*.md` | this project (git-shareable) |
-| **User**    | `~/.juggler/commands/*.md`         | all your projects |
+| **Project** | `<project>/.facet/commands/*.md` | this project (git-shareable) |
+| **User**    | `~/.facet/commands/*.md`         | all your projects |
 
 If both scopes define the same name, the **project** command wins. A custom
 command may **not** shadow a built-in command (`/clear`, `/compact`, …): such a
@@ -95,7 +95,7 @@ prompt (which the model then acts on under your normal approval rules).
 
 ## Importing from Claude Code
 
-The format is deliberately close to Claude Code's `.claude/commands/*.md`. Juggler
+The format is deliberately close to Claude Code's `.claude/commands/*.md`. Facet
 does not scan `.claude/` automatically; copy the files into a `commands/`
-directory (Juggler reads `argument-hint` as `argsHint` and ignores keys it does
+directory (Facet reads `argument-hint` as `argsHint` and ignores keys it does
 not recognise).

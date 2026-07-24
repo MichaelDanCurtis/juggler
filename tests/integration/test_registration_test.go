@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"juggler/cmd/juggler/server"
+	"facet/cmd/facet/server"
 )
 
 // TestAllTestFilesRegistered checks that every JS test file in the integration-tests/

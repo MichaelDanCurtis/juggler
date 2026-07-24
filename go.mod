@@ -1,4 +1,4 @@
-module juggler
+module facet
 
 go 1.26
 

@@ -12,7 +12,7 @@ import FallbackStrategy from './fallback-strategy.js';
  * Manages strategy loading and lifecycle.
  * Strategies control how the LLM approaches tasks (loop behavior, context assembly,
  * sub-conversation spawning, etc.).
- * @augments {BaseRegistry<typeof import('juggler/strategy-type').default>}
+ * @augments {BaseRegistry<typeof import('facet/strategy-type').default>}
  */
 class StrategyRegistry extends BaseRegistry {
   /**
@@ -34,7 +34,7 @@ class StrategyRegistry extends BaseRegistry {
 
   /**
    * Whether any strategy is registered (enabled). When false the app is in the
-   * degraded "no strategy" mode: every strategy ships in `@juggler/core` and the
+   * degraded "no strategy" mode: every strategy ships in `@facet/core` and the
    * user has disabled it (or all strategy plugins). Callers that start an LLM
    * turn use this to refuse and point the user at the Extensions settings rather
    * than silently running the inert fallback.
@@ -57,7 +57,7 @@ class StrategyRegistry extends BaseRegistry {
    * Get strategy capability descriptors (implements abstract method)
    *
    * Returns the strategy capabilities of every enabled extension — the
-   * `@juggler/core` builtin extension and any user/project extensions. The ID is
+   * `@facet/core` builtin extension and any user/project extensions. The ID is
    * extracted from each class's MANIFEST.id property.
    * @returns {Promise<import('../services/extensions.js').CapabilityRef[]>} Capability descriptors
    * @protected
@@ -71,7 +71,7 @@ class StrategyRegistry extends BaseRegistry {
    *
    * Returns manifest metadata for all registered strategies.
    * Used to generate the strategy section in the system prompt.
-   * @returns {Array<{id: string, manifest: import('juggler/strategy-type').StrategyManifest, modulePath: string, extensionId: string|null}>} Array of strategy metadata
+   * @returns {Array<{id: string, manifest: import('facet/strategy-type').StrategyManifest, modulePath: string, extensionId: string|null}>} Array of strategy metadata
    */
   getAllManifests() {
     // Same shape the base builds (id/manifest/modulePath/extensionId) — every
@@ -86,7 +86,7 @@ class StrategyRegistry extends BaseRegistry {
    * Each conversation owns its own strategy instance.
    * @param {string} id - Strategy ID
    * @param {import('../model/message-thread.js').default} messageThread - Message thread
-   * @returns {import('juggler/strategy-type').default} Strategy instance
+   * @returns {import('facet/strategy-type').default} Strategy instance
    */
   createStrategy(id, messageThread) {
     let StrategyClass = this.get(id);
@@ -102,7 +102,7 @@ class StrategyRegistry extends BaseRegistry {
     }
 
     if (!StrategyClass) {
-      // No registered strategy at all — every strategy ships in `@juggler/core`
+      // No registered strategy at all — every strategy ships in `@facet/core`
       // and it (or all strategy plugins) has been disabled. Use the framework's
       // built-in fallback (not a plugin, so it can't be disabled) instead of
       // throwing: a missing strategy must degrade gracefully, not brick session

@@ -1,9 +1,9 @@
-# Juggler
+# Facet
 
 ## Build / Test / Lint / Dev
 
 ```bash
-make build          # Lint + build Go binaries (bin/juggler, bin/juggler-app, bin/juggler-test)
+make build          # Lint + build Go binaries (bin/facet, bin/facet-app, bin/facet-test)
 make test           # All tests (unit + integration + browser); RUN='<name>' runs one
 make go-build       # Build Go binaries only (skip linting)
 make test-full      # Lint + tests. Run before opening a PR.
@@ -24,7 +24,7 @@ make build-windows  # Cross-compile bin/windows/*.exe (pure-Go, no cgo)
   silently diverges from what CI enforces.
 - To lint specific files (routed by extension to the same linters):
   ```bash
-  make lint-files FILES="cmd/juggler/worker/foo.go web/js/bar.js"
+  make lint-files FILES="cmd/facet/worker/foo.go web/js/bar.js"
   ```
 - **Before fixing lint failures by hand, run `make fix`** — it applies every
   auto-fix the linters can (gofmt, `golangci-lint --fix`, `eslint --fix`,
@@ -34,7 +34,7 @@ make build-windows  # Cross-compile bin/windows/*.exe (pure-Go, no cgo)
   are the only sanctioned ways to auto-fix; don't run `gofmt -w`, `eslint --fix`,
   or `stylelint --fix` directly (same drift reason as lint). Per-file:
   ```bash
-  make fix-files FILES="cmd/juggler/worker/foo.go web/css/bar.css"
+  make fix-files FILES="cmd/facet/worker/foo.go web/css/bar.css"
   ```
 
 ## Tests
@@ -51,8 +51,8 @@ make build-windows  # Cross-compile bin/windows/*.exe (pure-Go, no cgo)
   make test RUN='TestDiffView/collapsed'  # one subtest
   make test-go RUN='TestWorker'           # restrict to the fast unit layer
   ```
-- Browser tests launch `bin/juggler --assets-from-disk`, serving the local
-  `web/` tree. Once `bin/juggler` exists, web-only edits don't need a rebuild —
+- Browser tests launch `bin/facet --assets-from-disk`, serving the local
+  `web/` tree. Once `bin/facet` exists, web-only edits don't need a rebuild —
   rerun `make test RUN='<name>'` (Go builds are incremental, so this is cheap).
   Rebuild only for Go / embedded-asset / build-file changes.
 
@@ -74,7 +74,7 @@ make build-windows  # Cross-compile bin/windows/*.exe (pure-Go, no cgo)
 ## Conventions
 
 - **No mutexes.** Use goroutines + channels. The one sanctioned `sync.Mutex` is
-  `ycrdtMu` in `cmd/juggler/worker/document.go` (y-crdt C binding isn't
+  `ycrdtMu` in `cmd/facet/worker/document.go` (y-crdt C binding isn't
   goroutine-safe). Any other mutex is a regression.
 - **`docs/` is published user-facing docs only.** Assistant plans, notes, and
   scratch go in `scratch/` (git-ignored); promote to `docs/` only when it's for
@@ -85,12 +85,12 @@ make build-windows  # Cross-compile bin/windows/*.exe (pure-Go, no cgo)
 
 Two binaries, not one:
 
-- **`cmd/juggler` — the server.** Headless terminal process doing all the work:
+- **`cmd/facet` — the server.** Headless terminal process doing all the work:
   HTTP/WebSocket server, session store, and the hidden engine WebView (backend
   JS — tool execution, prompt building). Strictly windowless in production
   (macOS accessory app, `Mac.ActivationPolicy: Accessory`). Never create a
   visible window in the server's production path.
-- **`cmd/juggler-app` — the desktop app** (`bin/Juggler.app`). One long-lived
+- **`cmd/facet-app` — the desktop app** (`bin/Facet.app`). One long-lived
   process owning many visible windows, each a pure viewer pointed at a server
   over HTTP/WebSocket. Connects to a running server (`--url`) or
   spawns/discovers a local one.
@@ -109,19 +109,19 @@ Key invariants:
 
 ## Paths
 
-- **Logs** live in the platform log dir, deliberately OUTSIDE `~/.juggler/`:
-  macOS `~/Library/Logs/Juggler/`, Linux `$XDG_STATE_HOME/juggler/logs/`,
-  Windows `%LOCALAPPDATA%\Juggler\Logs\`. `JUGGLER_LOG_DIR` overrides the dir
+- **Logs** live in the platform log dir, deliberately OUTSIDE `~/.facet/`:
+  macOS `~/Library/Logs/Facet/`, Linux `$XDG_STATE_HOME/facet/logs/`,
+  Windows `%LOCALAPPDATA%\Facet\Logs\`. `FACET_LOG_DIR` overrides the dir
   (tests use it). Layout, rotation, and retention: `docs/logging.md`; code in
   `internal/logpaths` + `internal/jlog`.
-- **Config** (`internal/userpaths`): `ConfigDir()` = `~/.juggler` is the single
+- **Config** (`internal/userpaths`): `ConfigDir()` = `~/.facet` is the single
   source of truth. Durable state (credentials, sessions, extensions) lives
   directly under it; regenerable ephemera under `CacheDir()` =
-  `~/.juggler/cache/`. Doc: `docs/config-directory.md`.
+  `~/.facet/cache/`. Doc: `docs/config-directory.md`.
 
 ## Vendored forks
 
 `3rdparty/wails` is a git submodule (`go.mod` `replace` points at it). After a
 fresh clone: `git submodule update --init --recursive`. It's shallow by default;
 unshallow before rebasing onto upstream. Keep the branch upstream-PR-ready — no
-juggler-specific references.
+facet-specific references.

@@ -5,10 +5,10 @@
 /**
  * Node-backed engine runtime — the Node twin of engine-worker-runtime.js.
  *
- * When Juggler can't host the engine inside a webview (a headless Linux box
+ * When Facet can't host the engine inside a webview (a headless Linux box
  * with no display), the server snapshots the engine module graph to disk and
  * spawns `node engine-host.mjs --server <addr>` (see
- * cmd/juggler/server/engine_snapshot.go and cmd/juggler/app nodeHost). This
+ * cmd/facet/server/engine_snapshot.go and cmd/facet/app nodeHost). This
  * file is that entry: it installs the small set of browser globals the engine
  * graph expects, then imports the real EngineApp (web/js/engine-app.js) from
  * the snapshot beside it.
@@ -19,10 +19,10 @@
 
 // The server address the engine dials, and the per-instance API token. The
 // address arrives on argv (`--server host:port`); the token arrives via env
-// (JUGGLER_TOKEN) so it never appears in the process table.
+// (FACET_TOKEN) so it never appears in the process table.
 const serverAddr = readServerAddr(process.argv);
-const apiToken = process.env.JUGGLER_TOKEN || '';
-const projectRoot = process.env.JUGGLER_PROJECT_ROOT || '';
+const apiToken = process.env.FACET_TOKEN || '';
+const projectRoot = process.env.FACET_PROJECT_ROOT || '';
 const origin = `http://${serverAddr}`;
 
 /**
@@ -38,9 +38,9 @@ function readServerAddr(argv) {
 
 // Mark the engine global BEFORE the graph loads so client-role.isEngine() makes
 // the real wsService connect as role=engine (mirrors engine-worker-runtime.js).
-globalThis.JUGGLER_ENGINE = true;
+globalThis.FACET_ENGINE = true;
 globalThis.__assetPrefix = '';
-globalThis.__jugglerToken = apiToken;
+globalThis.__facetToken = apiToken;
 
 // The engine graph reads globalThis.location to build the WebSocket URL
 // (services/websocket.js: `${protocol}//${loc.host}/api/ws…`) and, via the
@@ -67,7 +67,7 @@ installAPITokenFetchShim(apiToken);
 // extension-provided tools and commands load in node mode, matching the webview
 // worker. Dynamic import of node:module keeps this file free of static engine
 // imports (see the header note); the hooks file is copied to the snapshot root
-// beside this one (cmd/juggler/server/engine_snapshot.go).
+// beside this one (cmd/facet/server/engine_snapshot.go).
 await installEngineLoaderHooks(origin, apiToken);
 
 /**
@@ -103,7 +103,7 @@ function report(event, payload) {
  * from engine-worker-runtime.js's shim, both because Node's fetch (undici)
  * rejects relative URLs where a webview page would resolve them against its
  * origin: (1) relative "/…" URLs are made absolute against the server origin;
- * (2) the X-Juggler-Token header is added to same-origin /api requests, exactly
+ * (2) the X-Facet-Token header is added to same-origin /api requests, exactly
  * as the worker shim does.
  * @param {string} token
  */
@@ -130,7 +130,7 @@ function installAPITokenFetchShim(token) {
           (typeof input !== 'string' && inputAny && inputAny.headers) ||
           undefined
         );
-        headers.set('X-Juggler-Token', token);
+        headers.set('X-Facet-Token', token);
         init.headers = headers;
       }
     } catch { /* fall through to the unmodified fetch */ }

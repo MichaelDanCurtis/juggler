@@ -160,7 +160,7 @@ export const gitStatusCard = {
     /** @type {ReturnType<typeof setInterval>|null} */
     let timer = null;
 
-    // Never run git while Juggler is unfocused: a background `git status` poll
+    // Never run git while Facet is unfocused: a background `git status` poll
     // fighting the user's own git client is worse than a slightly stale card.
     // (We still pass --no-optional-locks server-side, but not polling at all
     // while they're elsewhere is the real fix.) We refresh at once on refocus.
@@ -190,7 +190,7 @@ export const gitStatusCard = {
     };
 
     // Regaining focus refreshes at once, so the card is current the moment the
-    // user looks back at Juggler rather than up to REFRESH_MS stale.
+    // user looks back at Facet rather than up to REFRESH_MS stale.
     const onFocus = () => { refresh(); };
     if (typeof window !== 'undefined') window.addEventListener('focus', onFocus);
 

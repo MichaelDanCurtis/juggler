@@ -17,7 +17,7 @@ import { formatTokens } from '../utils/format.js';
 const USAGE_STALE_MS = 5 * 60 * 1000;
 
 /** localStorage key holding the per-provider list view-state override map. */
-const VIEW_STATE_STORAGE_KEY = 'juggler-model-view-state';
+const VIEW_STATE_STORAGE_KEY = 'facet-model-view-state';
 
 /** The list view-states a provider header toggle cycles through. */
 const VIEW_STATES = ['none', 'top', 'all'];
@@ -261,7 +261,7 @@ class ModelSelector extends HTMLElement {
     this.render();
 
     // Ask the server to re-check external provider state. This catches
-    // cases like `codex login` completing while Juggler is already open;
+    // cases like `codex login` completing while Facet is already open;
     // the fresh list arrives asynchronously via providers-update.
     this.refresh().catch(err => console.warn('[ModelSelector] Failed to refresh providers:', err));
 
@@ -644,7 +644,7 @@ class ModelSelector extends HTMLElement {
     if (this.loadingProviders) {
       return `
                 <li class="menu-item unavailable">
-                    <juggler-spinner style="--size: 0.875rem"></juggler-spinner>
+                    <facet-spinner style="--size: 0.875rem"></facet-spinner>
                     <span>Loading providers...</span>
                 </li>
             `;
@@ -745,7 +745,7 @@ class ModelSelector extends HTMLElement {
     const usage = usageStatsCache.get(providerName);
 
     const spinner = this._usageLoading
-      ? '<juggler-spinner class="model-usage-spinner" style="--size: 1.125rem"></juggler-spinner>'
+      ? '<facet-spinner class="model-usage-spinner" style="--size: 1.125rem"></facet-spinner>'
       : '';
 
     const hasStats = usage && usage.stats && usage.stats.length > 0;

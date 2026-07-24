@@ -9,7 +9,7 @@
  * integration test fails, the failure block can show every iframe's view
  * of what happened on the affected conversation, interleaved by wall
  * clock. Production page loads no-op every recordTape() call (the gate
- * is the truthy `window.__jugglerTrace` flag, set only by the test
+ * is the truthy `window.__facetTrace` flag, set only by the test
  * harness), so there is no cost in normal operation.
  * @module utils/event-tape
  */
@@ -38,12 +38,12 @@ let _size = 0;
 
 /**
  * True when the tape should record. Set by the test harness once at startup
- * (`window.__jugglerTrace = true`); production page loads leave it falsy so
+ * (`window.__facetTrace = true`); production page loads leave it falsy so
  * recordTape() short-circuits in one boolean test.
  * @returns {boolean} True iff tape recording is active
  */
 function _enabled() {
-  return Boolean(/** @type {any} */ (globalThis.window || globalThis).__jugglerTrace);
+  return Boolean(/** @type {any} */ (globalThis.window || globalThis).__facetTrace);
 }
 
 /**

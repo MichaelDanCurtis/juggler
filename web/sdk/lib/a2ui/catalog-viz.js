@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * The `juggler:viz/1` catalog — the visualization payload of Juggler's A2UI
+ * The `facet:viz/1` catalog — the visualization payload of Facet's A2UI
  * support: hand-rolled SVG charts, node/edge diagrams drawn with the named
  * symbol library, and metric tiles. No chart library; everything is plain
  * SVG built the way the rest of the extension builds DOM, with theme-aware

@@ -12,10 +12,10 @@ import (
 	"strings"
 	"testing"
 
-	"juggler/internal/userpaths/userpathstest"
+	"facet/internal/userpaths/userpathstest"
 )
 
-// withHome isolates HOME and clears any ambient JUGGLER_CONFIG_DIR / XDG_* via
+// withHome isolates HOME and clears any ambient FACET_CONFIG_DIR / XDG_* via
 // the shared helper so the resolved paths are deterministic per test.
 func withHome(t *testing.T) string {
 	t.Helper()
@@ -39,13 +39,13 @@ func TestResolveConfigDirPerPlatform(t *testing.T) {
 		getenv func(string) string
 		want   string
 	}{
-		{"macOS", "darwin", home, noenv, filepath.Join(home, ".juggler")},
-		{"windows", "windows", home, noenv, filepath.Join(home, ".juggler")},
+		{"macOS", "darwin", home, noenv, filepath.Join(home, ".facet")},
+		{"windows", "windows", home, noenv, filepath.Join(home, ".facet")},
 		{"linux default (XDG config)", "linux", home, noenv,
-			filepath.Join(home, ".config", "juggler")},
+			filepath.Join(home, ".config", "facet")},
 		{"linux honours XDG_CONFIG_HOME", "linux", home,
 			env(map[string]string{"XDG_CONFIG_HOME": "/xdg/config"}),
-			filepath.Join("/xdg/config", "juggler")},
+			filepath.Join("/xdg/config", "facet")},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -65,13 +65,13 @@ func TestResolveCacheDirPerPlatform(t *testing.T) {
 		getenv func(string) string
 		want   string
 	}{
-		{"macOS", "darwin", home, noenv, filepath.Join(home, ".juggler", "cache")},
-		{"windows", "windows", home, noenv, filepath.Join(home, ".juggler", "cache")},
+		{"macOS", "darwin", home, noenv, filepath.Join(home, ".facet", "cache")},
+		{"windows", "windows", home, noenv, filepath.Join(home, ".facet", "cache")},
 		{"linux default (XDG cache)", "linux", home, noenv,
-			filepath.Join(home, ".cache", "juggler")},
+			filepath.Join(home, ".cache", "facet")},
 		{"linux honours XDG_CACHE_HOME", "linux", home,
 			env(map[string]string{"XDG_CACHE_HOME": "/xdg/cache"}),
-			filepath.Join("/xdg/cache", "juggler")},
+			filepath.Join("/xdg/cache", "facet")},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -115,13 +115,13 @@ func TestConfigDirStable(t *testing.T) {
 	}
 }
 
-// JUGGLER_CONFIG_DIR overrides the home-derived path outright on every platform,
+// FACET_CONFIG_DIR overrides the home-derived path outright on every platform,
 // and CacheDir stays nested beneath it so one override isolates cache too. This
 // is how CI and tests isolate per-user state on a shared/persistent machine.
 func TestConfigDirEnvOverride(t *testing.T) {
 	withHome(t)
 	override := filepath.Join(t.TempDir(), "isolated-config")
-	t.Setenv("JUGGLER_CONFIG_DIR", override)
+	t.Setenv("FACET_CONFIG_DIR", override)
 	if got := ConfigDir(); got != override {
 		t.Fatalf("ConfigDir() = %q, want override %q", got, override)
 	}
@@ -130,11 +130,11 @@ func TestConfigDirEnvOverride(t *testing.T) {
 	}
 }
 
-// An empty JUGGLER_CONFIG_DIR is ignored, falling back to the platform-derived
-// path (so `export JUGGLER_CONFIG_DIR=` doesn't redirect state to a bare path).
+// An empty FACET_CONFIG_DIR is ignored, falling back to the platform-derived
+// path (so `export FACET_CONFIG_DIR=` doesn't redirect state to a bare path).
 func TestConfigDirEnvOverrideEmptyIgnored(t *testing.T) {
 	home := withHome(t)
-	t.Setenv("JUGGLER_CONFIG_DIR", "")
+	t.Setenv("FACET_CONFIG_DIR", "")
 	want := resolveConfigDir(runtime.GOOS, home, os.Getenv)
 	if got := ConfigDir(); got != want {
 		t.Fatalf("empty override not ignored: ConfigDir() = %q, want %q", got, want)
@@ -154,11 +154,11 @@ func TestConfigAndCacheUnderHome(t *testing.T) {
 
 // --- Migration -----------------------------------------------------------
 
-// seedLegacy creates a legacy ~/.juggler tree under home with a config file and
+// seedLegacy creates a legacy ~/.facet tree under home with a config file and
 // a cache subdir file, returning the two sentinel file paths.
 func seedLegacy(t *testing.T, home string) (cfgFile, cacheFile string) {
 	t.Helper()
-	legacy := filepath.Join(home, ".juggler")
+	legacy := filepath.Join(home, ".facet")
 	if err := os.MkdirAll(filepath.Join(legacy, "cache"), 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -179,20 +179,20 @@ func TestMigrateLinuxMovesLegacyTree(t *testing.T) {
 
 	migrate("linux", home, noenv, nil)
 
-	// Config content landed at ~/.config/juggler; cache lifted to ~/.cache/juggler.
-	wantCfg := filepath.Join(home, ".config", "juggler", "credentials.json")
+	// Config content landed at ~/.config/facet; cache lifted to ~/.cache/facet.
+	wantCfg := filepath.Join(home, ".config", "facet", "credentials.json")
 	if !isFile(wantCfg) {
 		t.Errorf("config not migrated: %q missing", wantCfg)
 	}
-	wantCache := filepath.Join(home, ".cache", "juggler", "recents.json")
+	wantCache := filepath.Join(home, ".cache", "facet", "recents.json")
 	if !isFile(wantCache) {
 		t.Errorf("cache not migrated: %q missing", wantCache)
 	}
 	// Legacy tree is gone, and no cache/ was left behind inside the new config dir.
-	if isDir(filepath.Join(home, ".juggler")) {
-		t.Errorf("legacy ~/.juggler still present after migration")
+	if isDir(filepath.Join(home, ".facet")) {
+		t.Errorf("legacy ~/.facet still present after migration")
 	}
-	if isDir(filepath.Join(home, ".config", "juggler", "cache")) {
+	if isDir(filepath.Join(home, ".config", "facet", "cache")) {
 		t.Errorf("cache/ left behind inside the new config dir")
 	}
 }
@@ -206,10 +206,10 @@ func TestMigrateLinuxHonoursXDGEnv(t *testing.T) {
 
 	migrate("linux", home, getenv, nil)
 
-	if !isFile(filepath.Join(xdgConfig, "juggler", "credentials.json")) {
+	if !isFile(filepath.Join(xdgConfig, "facet", "credentials.json")) {
 		t.Errorf("config not migrated into XDG_CONFIG_HOME")
 	}
-	if !isFile(filepath.Join(xdgCache, "juggler", "recents.json")) {
+	if !isFile(filepath.Join(xdgCache, "facet", "recents.json")) {
 		t.Errorf("cache not migrated into XDG_CACHE_HOME")
 	}
 }
@@ -221,7 +221,7 @@ func TestMigrateNoopOnDarwinWindows(t *testing.T) {
 		home := t.TempDir()
 		seedLegacy(t, home)
 		migrate(goos, home, noenv, nil)
-		if !isFile(filepath.Join(home, ".juggler", "credentials.json")) {
+		if !isFile(filepath.Join(home, ".facet", "credentials.json")) {
 			t.Errorf("%s: legacy tree should be untouched", goos)
 		}
 	}
@@ -232,7 +232,7 @@ func TestMigrateNoopOnDarwinWindows(t *testing.T) {
 func TestMigrateDoesNotClobberExistingDest(t *testing.T) {
 	home := t.TempDir()
 	seedLegacy(t, home)
-	dest := filepath.Join(home, ".config", "juggler")
+	dest := filepath.Join(home, ".config", "facet")
 	if err := os.MkdirAll(dest, 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -248,7 +248,7 @@ func TestMigrateDoesNotClobberExistingDest(t *testing.T) {
 	if !strings.Contains(string(data), "existing") {
 		t.Errorf("existing dest config was overwritten")
 	}
-	if !isFile(filepath.Join(home, ".juggler", "credentials.json")) {
+	if !isFile(filepath.Join(home, ".facet", "credentials.json")) {
 		t.Errorf("legacy tree should be left in place when dest exists")
 	}
 }
@@ -257,22 +257,22 @@ func TestMigrateDoesNotClobberExistingDest(t *testing.T) {
 func TestMigrateNoopWhenNoLegacy(t *testing.T) {
 	home := t.TempDir()
 	migrate("linux", home, noenv, nil)
-	if isDir(filepath.Join(home, ".config", "juggler")) {
+	if isDir(filepath.Join(home, ".config", "facet")) {
 		t.Errorf("migration created a config dir with no legacy tree to move")
 	}
 }
 
 // Migrate() (the exported wrapper) refuses to touch anything when
-// JUGGLER_CONFIG_DIR is set — the override owns state placement.
+// FACET_CONFIG_DIR is set — the override owns state placement.
 func TestMigrateSkippedWithOverride(t *testing.T) {
 	home := withHome(t)
 	seedLegacy(t, home)
-	t.Setenv("JUGGLER_CONFIG_DIR", filepath.Join(t.TempDir(), "override"))
+	t.Setenv("FACET_CONFIG_DIR", filepath.Join(t.TempDir(), "override"))
 
 	Migrate(nil)
 
-	if !isFile(filepath.Join(home, ".juggler", "credentials.json")) {
-		t.Errorf("Migrate must not move the legacy tree when JUGGLER_CONFIG_DIR is set")
+	if !isFile(filepath.Join(home, ".facet", "credentials.json")) {
+		t.Errorf("Migrate must not move the legacy tree when FACET_CONFIG_DIR is set")
 	}
 }
 
@@ -284,7 +284,7 @@ func isFile(path string) bool {
 
 // --- Tombstone -----------------------------------------------------------
 
-// migrationRemoveAt is the version at which the one-time ~/.juggler → XDG
+// migrationRemoveAt is the version at which the one-time ~/.facet → XDG
 // migration should be deleted — by then virtually every user has launched a
 // migrating build, so the code is dead weight. Bump only if you deliberately
 // extend the migration window.
@@ -297,7 +297,7 @@ const migrationRemoveAt = "0.6.0"
 func TestMigrationTombstone(t *testing.T) {
 	v := repoVersion(t)
 	if semverGTE(v, migrationRemoveAt) {
-		t.Fatalf("VERSION %s ≥ %s: remove the one-time ~/.juggler → XDG migration "+
+		t.Fatalf("VERSION %s ≥ %s: remove the one-time ~/.facet → XDG migration "+
 			"(grep MIGRATION(xdg): userpaths.Migrate/migrate + its two startup call sites)",
 			v, migrationRemoveAt)
 	}

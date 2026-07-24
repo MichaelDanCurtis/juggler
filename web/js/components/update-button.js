@@ -14,14 +14,14 @@ import { getUpdaterState, startInstall } from '../services/updater-control.js';
  *      notice content (title/html/actions) and latest version.
  *   2. The in-app auto-updater (macOS official builds only), reached over the
  *      loopback control endpoint (seed via op=state, live via the pushed
- *      `juggler:updater-status` event) — tells us downloading/verifying/ready
+ *      `facet:updater-status` event) — tells us downloading/verifying/ready
  *      state, progress, and the restart action.
  *
  * The button is hidden until one of the sources says an update matters, styles
  * itself to the live state (Update → Downloading… n% → Restart to update), and
  * on click opens the shared <update-notice> dialog with the merged view-model.
  * It never auto-opens the dialog — the only non-click opener is the app's
- * "Check for Updates…" menu, which fires `juggler:open-update-dialog`.
+ * "Check for Updates…" menu, which fires `facet:open-update-dialog`.
  *
  * In a browser tab, a free build, or a non-macOS build there is no updater, so
  * the button degrades to the server notice alone and never shows progress.
@@ -75,11 +75,11 @@ class UpdateButton extends HTMLElement {
     // Source 2 — in-app updater. Seed over the control endpoint, then track the
     // pushed snapshots. The app also asks us to open the dialog from its menu.
     void this._seedUpdater();
-    this._onWindow('juggler:updater-status', (e) => {
+    this._onWindow('facet:updater-status', (e) => {
       const detail = /** @type {CustomEvent} */ (e).detail;
       if (detail && typeof detail === 'object') { this._updater = detail; this._scheduleRender(); }
     });
-    this._onWindow('juggler:open-update-dialog', () => this._openDialog(true));
+    this._onWindow('facet:open-update-dialog', () => this._openDialog(true));
 
     this._scheduleRender();
   }

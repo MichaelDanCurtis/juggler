@@ -54,7 +54,7 @@ export async function resolve(specifier, context, nextResolve) {
  */
 export async function load(url, context, nextLoad) {
   if (origin && url.startsWith(origin + '/')) {
-    const res = await fetch(url, token ? { headers: { 'X-Juggler-Token': token } } : undefined);
+    const res = await fetch(url, token ? { headers: { 'X-Facet-Token': token } } : undefined);
     if (!res.ok) {
       throw new Error(`explore_code import failed (${res.status}) for ${url}`);
     }

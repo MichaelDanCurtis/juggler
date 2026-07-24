@@ -97,7 +97,7 @@ export async function runTests(_ctx) {
 
   // === formatCommandForDisplay: newline-splitting for the properties panel ===
 
-  const { formatCommandForDisplay } = await import('../../extensions/juggler-core/context-items/execute-context-item.js');
+  const { formatCommandForDisplay } = await import('../../extensions/facet-core/context-items/execute-context-item.js');
 
   /**
    * @param {string} label

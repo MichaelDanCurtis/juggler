@@ -1,0 +1,14 @@
+{
+  "id": "@facet/a2ui",
+  "name": "Facet A2UI",
+  "version": "0.1.0",
+  "author": "Facet Team",
+  "homepage": "https://a2ui.org",
+  "license": "Apache-2.0",
+  "engineApi": "^1.0.0",
+  "permissions": [],
+  "provides": {
+    "contextItems": ["context-items/*-context-item.js"],
+    "systemPrompt": "system-prompt-contribution.js"
+  }
+}

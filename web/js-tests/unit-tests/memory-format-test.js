@@ -5,7 +5,7 @@
 /**
  * Memory format tests.
  *
- * `memory-format.js` is the pure, total parser/serializer for `.juggler/MEMORY.md`.
+ * `memory-format.js` is the pure, total parser/serializer for `.facet/MEMORY.md`.
  * The grammar is a single `# Memory` heading over a flat list of dated bullets:
  *
  *   # Memory
@@ -26,7 +26,7 @@ import {
   serializeMemory,
   appendEntry,
   removeMatching
-} from '../../extensions/juggler-core/context-items/memory/memory-format.js';
+} from '../../extensions/facet-core/context-items/memory/memory-format.js';
 import { assert } from '../utilities/test-helpers.js';
 
 /**

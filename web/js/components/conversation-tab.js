@@ -677,7 +677,7 @@ class ConversationTab extends HTMLElement {
             e.preventDefault();
             this._selection.markManualInteraction();
             if (this._selection.activeColumnIndex === 0) {
-              document.dispatchEvent(new CustomEvent('juggler:focus-tab-list'));
+              document.dispatchEvent(new CustomEvent('facet:focus-tab-list'));
             } else {
               this._navigateLeft();
             }
@@ -704,8 +704,8 @@ class ConversationTab extends HTMLElement {
             // interrupts that thread (leaves it open); the root column (or a
             // non-thread column like properties) stops everything and closes
             // open sub-threads.
-            // @ts-ignore - jugglerApp is added dynamically in app.js
-            if (window.jugglerApp && window.jugglerApp.shouldHandleEscape()) {
+            // @ts-ignore - facetApp is added dynamically in app.js
+            if (window.facetApp && window.facetApp.shouldHandleEscape()) {
               const focusedThreadId = (activeCol.tagName === 'CONVERSATION-AREA'
                 && typeof (/** @type {any} */ (activeCol).getMessageThread) === 'function')
                 ? (/** @type {any} */ (activeCol).getMessageThread()?.threadItemId ?? null)
@@ -716,7 +716,7 @@ class ConversationTab extends HTMLElement {
               // pending re-affirms it rather than turning it off. Plain Escape =
               // hard cancel, and (per D7) escalates a pending Pause to a full cancel.
               // @ts-ignore
-              window.jugglerApp.cancelLLMOperation(focusedThreadId, { polite: e.shiftKey });
+              window.facetApp.cancelLLMOperation(focusedThreadId, { polite: e.shiftKey });
             }
             // Rule 17: escape while navigating the conversation-area → typing mode.
             if (activeCol.tagName === 'CONVERSATION-AREA') this._focusInput();
@@ -1298,8 +1298,8 @@ class ConversationTab extends HTMLElement {
     const propInputKey = `${conversation.id}:${selectedItemId}`;
     if (/** @type {any} */ (col)._renderedInputKey !== propInputKey) {
       /** @type {any} */ (col)._renderedInputKey = propInputKey;
-      clearTimeout(/** @type {any} */ (col)._juggler_renderTimer);
-      /** @type {any} */ (col)._juggler_renderTimer = setTimeout(() => {
+      clearTimeout(/** @type {any} */ (col)._facet_renderTimer);
+      /** @type {any} */ (col)._facet_renderTimer = setTimeout(() => {
         /** @type {any} */ (col).setConversation(conversation);
         const parentMessageThread = parentEntry?.threadItemId
           ? createMessageThread(conversation, parentEntry.container, parentEntry.threadItemId)
@@ -1490,7 +1490,7 @@ class ConversationTab extends HTMLElement {
     } else {
       overlay.innerHTML = `
         <div class="conversation-tab-loading-content">
-          <juggler-spinner></juggler-spinner>
+          <facet-spinner></facet-spinner>
         </div>
       `;
     }

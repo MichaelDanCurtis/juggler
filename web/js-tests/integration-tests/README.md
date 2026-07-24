@@ -1,6 +1,6 @@
 # Integration Tests
 
-This directory contains integration tests for the Juggler framework. Tests run the **full framework pipeline** with only the LLM mocked.
+This directory contains integration tests for the Facet framework. Tests run the **full framework pipeline** with only the LLM mocked.
 
 ## Quick Start
 
@@ -9,10 +9,10 @@ This directory contains integration tests for the Juggler framework. Tests run t
 make test
 
 # Run all integration tests
-bin/juggler-test --task integration-all
+bin/facet-test --task integration-all
 
 # Run specific test
-bin/juggler-test --task approval-approve
+bin/facet-test --task approval-approve
 ```
 
 ## Architecture
@@ -308,7 +308,7 @@ If a test cannot pass:
 ### Enable Verbose Logging
 
 ```bash
-bin/juggler-test --task my-test --verbose
+bin/facet-test --task my-test --verbose
 ```
 
 ### Capture Actual State

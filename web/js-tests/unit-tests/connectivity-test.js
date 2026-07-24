@@ -205,11 +205,11 @@ export async function runTests(_ctx) {
       ...baseIdle(),
       tunnelEnabled: true,
       tunnelMode: 'p2p',
-      tunnelURL: 'https://juggler.studio/c/abc',
+      tunnelURL: 'https://facet.studio/c/abc',
     });
     try {
       const link = el.querySelector('#connectivity-form .connectivity-url');
-      assert(link && (link.textContent || '').includes('juggler.studio/c/abc'),
+      assert(link && (link.textContent || '').includes('facet.studio/c/abc'),
         'active tunnel shows its URL');
       const labels = [...el.querySelectorAll('#connectivity-form button')]
         .map((b) => (b.textContent || '').trim());

@@ -35,8 +35,8 @@ export function clipboardUnavailableMessage() {
         && loc.protocol === 'http:';
   if (insecure) {
     return `Couldn't copy: browsers only allow clipboard access on secure (https://) pages, `
-            + `localhost, or the Juggler desktop app — and this page is served over plain http `
-            + `(${host}). Open Juggler in the desktop app, or browse over https/localhost, to copy.`;
+            + `localhost, or the Facet desktop app — and this page is served over plain http `
+            + `(${host}). Open Facet in the desktop app, or browse over https/localhost, to copy.`;
   }
   return `Couldn't copy: this browser blocked clipboard access. Make sure the page has focus and `
         + `that clipboard permissions aren't denied for ${host}.`;

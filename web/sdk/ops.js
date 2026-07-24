@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * `juggler/ops` — the privileged host-operations layer.
+ * `facet/ops` — the privileged host-operations layer.
  *
  * This is the keystone of third-party parity: file, shell, web, grep and tree
  * operations that previously only built-in plugins could reach. These ops run

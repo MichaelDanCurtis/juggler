@@ -6,7 +6,7 @@
 /**
  * System-prompt preset registry — the single in-memory catalog of prompt
  * presets (built-ins shipped here, plus the user's saved presets merged in at
- * runtime). It lives in core (not the juggler-core extension) so that core
+ * runtime). It lives in core (not the facet-core extension) so that core
  * seeding/UI can depend on it without a core→extension import; the extension's
  * system-prompt context item depends on core, which is the allowed direction.
  *
@@ -121,7 +121,7 @@ const systemPromptRegistry = new SystemPromptRegistry();
 
 /**
  * Neutral, opinion-free working guidance shared by the general-purpose built-in
- * presets. It describes how Juggler operates (the tool loop, code handling, code
+ * presets. It describes how Facet operates (the tool loop, code handling, code
  * references) in factual terms that apply to any user and any project — no tone,
  * persona, or workflow preferences. Persona/tone choices belong to whoever
  * writes a custom preset, not to the shipped defaults.
@@ -146,7 +146,7 @@ const BUILTIN_PRESETS = [
     description: 'General-purpose coding assistant with neutral working guidance',
     category: 'general',
     builtin: true,
-    content: 'You are Juggler, an AI coding assistant.\n\n' + GLOBAL_GUIDANCE
+    content: 'You are Facet, an AI coding assistant.\n\n' + GLOBAL_GUIDANCE
   },
   {
     id: 'minimal',
@@ -155,7 +155,7 @@ const BUILTIN_PRESETS = [
     description: 'Just the role — no added guidance',
     category: 'general',
     builtin: true,
-    content: 'You are Juggler, a coding assistant.'
+    content: 'You are Facet, a coding assistant.'
   },
   {
     id: 'code-reviewer',
@@ -165,7 +165,7 @@ const BUILTIN_PRESETS = [
     category: 'specialized',
     builtin: true,
     content:
-			'You are Juggler, an AI coding assistant focused on reviewing code. Examine changes for ' +
+			'You are Facet, an AI coding assistant focused on reviewing code. Examine changes for ' +
 			'correctness, edge cases, and clarity, and explain the reasoning behind each point you raise.\n\n' +
 			GLOBAL_GUIDANCE
   }

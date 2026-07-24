@@ -14,7 +14,7 @@ import { FormattingHelpers } from '../../sdk/lib/formatting-helpers.js';
 import toolExecutor from './tool-executor.js';
 import workerManager from './worker-manager.js';
 import wsService from './websocket.js';
-import { APPROVAL_POLICY } from 'juggler/strategy-type';
+import { APPROVAL_POLICY } from 'facet/strategy-type';
 
 /**
  * @typedef {import('../../sdk/lib/message.js').Message} Message
@@ -105,7 +105,7 @@ class ResponseHandler {
    * @param {Array<{id: string, name: string, input: object}>} toolCalls - Tool calls to execute
    * @param {import('../model/message-thread.js').default} messageThread - Message thread
    * @param {Array<{name: string, category?: string}>} [toolDefinitions] - Tool definitions for category lookup (includes strategy-provided tools)
-   * @returns {Promise<import('juggler/strategy-type').ToolOutcome[]>} Outcomes for each tool
+   * @returns {Promise<import('facet/strategy-type').ToolOutcome[]>} Outcomes for each tool
    */
   async executeToolCalls(toolCalls, messageThread, toolDefinitions) {
     return toolExecutor.executeToolCalls(toolCalls, this, messageThread, { toolDefinitions });
@@ -144,7 +144,7 @@ class ResponseHandler {
    * @param {Array<{id: string, name: string, input: object}>} toolCalls - Tool calls to validate
    * @param {import('../model/message-thread.js').MessageThread} messageThread - Message thread
    * @param {Array<{name: string, category?: string, input_schema?: object}>} [toolDefinitions] - Tool definitions
-   * @returns {Promise<import('juggler/strategy-type').ToolsValidationResult>} Validation results
+   * @returns {Promise<import('facet/strategy-type').ToolsValidationResult>} Validation results
    */
   async validateToolCalls(toolCalls, messageThread, toolDefinitions) {
     // Empty input is valid
@@ -174,7 +174,7 @@ class ResponseHandler {
     }
 
     // Validate each tool call
-    /** @type {import('juggler/strategy-type').ToolValidationResult[]} */
+    /** @type {import('facet/strategy-type').ToolValidationResult[]} */
     const results = await Promise.all(toolCalls.map(async (tc) => {
       // Check malformed
       if (!tc || typeof tc !== 'object') {
@@ -922,7 +922,7 @@ class ResponseHandler {
         // about to stamp 'cancelled' (e.g. a rerun whose execution got
         // spuriously aborted), the tool wedges at running-with-no-result
         // — surface the decision on every viewer's tape.
-        wsService.sendEngineBridge('juggler-tool-exec', {
+        wsService.sendEngineBridge('facet-tool-exec', {
           toolUseId: toolCall.id,
           toolName: toolCall.name,
           conversationId: /** @type {any} */ (this._conversation)?.id,
@@ -1037,7 +1037,7 @@ class ResponseHandler {
    * @param {any} toolCall - Tool call object
    * @param {import('./context-writer.js').ContextWriter} _ctx - ContextWriter (unused - executeContextItem handles execution)
    * @param {import('../model/message-thread.js').default} messageThread - Message thread
-   * @returns {Promise<import('juggler/context-item').ToolCallResult>} Result of context item tool call execution
+   * @returns {Promise<import('facet/context-item').ToolCallResult>} Result of context item tool call execution
    * @private
    */
   async _executeContextItemToolCall(itemDetails, toolCall, _ctx, messageThread) {

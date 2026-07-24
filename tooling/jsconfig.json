@@ -19,17 +19,17 @@
       "/js/*": ["web/js/*"],
       "/extensions/*": ["web/extensions/*"],
       "yjs": ["tooling/node_modules/yjs"],
-      "juggler/context-item": ["web/sdk/context-item.js"],
-      "juggler/strategy-type": ["web/sdk/strategy-type.js"],
-      "juggler/command-type": ["web/sdk/command-type.js"],
-      "juggler/ops": ["web/sdk/ops.js"],
-      "juggler/sandbox": ["web/sdk/sandbox.js"],
-      "juggler/ui": ["web/sdk/ui.js"],
-      "juggler/model": ["web/sdk/model.js"],
-      "juggler/item-utils": ["web/sdk/item-utils.js"],
-      "juggler/registry": ["web/sdk/registry.js"],
-      "juggler/version": ["web/sdk/version.js"],
-      "juggler/utils/html": ["web/js/utils/html.js"]
+      "facet/context-item": ["web/sdk/context-item.js"],
+      "facet/strategy-type": ["web/sdk/strategy-type.js"],
+      "facet/command-type": ["web/sdk/command-type.js"],
+      "facet/ops": ["web/sdk/ops.js"],
+      "facet/sandbox": ["web/sdk/sandbox.js"],
+      "facet/ui": ["web/sdk/ui.js"],
+      "facet/model": ["web/sdk/model.js"],
+      "facet/item-utils": ["web/sdk/item-utils.js"],
+      "facet/registry": ["web/sdk/registry.js"],
+      "facet/version": ["web/sdk/version.js"],
+      "facet/utils/html": ["web/js/utils/html.js"]
     }
   },
   "include": [

@@ -184,7 +184,7 @@ export const threadDoesNotInheritRootContextTest = {
  * sub-thread turn. Result: the LLM's sub-thread saw the system prompt but no
  * agents file and no memory.
  *
- * Setup seeds a real project layout — CLAUDE.md on disk + `.juggler/MEMORY.md` —
+ * Setup seeds a real project layout — CLAUDE.md on disk + `.facet/MEMORY.md` —
  * then creates a fresh conversation so both auto-seed onto root
  * ([system-prompt, file-content(CLAUDE.md), memory, …]). The LLM then spawns a
  * sub-thread. The sub-thread's first-turn blob (systemPrompt + messages) MUST
@@ -199,7 +199,7 @@ export const threadInheritsFoundationalContextTest = {
 
   setupFiles: {
     'CLAUDE.md': '# Agent Instructions\n\nAGENTFILE_MARKER_ZZZ: follow the house style.\n',
-    '.juggler/MEMORY.md': '# Memory\n\n- [2026-06-14] MEMORY_MARKER_ZZZ: build with make build\n'
+    '.facet/MEMORY.md': '# Memory\n\n- [2026-06-14] MEMORY_MARKER_ZZZ: build with make build\n'
   },
 
   llmResponses: [],
@@ -244,7 +244,7 @@ export const threadInheritsFoundationalContextTest = {
  * WRONGLY TERMINATES the run: any standing context item positioned after it is
  * dropped from what the sub-thread inherits.
  *
- * This test forces that order. It seeds `.juggler/MEMORY.md` but NO CLAUDE.md, so
+ * This test forces that order. It seeds `.facet/MEMORY.md` but NO CLAUDE.md, so
  * a fresh conversation's root is [system-prompt, memory]. It then pins a
  * user-position agents-style file (README) onto root BEFORE any message — landing
  * it in the leading run but AFTER memory: [system-prompt, memory, file-content].
@@ -262,7 +262,7 @@ export const threadInheritsStandingContextAfterMemoryTest = {
   pollutesFixtureRoot: true,
 
   setupFiles: {
-    '.juggler/MEMORY.md': '# Memory\n\n- [2026-06-14] MEMORY_MARKER_ZZZ: build with make build\n'
+    '.facet/MEMORY.md': '# Memory\n\n- [2026-06-14] MEMORY_MARKER_ZZZ: build with make build\n'
   },
 
   llmResponses: [],

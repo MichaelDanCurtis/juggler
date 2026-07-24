@@ -1,10 +1,10 @@
 # Distribution: two binaries, one unit
 
-Juggler is two programs, not one:
+Facet is two programs, not one:
 
-- **`juggler`** (`juggler.exe` on Windows) — the headless command-line server.
+- **`facet`** (`facet.exe` on Windows) — the headless command-line server.
   It does all the work: HTTP/WebSocket server, session store, tool execution.
-- **Juggler app** (`juggler-app.exe`) — the native desktop app. It owns the
+- **Facet app** (`facet-app.exe`) — the native desktop app. It owns the
   windows and is otherwise a thin client pointed at a server.
 
 These two are versioned and shipped **together, as one indivisible unit**. The
@@ -28,27 +28,27 @@ sibling lookup resolves the matching server.
 
 ### macOS — `.dmg`
 
-The `.dmg` contains `Juggler.app`, a normal drag-to-Applications bundle. Both
-binaries live *inside* the bundle (`Juggler.app/Contents/MacOS/`), so the app
+The `.dmg` contains `Facet.app`, a normal drag-to-Applications bundle. Both
+binaries live *inside* the bundle (`Facet.app/Contents/MacOS/`), so the app
 and its server can never be separated — moving or copying the app moves both.
 Launching the app spawns the bundled server automatically.
 
 > **Opening on macOS.** Downloaded builds are quarantined by Gatekeeper. The
-> first time you open Juggler, right-click (or Control-click) the app → **Open**
+> first time you open Facet, right-click (or Control-click) the app → **Open**
 > → **Open**, or go to **System Settings → Privacy & Security → Open Anyway**.
 > After the first launch it opens normally.
 
 ### Windows — installer
 
-`Juggler-<version>-setup.exe` (built with Inno Setup, see
-`packaging/windows/juggler.iss`) writes `juggler-app.exe` and `juggler.exe` into
-one install directory as siblings and can add `juggler` to your `PATH`. Because
+`Facet-<version>-setup.exe` (built with Inno Setup, see
+`packaging/windows/facet.iss`) writes `facet-app.exe` and `facet.exe` into
+one install directory as siblings and can add `facet` to your `PATH`. Because
 they land in the same directory in a single install step, the two never drift
 apart. Uninstalling removes both.
 
 ### Linux — server binary
 
-Linux ships the `juggler` server binary; run it from a terminal and connect with
+Linux ships the `facet` server binary; run it from a terminal and connect with
 a browser or the desktop app. There is no separate app package yet.
 
 ### Planned: Homebrew cask / winget
@@ -61,6 +61,6 @@ independently.
 
 ## The invariant, restated
 
-However Juggler reaches your machine, the desktop app and its server arrive and
+However Facet reaches your machine, the desktop app and its server arrive and
 install as one unit, in one place, and the app spawns the server sitting beside
 it. Never install, package, or update the two halves separately.

@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * `juggler/ui` — DOM, rendering and formatting helpers for an extension's
+ * `facet/ui` — DOM, rendering and formatting helpers for an extension's
  * properties panel and result rendering.
  *
  * Curated re-export façade: only the symbols built-ins actually depend on are

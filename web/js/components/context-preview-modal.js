@@ -14,7 +14,7 @@ import { markPopupOpen } from '../utils/popup-manager.js';
  * with section navigation sidebar, a byte-size readout, and copy-to-clipboard.
  * The readout is bytes rather than tokens because the client ships no encoder;
  * the exact token count lives on the conversation footer behind the modal.
- * @typedef {import('juggler/context-item').default} ContextItemInstance
+ * @typedef {import('facet/context-item').default} ContextItemInstance
  * @typedef {import('../services/api.js').Message} Message
  */
 

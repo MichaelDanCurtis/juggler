@@ -166,7 +166,7 @@ export default [
       // This prevents regression back to the old window.* pattern.
       // Services, registries, and stores MUST use ES6 imports.
       // Acceptable window.* usage: showAlert, showConfirm, showPrompt,
-      // jugglerApp (debugging), browser APIs
+      // facetApp (debugging), browser APIs
       'no-restricted-syntax': [
         'error',
         // ===================================================================
@@ -345,7 +345,7 @@ export default [
   {
     files: [
       'web/sdk/lib/error-utils.js',
-      'web/extensions/juggler-core/context-items/*.js',
+      'web/extensions/facet-core/context-items/*.js',
       // Worker entry/diagnostic files follow the same safe
       // `err instanceof Error ? err.message : String(err)` pattern.
       'web/js/engine-worker-runtime.js',

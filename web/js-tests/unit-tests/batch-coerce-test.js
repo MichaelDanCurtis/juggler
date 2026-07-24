@@ -23,7 +23,7 @@
  */
 
 import { assert } from '../utilities/test-helpers.js';
-import BatchContextItem from '../../extensions/juggler-core/context-items/batch-context-item.js';
+import BatchContextItem from '../../extensions/facet-core/context-items/batch-context-item.js';
 
 /**
  * @typedef {object} TestResult
@@ -66,8 +66,8 @@ export async function runTests(_ctx) {
   });
 
   const stringifiedSearches = JSON.stringify([
-    { pattern: 'window/control', glob: 'cmd/juggler/server/*.go', output_mode: 'content' },
-    { pattern: 'instance.json|Addr|port', glob: 'cmd/juggler/core/*.go', output_mode: 'content' }
+    { pattern: 'window/control', glob: 'cmd/facet/server/*.go', output_mode: 'content' },
+    { pattern: 'instance.json|Addr|port', glob: 'cmd/facet/core/*.go', output_mode: 'content' }
   ]);
 
   await run('_coerceArray parses a JSON-string-of-an-array', () => {

@@ -5,7 +5,7 @@
 import { formatRelativeDateTime } from '../utils/format.js';
 import { markPopupOpen } from '../utils/popup-manager.js';
 import { showAlert, showConfirm } from './modal-dialog.js';
-import JugglerElement from './juggler-element.js';
+import FacetElement from './facet-element.js';
 
 /**
  * @typedef {object} BinnedConvRow
@@ -22,7 +22,7 @@ import JugglerElement from './juggler-element.js';
  * auto-expires). Re-fetches the list every time it's opened; refreshes after
  * each user action so restore/delete results are immediately visible.
  */
-class BinModal extends JugglerElement {
+class BinModal extends FacetElement {
   constructor() {
     super();
     /** @type {import('../model/session.js').default|null} @private */

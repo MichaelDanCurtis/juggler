@@ -7,8 +7,8 @@ package integration_test
 import (
 	"testing"
 
-	"juggler/cmd/juggler/core"
-	"juggler/tests/helpers"
+	"facet/cmd/facet/core"
+	"facet/tests/helpers"
 )
 
 func TestConfig_Default(t *testing.T) {

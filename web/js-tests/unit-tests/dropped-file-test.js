@@ -19,7 +19,7 @@
  * @module unit-tests/dropped-file-test
  */
 
-import DroppedFileContextItem from '../../extensions/juggler-core/context-items/dropped-file-context-item.js';
+import DroppedFileContextItem from '../../extensions/facet-core/context-items/dropped-file-context-item.js';
 import { normalizeDraft } from '../../js/utils/attachments.js';
 import { initializeRegistries, assert } from '../utilities/test-helpers.js';
 import '../../js/components/input-box.js';

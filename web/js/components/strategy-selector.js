@@ -11,7 +11,7 @@ import { DROPDOWN_ARROW_SVG } from '../utils/icons.js';
  * Strategy Selector - Dropdown component for selecting conversation strategy
  * @typedef {object} StrategyManifestInfo
  * @property {string} id - Strategy ID
- * @property {import('juggler/strategy-type').StrategyManifest} manifest - Strategy manifest
+ * @property {import('facet/strategy-type').StrategyManifest} manifest - Strategy manifest
  */
 
 class StrategySelector extends HTMLElement {

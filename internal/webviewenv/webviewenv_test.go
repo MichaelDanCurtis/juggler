@@ -121,15 +121,15 @@ func TestMessagePerOS(t *testing.T) {
 		excludes []string
 	}{
 		{"linux apt without xvfb", "linux", linuxHost{pm: "apt-get"},
-			[]string{reason, "sudo apt-get install -y xvfb", "xvfb-run -a juggler", "WEBKIT_DISABLE", "apparmor_restrict_unprivileged_userns", "WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS"},
+			[]string{reason, "sudo apt-get install -y xvfb", "xvfb-run -a facet", "WEBKIT_DISABLE", "apparmor_restrict_unprivileged_userns", "WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS"},
 			nil},
 		{"linux dnf without xvfb", "linux", linuxHost{pm: "dnf"},
 			[]string{"sudo dnf install -y xorg-x11-server-Xvfb"}, nil},
 		{"linux xvfb already installed skips the install step", "linux", linuxHost{pm: "apt-get", hasXvfb: true},
-			[]string{"xvfb-run -a juggler"},
+			[]string{"xvfb-run -a facet"},
 			[]string{"install -y xvfb"}},
 		{"linux unknown package manager gets generic advice", "linux", linuxHost{},
-			[]string{"Xvfb package", "xvfb-run -a juggler"},
+			[]string{"Xvfb package", "xvfb-run -a facet"},
 			[]string{"install -y"}},
 		{"darwin", "darwin", linuxHost{}, []string{reason, "Aqua", "LaunchAgent"}, nil},
 		{"windows", "windows", linuxHost{}, []string{reason, "WebView2", "interactive user session"}, nil},
