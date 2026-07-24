@@ -17,6 +17,7 @@
  */
 
 import workerManager from '../services/worker-manager.js';
+import { setPzxContext } from './prizmanyx-context.js';
 
 /** @type {import('../model/session.js').default|null} */
 let _session = null;
@@ -154,6 +155,21 @@ function onMessage(event) {
     );
   } else if (msg.type === 'facet:details') {
     setDetailsState(msg);
+  } else if (
+    msg.type === 'facet:context' &&
+    typeof msg.programId === 'number' &&
+    typeof msg.token === 'string' &&
+    typeof msg.webBase === 'string'
+  ) {
+    // The parent hands the native Workspace/Browser panes their Prizmanyx
+    // capability (program id + token + web origin). Origin-gated like every
+    // command above; persisted so the pop-out window shares it.
+    setPzxContext({
+      programId: msg.programId,
+      token: msg.token,
+      webBase: msg.webBase,
+      expires: typeof msg.expires === 'number' ? msg.expires : 0,
+    });
   }
 }
 

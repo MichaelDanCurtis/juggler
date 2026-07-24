@@ -23,6 +23,7 @@ import { markSeen } from './services/tips-manager.js';
 import { updateWindowTitle } from './utils/window-title.js';
 import { initAttention } from './utils/attention-manager.js';
 import { initEmbedBridge } from './utils/embed-bridge.js';
+import { initPzxContext } from './utils/prizmanyx-context.js';
 import scheduledSendService from './services/scheduled-send-service.js';
 import { initViewportFit } from './utils/viewport-fit.js';
 import { openExternalURL, externalURLFromHref } from '../sdk/lib/window-control.js';
@@ -260,6 +261,10 @@ class JugglerApp {
     // Prizmanyx fork: mirror conversation tabs to the embedding shell's
     // section sidebar (no-op outside an iframe; see utils/embed-bridge.js).
     initEmbedBridge(session);
+
+    // Prizmanyx fork: track the active conversation for the panel's native
+    // Workspace pane ("This task") — embedded AND standalone/pop-out.
+    initPzxContext(session);
 
     // Poll every conversation for a due scheduled send ("send after a delay")
     // and fire it — regardless of which thread is currently on screen.

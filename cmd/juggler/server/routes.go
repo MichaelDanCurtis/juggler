@@ -372,6 +372,13 @@ func (s *Server) setupRoutes() {
 	api.HandleFunc("/version", s.handleVersion).Methods("GET")
 	api.HandleFunc("/update-status", s.handleUpdateStatus).Methods("GET")
 
+	// Prizmanyx console panes: same-origin proxy to the Prizmanyx API (no-op
+	// without PRIZMANYX_API_BASE) + the server-held console context that every
+	// fork window shares (token-gated /api path). See prizmanyx_proxy.go.
+	s.registerPrizmanyxProxy()
+	api.HandleFunc("/pzx-context", s.handleGetPzxContext).Methods("GET")
+	api.HandleFunc("/pzx-context", s.handlePutPzxContext).Methods("PUT")
+
 	// Serve extension containers straight off disk. ExtensionsAPI owns these
 	// paths; a "" path (e.g. no-project mode) simply registers no route.
 	if userDir := s.extensionsAPI.UserExtensionDir(); userDir != "" {

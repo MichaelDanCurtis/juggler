@@ -1106,8 +1106,22 @@ class ConversationTab extends HTMLElement {
         }
       }
 
-      // Remove excess old columns
-      for (let i = chain.length; i < this._columns.length; i++) {
+      // Prizmanyx fork: the right rail is PERSISTENT — it hosts the panel's
+      // Details | Workspace | Browser tabs, so it must exist even with nothing
+      // selected (Details then shows its built-in empty state). When the chain
+      // ends without a properties column, append one with no selection; when a
+      // selection later creates a real properties entry at this index, the
+      // builder reuses this same element, so the rail never flickers.
+      if (
+        newColumns.length === 0 ||
+        newColumns[newColumns.length - 1].tagName !== 'PROPERTIES-PANEL'
+      ) {
+        newColumns.push(this._buildRailColumn(newColumns.length, conversation));
+      }
+
+      // Remove excess old columns (bounded by newColumns, not chain — the
+      // persistent rail above may extend past the chain).
+      for (let i = newColumns.length; i < this._columns.length; i++) {
         /** @type {HTMLElement} */ (this._columns[i]).remove();
       }
 
@@ -1299,6 +1313,34 @@ class ConversationTab extends HTMLElement {
       }, 150);
     }
 
+    return col;
+  }
+
+  /**
+   * Build (or reuse) the PERSISTENT rail column — a properties-panel with no
+   * selection, appended when the chain ends without one so the panel's
+   * Details/Workspace/Browser tabs are always reachable (Prizmanyx fork).
+   * @param {number} i
+   * @param {any} conversation
+   * @returns {HTMLElement}
+   * @private
+   */
+  _buildRailColumn(i, conversation) {
+    const existingCol = this._columns[i];
+    let col;
+    if (existingCol && existingCol.tagName === 'PROPERTIES-PANEL') {
+      col = existingCol;
+    } else {
+      if (existingCol) existingCol.remove();
+      col = document.createElement('properties-panel');
+      /** @type {any} */ (this._columnContainer).appendChild(col);
+    }
+    const railKey = `${conversation.id}:rail`;
+    if (/** @type {any} */ (col)._renderedInputKey !== railKey) {
+      /** @type {any} */ (col)._renderedInputKey = railKey;
+      /** @type {any} */ (col).setConversation(conversation);
+      /** @type {any} */ (col).clearSelection();
+    }
     return col;
   }
 

@@ -23,6 +23,9 @@ import { dispatchItemRenderer, renderContextItem } from '../services/renderers/i
 import workerManager from '../services/worker-manager.js';
 import { setupColumnResize } from '../utils/column-resize.js';
 import { formatRelativeDateTime } from '../utils/format.js';
+// Prizmanyx fork: register the panel's Workspace/Browser tab panes.
+import './facet-workspace-pane.js';
+import './facet-browser-pane.js';
 
 /**
  * @typedef {import('../model/conversation.js').default} Conversation
@@ -138,6 +141,10 @@ class PropertiesPanel extends HTMLElement {
   selectItem(itemId) {
     this._transactionMode = null;
     this._selectedItemId = itemId;
+    // An explicit selection means "show me the details" — bring the Details
+    // tab forward even if the panel was on Workspace/Browser. Clearing a
+    // selection (itemId null) never yanks the user's chosen tab.
+    if (itemId !== null) this._activatePanelTab?.('details');
     this._renderContent();
   }
 
@@ -156,6 +163,7 @@ class PropertiesPanel extends HTMLElement {
     this._renderedItemId = null;
     this._liveUpdater = null;
     this._lastSnapshot = null;
+    this._activatePanelTab?.('details');
     this._renderTransactionContent();
   }
 
@@ -296,6 +304,11 @@ class PropertiesPanel extends HTMLElement {
             <button class="properties-panel-collapse" type="button"
                     title="Collapse the details panel"
                     aria-label="Toggle the details panel">⟩</button>
+            <div class="facet-panel-tabs" role="tablist" aria-label="Panel view">
+                <button type="button" role="tab" data-panel-tab="details">Details</button>
+                <button type="button" role="tab" data-panel-tab="workspace">Workspace</button>
+                <button type="button" role="tab" data-panel-tab="browser">Browser</button>
+            </div>
             <properties-panel-content>
                 <properties-panel-empty>
                     <span class="properties-panel-empty-icon">
@@ -306,8 +319,11 @@ class PropertiesPanel extends HTMLElement {
                     <span class="properties-panel-empty-text">Select an item to view details</span>
                 </properties-panel-empty>
             </properties-panel-content>
+            <facet-workspace-pane hidden></facet-workspace-pane>
+            <facet-browser-pane hidden></facet-browser-pane>
             <col-resize-handle></col-resize-handle>
         `;
+    this._setupPanelTabs();
     // Collapsible details rail (Prizmanyx 2026-07-24): the toggle folds the
     // panel to a slim strip and remembers the choice; the strip's button
     // re-expands. Width is CSS-forced while collapsed, so the stored
@@ -334,6 +350,54 @@ class PropertiesPanel extends HTMLElement {
       /* default expanded */
     }
     setupColumnResize(this, 'juggler-properties-panel-width');
+  }
+
+  /**
+   * The panel is ONE switchable region — Details (the tool-call inspector),
+   * Workspace (per-task Prizmanyx files), Browser (gateway browsing) — native
+   * fork UI, present in the embedded console and the standalone window alike.
+   * Details keeps the whole existing properties-panel-content rendering path;
+   * the other two tabs swap it for their pane component. Choice persists.
+   * @private
+   */
+  _setupPanelTabs() {
+    const tabs = /** @type {NodeListOf<HTMLButtonElement>} */ (
+      this.querySelectorAll('[data-panel-tab]')
+    );
+    /** @param {string} name */
+    const activate = (name) => {
+      this.setAttribute('data-panel-view', name);
+      for (const tab of tabs) {
+        tab.setAttribute('aria-selected', tab.dataset.panelTab === name ? 'true' : 'false');
+      }
+      const content = this.querySelector('properties-panel-content');
+      const workspace = this.querySelector('facet-workspace-pane');
+      const browser = this.querySelector('facet-browser-pane');
+      content?.toggleAttribute('hidden', name !== 'details');
+      workspace?.toggleAttribute('hidden', name !== 'workspace');
+      browser?.toggleAttribute('hidden', name !== 'browser');
+      if (name === 'workspace') /** @type {any} */ (workspace)?.refresh?.();
+      if (name === 'browser') /** @type {any} */ (browser)?.refresh?.();
+      try {
+        localStorage.setItem('facet-panel-tab', name);
+      } catch {
+        /* per-session only */
+      }
+    };
+    for (const tab of tabs) {
+      tab.addEventListener('click', () => activate(/** @type {string} */ (tab.dataset.panelTab)));
+    }
+    // selectItem/setTransaction bring Details forward through this handle.
+    /** @type {(name: string) => void} */
+    this._activatePanelTab = activate;
+    let initial = 'details';
+    try {
+      const saved = localStorage.getItem('facet-panel-tab');
+      if (saved === 'workspace' || saved === 'browser') initial = saved;
+    } catch {
+      /* default details */
+    }
+    activate(initial);
   }
 
   /**

@@ -106,7 +106,7 @@ html.embed-mode #conversation-bar {
   font-size: 11px; line-height: 1; cursor: pointer;
 }
 .properties-panel-collapse:hover { color: var(--text-primary); }
-properties-panel > properties-panel-content { padding-top: 26px; }
+/* (chevron clearance now comes from the tab strip's padding-left) */
 properties-panel[data-collapsed] {
   width: 30px !important; min-width: 30px !important;
   flex: 0 0 30px !important;
@@ -120,3 +120,84 @@ properties-panel[data-collapsed] .properties-panel-collapse {
    pane in this region, the inspector is removed entirely — no 30px stub to
    stack beside the shell's dock (embed-bridge sets data-embed-hidden). */
 properties-panel[data-embed-hidden] { display: none !important; }
+
+/* ── Panel tabs: Details | Workspace | Browser (2026-07-24) ──────────────────
+   The right rail is ONE switchable region, native to Facet — same tabs in the
+   embedded console and the standalone window. Collapse folds it all. */
+.facet-panel-tabs {
+  display: flex; gap: 2px;
+  padding: 6px 8px 0 30px; /* clear the collapse chevron */
+  border-bottom: 1px solid var(--border-divider);
+}
+.facet-panel-tabs [role="tab"] {
+  font-size: 11px; padding: 4px 10px 6px;
+  background: none; border: none; cursor: pointer;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+}
+.facet-panel-tabs [role="tab"][aria-selected="true"] {
+  color: var(--text-primary);
+  border-bottom-color: var(--accent-blue);
+}
+properties-panel > properties-panel-content { padding-top: 4px; }
+/* The [hidden] UA default loses to the author display:flex on
+   properties-panel-content (components.css) — restate it so tab switching
+   actually hides the inspector. */
+properties-panel-content[hidden] { display: none; }
+properties-panel[data-collapsed] .facet-panel-tabs,
+properties-panel[data-collapsed] facet-workspace-pane,
+properties-panel[data-collapsed] facet-browser-pane { display: none; }
+
+/* The panes themselves */
+facet-workspace-pane, facet-browser-pane {
+  display: flex; flex-direction: column; gap: 8px;
+  flex: 1; min-height: 0; padding: 10px 12px; overflow: hidden;
+}
+facet-workspace-pane[hidden], facet-browser-pane[hidden] { display: none; }
+.pzx-pane-toolbar { display: flex; gap: 6px; align-items: center; flex: none; }
+.pzx-scope, .pzx-upload, .pzx-go {
+  font-size: 11px; padding: 3px 10px; cursor: pointer;
+  background: none; color: var(--text-secondary);
+  border: 1px solid var(--border-divider); border-radius: 4px;
+}
+.pzx-scope.is-active { color: var(--text-primary); border-color: var(--text-secondary); }
+.pzx-scope[disabled] { opacity: 0.5; cursor: default; }
+.pzx-upload { margin-left: auto; }
+.pzx-address {
+  flex: 1; min-width: 80px; font-size: 11px; padding: 4px 8px;
+  font-family: var(--font-mono, monospace);
+  background: var(--background-secondary, transparent);
+  color: var(--text-primary);
+  border: 1px solid var(--border-divider); border-radius: 4px;
+}
+.pzx-pane-status { flex: none; font-size: 10px; color: var(--text-secondary); }
+.pzx-pane-empty, .pzx-pane-error {
+  flex: none; font-size: 12px; line-height: 1.5; color: var(--text-secondary);
+  padding: 10px; border: 1px dashed var(--border-divider); border-radius: 4px;
+}
+.pzx-pane-error { color: var(--text-error, #f66); border-style: solid; }
+.pzx-file-list {
+  list-style: none; margin: 0; padding: 0;
+  overflow-y: auto; min-height: 0;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.pzx-file-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 9px; font-size: 12px;
+  border: 1px solid var(--border-divider); border-radius: 4px;
+}
+.pzx-file-name {
+  flex: 1; min-width: 0; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap;
+  color: var(--text-primary); text-decoration: none;
+}
+.pzx-file-size { flex: none; font-size: 10px; color: var(--text-secondary); }
+.pzx-file-delete {
+  flex: none; background: none; border: none; cursor: pointer;
+  color: var(--text-secondary); font-size: 12px; padding: 0;
+}
+.pzx-browser-frame {
+  flex: 1; min-height: 0; width: 100%;
+  border: 1px solid var(--border-divider); border-radius: 4px;
+  background: var(--background-secondary, transparent);
+}
