@@ -12,7 +12,7 @@ import (
 )
 
 // lockedProjectError means another process still holds a project's OS-level
-// lock, but its instance metadata cannot be verified as a running Juggler
+// lock, but its instance metadata cannot be verified as a running Facet
 // server. The desktop app presents this in an otherwise empty window instead of
 // silently dropping a restored session.
 type lockedProjectError struct {
@@ -30,11 +30,11 @@ func (e *lockedProjectError) Error() string {
 
 func (e *lockedProjectError) message() string {
 	lockPath := filepath.Join(e.project, ".juggler", "juggler.lock")
-	message := "This project is locked by another process, but Juggler could not connect to the session that holds it.\n\n" +
+	message := "This project is locked by another process, but Facet could not connect to the session that holds it.\n\n" +
 		"The lock file is:\n" + lockPath + "\n\n" +
-		"If you are sure no other Juggler process is running for this project, quit Juggler, delete that file, then reopen the project."
+		"If you are sure no other Facet process is running for this project, quit Facet, delete that file, then reopen the project."
 	if e.info != nil {
-		message += fmt.Sprintf("\n\nThe lock recorded Juggler process %d at %s:%d, but it did not respond as this project.", e.info.PID, e.info.Host, e.info.Port)
+		message += fmt.Sprintf("\n\nThe lock recorded Facet process %d at %s:%d, but it did not respond as this project.", e.info.PID, e.info.Host, e.info.Port)
 	}
 	return message
 }

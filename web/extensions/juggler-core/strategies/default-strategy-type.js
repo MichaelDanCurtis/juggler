@@ -25,7 +25,7 @@ export default class DefaultStrategyType extends StrategyType {
     id: 'default',
     name: 'Default Strategy',
     version: '2.0.0',
-    description: 'Standard Juggler behavior - general-purpose coding assistant',
+    description: 'Standard Facet behavior - general-purpose coding assistant',
     author: 'Juggler Team',
     color: 'var(--accent-yellow)',
     showsApprovalControls: true,

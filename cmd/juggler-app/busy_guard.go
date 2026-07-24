@@ -128,7 +128,7 @@ func (a *appState) confirmThenQuit() {
 	}
 	if total > 0 {
 		msg := busyMessage(total, "Quitting")
-		if !a.confirmDiscard(nil, "Quit Juggler?", msg, "Quit anyway") {
+		if !a.confirmDiscard(nil, "Quit Facet?", msg, "Quit anyway") {
 			return // user chose to keep working
 		}
 	}

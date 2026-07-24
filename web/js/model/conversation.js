@@ -1374,7 +1374,7 @@ class Conversation {
     // they try to send — and leave their message in the box. Slash commands
     // were already handled above, so the Extensions settings stay reachable.
     if (!strategyRegistry.hasAnyStrategy()) {
-      this.showWarning("Can't start a conversation — the core Juggler extension is turned off. Re-enable it in Extensions settings to continue.", 8000);
+      this.showWarning("Can't start a conversation — the core Facet extension is turned off. Re-enable it in Extensions settings to continue.", 8000);
       return 'no strategy enabled';
     }
 

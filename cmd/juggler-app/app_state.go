@@ -170,7 +170,7 @@ func (a *appState) initApplication() {
 	// os.Exit(1) fatal path — produces no output at all. See wailsLogHandlers.
 	wailsLogger, onWailsError, onWailsWarn, onWailsPanic := wailsLogHandlers()
 	a.app = application.New(application.Options{
-		Name:           "Juggler",
+		Name:           "Facet",
 		Description:    "Prizmanyx Console",
 		Logger:         wailsLogger,
 		LogLevel:       slog.LevelDebug,
@@ -193,7 +193,7 @@ func (a *appState) initApplication() {
 		// synchronously, so the real decision happens asynchronously and a
 		// confirmed quit re-issues app.Quit() with the quitting flag set.
 		ShouldQuit: a.shouldQuit,
-		Linux:      application.LinuxOptions{ProgramName: "Juggler"},
+		Linux:      application.LinuxOptions{ProgramName: "Facet"},
 		Windows: application.WindowsOptions{
 			AdditionalBrowserArgs: []string{"--disable-logging"},
 		},
@@ -588,7 +588,7 @@ func (a *appState) buildLockedProjectWindow(spec windowSpec, message, inheritedT
 	}
 	page := "data:text/html;charset=utf-8," + url.QueryEscape(`<!doctype html><meta charset="utf-8"><title>Project locked</title><style>body{margin:0;padding:48px;background:#0d1117;color:#e6edf3;font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}main{max-width:720px;margin:auto}h1{margin-top:0}pre{white-space:pre-wrap;font:inherit}</style><main><h1>Project locked</h1><pre>`+html.EscapeString(message)+`</pre></main>`)
 	win := a.app.Window.NewWithOptions(application.WebviewWindowOptions{
-		Title:            "Project locked — Juggler",
+		Title:            "Project locked — Facet",
 		URL:              page,
 		Width:            defaultWindowWidth,
 		Height:           defaultWindowHeight,
@@ -682,7 +682,7 @@ func (a *appState) buildWindow(spec windowSpec, serverURL string, serverProc *ex
 		// Startup placeholder only — the page reports its session path via the
 		// loopback control endpoint (action=title) once loaded, so the macOS
 		// "Window" menu names each window by the project it views.
-		Title:           "Juggler",
+		Title:           "Facet",
 		URL:             fullURL,
 		Width:           width,
 		Height:          height,

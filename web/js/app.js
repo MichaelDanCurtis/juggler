@@ -83,7 +83,7 @@ class JugglerApp {
     this.conversationBar = document.querySelector('conversation-bar');
 
     if (!this.conversationBar) {
-      console.error('[Juggler] Failed to find required components');
+      console.error('[Facet] Failed to find required components');
       return;
     }
 
@@ -98,9 +98,9 @@ class JugglerApp {
 
     // Listen for plugin file changes (hot reload)
     wsService.on('plugin-changed', async () => {
-      console.info('[Juggler] Plugin changed — reloading registries');
+      console.info('[Facet] Plugin changed — reloading registries');
       await reloadRegistries();
-      console.info('[Juggler] Plugin registries reloaded');
+      console.info('[Facet] Plugin registries reloaded');
     });
 
     // Initialize services
@@ -235,12 +235,12 @@ class JugglerApp {
    */
   _initializeSessionServices() {
     if (!this._connectionManager) {
-      console.error('[Juggler] Cannot initialize session services: connection manager is null');
+      console.error('[Facet] Cannot initialize session services: connection manager is null');
       return;
     }
     const session = this._connectionManager.getSession();
     if (!session) {
-      console.error('[Juggler] Cannot initialize session services: session is null');
+      console.error('[Facet] Cannot initialize session services: session is null');
       return;
     }
 
@@ -318,8 +318,8 @@ class JugglerApp {
       const showConfirm = /** @type {any} */ (window).showConfirm;
       if (typeof showConfirm !== 'function') return;
       const goToSettings = await showConfirm(
-        'Juggler is a visual AI coding workbench. To get started, connect an AI provider — add an API key, or enable Claude Code if you have its CLI installed.',
-        'Welcome to Juggler',
+        'Facet is a visual AI coding workbench. To get started, connect an AI provider — add an API key, or enable Claude Code if you have its CLI installed.',
+        'Welcome to Facet',
         { confirmText: 'Add a provider', cancelText: 'Later' }
       );
       if (goToSettings && typeof (/** @type {any} */ (window).openSettings) === 'function') {
@@ -342,7 +342,7 @@ class JugglerApp {
   async _sendMessage(message, threadItemId, messageThread, attachments) {
     const conversation = messageThread?.conversation;
     if (!conversation) {
-      console.error('[Juggler] Cannot send message: no target conversation');
+      console.error('[Facet] Cannot send message: no target conversation');
       return;
     }
 
@@ -358,12 +358,12 @@ class JugglerApp {
    */
   async _handleServerMessage(data) {
     if (!this._connectionManager) {
-      console.error('[Juggler] Cannot handle message: connection manager not initialized');
+      console.error('[Facet] Cannot handle message: connection manager not initialized');
       return;
     }
     const session = this._connectionManager.getSession();
     if (!session) {
-      console.error('[Juggler] Cannot handle message: session not initialized');
+      console.error('[Facet] Cannot handle message: session not initialized');
       return;
     }
 
@@ -386,7 +386,7 @@ class JugglerApp {
         case 'restored':         session.applyConversationRestored(id, name); break;
         case 'binned-deleted':   session.applyBinnedConversationDeleted(id); break;
         case 'reordered':        session.applyConversationsReordered(order); break;
-        default: console.warn('[Juggler] unknown conversations-changed op:', op);
+        default: console.warn('[Facet] unknown conversations-changed op:', op);
       }
       return;
     }
@@ -411,7 +411,7 @@ class JugglerApp {
     if (!conversationId) {
       // Server response missing conversationId - this is a backend bug
       // Just log it - user can't fix this, and alert dialogs during disconnection are noise
-      console.error('[Juggler] Server response missing conversationId - cannot route:', data);
+      console.error('[Facet] Server response missing conversationId - cannot route:', data);
       return;
     }
 
@@ -426,7 +426,7 @@ class JugglerApp {
       // Internal-consistency event, not user-actionable: a response landed for a
       // conversation that was deleted while the request was in flight. Log it for
       // diagnosis rather than surfacing a raw ID to the user.
-      console.warn('[Juggler] Response received for unknown conversation:', conversationId, 'Available:', Array.from(session.conversations.keys()));
+      console.warn('[Facet] Response received for unknown conversation:', conversationId, 'Available:', Array.from(session.conversations.keys()));
       return;
     }
 
@@ -472,7 +472,7 @@ class JugglerApp {
       await conversation.handleResponse(messageThread, blocks, inputTokens, outputTokens, cachedTokens, transactionId, stopReason);
     } else {
       // Unknown message format - log and notify user
-      console.error('[Juggler] Unexpected message format from server:', data);
+      console.error('[Facet] Unexpected message format from server:', data);
       const messageThread = conversation.resolveMessageThread(data.threadItemId);
       conversation.handleError(messageThread, 'Received unexpected message format from server');
     }
@@ -499,12 +499,12 @@ class JugglerApp {
     const { action, itemId, threadItemId } = actionDetail;
 
     if (!this._connectionManager) {
-      console.error('[Juggler] Cannot handle context item action: connection manager not initialized');
+      console.error('[Facet] Cannot handle context item action: connection manager not initialized');
       return;
     }
     const session = this._connectionManager.getSession();
     if (!session) {
-      console.error('[Juggler] Cannot handle context item action: session not initialized');
+      console.error('[Facet] Cannot handle context item action: session not initialized');
       return;
     }
 
@@ -537,19 +537,19 @@ class JugglerApp {
    */
   _handleRollbackFromItem(itemId) {
     if (!this._connectionManager) {
-      console.error('[Juggler] Cannot rollback: connection manager not initialized');
+      console.error('[Facet] Cannot rollback: connection manager not initialized');
       return;
     }
 
     const session = this._connectionManager.getSession();
     if (!session) {
-      console.error('[Juggler] Cannot rollback: session not initialized');
+      console.error('[Facet] Cannot rollback: session not initialized');
       return;
     }
 
     const conversation = session.getVisibleConversation();
     if (!conversation) {
-      console.error('[Juggler] No active conversation to rollback');
+      console.error('[Facet] No active conversation to rollback');
       return;
     }
 
@@ -563,7 +563,7 @@ class JugglerApp {
 
     const item = /** @type {import('../sdk/lib/message.js').Message|undefined} */ (items[itemIndex]);
     if (itemIndex < 0 || !item || item.get('type') !== 'user') {
-      console.error('[Juggler] Item is not a user message');
+      console.error('[Facet] Item is not a user message');
       return;
     }
 
@@ -593,19 +593,19 @@ class JugglerApp {
    */
   async _handleBranchFromItem(itemId) {
     if (!this._connectionManager) {
-      console.error('[Juggler] Cannot branch: connection manager not initialized');
+      console.error('[Facet] Cannot branch: connection manager not initialized');
       return;
     }
 
     const session = this._connectionManager.getSession();
     if (!session) {
-      console.error('[Juggler] Cannot branch: session not initialized');
+      console.error('[Facet] Cannot branch: session not initialized');
       return;
     }
 
     const conversation = session.getVisibleConversation();
     if (!conversation) {
-      console.error('[Juggler] No active conversation to branch from');
+      console.error('[Facet] No active conversation to branch from');
       return;
     }
 
@@ -619,7 +619,7 @@ class JugglerApp {
 
     const item = /** @type {import('../sdk/lib/message.js').Message|undefined} */ (items[itemIndex]);
     if (itemIndex < 0 || !item) {
-      console.error('[Juggler] Item not found for id', itemId);
+      console.error('[Facet] Item not found for id', itemId);
       return;
     }
 
@@ -640,7 +640,7 @@ class JugglerApp {
       // Re-resolve index in the new conversation's items
       const newItemIndex = newConv.rootMessageThread.findIndexByItemId(itemId);
       if (newItemIndex < 0) {
-        console.error('[Juggler] Item not found in new conversation');
+        console.error('[Facet] Item not found in new conversation');
         return;
       }
       newConv.deleteRangeWithCleanup(newConv.rootMessageThread, newItemIndex);
@@ -683,19 +683,19 @@ class JugglerApp {
    */
   async _handleDuplicateConversation() {
     if (!this._connectionManager) {
-      console.error('[Juggler] Cannot duplicate: connection manager not initialized');
+      console.error('[Facet] Cannot duplicate: connection manager not initialized');
       return;
     }
 
     const session = this._connectionManager.getSession();
     if (!session) {
-      console.error('[Juggler] Cannot duplicate: session not initialized');
+      console.error('[Facet] Cannot duplicate: session not initialized');
       return;
     }
 
     const conversation = session.getVisibleConversation();
     if (!conversation) {
-      console.error('[Juggler] No active conversation to duplicate');
+      console.error('[Facet] No active conversation to duplicate');
       return;
     }
 
@@ -813,19 +813,19 @@ class JugglerApp {
    */
   async cancelLLMOperation(focusedThreadId = undefined, { polite = false, toggle = false } = {}) {
     if (!this._connectionManager) {
-      console.error('[Juggler] Cannot cancel: connection manager not initialized');
+      console.error('[Facet] Cannot cancel: connection manager not initialized');
       return;
     }
     const session = this._connectionManager.getSession();
     if (!session) {
-      console.error('[Juggler] Cannot cancel: session not initialized');
+      console.error('[Facet] Cannot cancel: session not initialized');
       return;
     }
 
     // Get visible conversation (the one being cancelled)
     const conversation = session.getVisibleConversation();
     if (!conversation) {
-      console.error('[Juggler] Cannot cancel: no visible conversation');
+      console.error('[Facet] Cannot cancel: no visible conversation');
       return;
     }
 

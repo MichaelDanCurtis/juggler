@@ -4,9 +4,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * The "About Juggler" corpus — a self-contained reference manual describing the
- * Juggler application itself. It is returned verbatim by the AboutJuggler tool
- * when the user asks about Juggler (its features, tools, shortcuts, config, etc.).
+ * The "About Facet" corpus — a self-contained reference manual describing the
+ * Facet application itself. It is returned verbatim by the AboutJuggler tool
+ * when the user asks about Facet (its features, tools, shortcuts, config, etc.).
  *
  * COST MODEL: this string never enters the model's context until the tool is
  * actually called, so it costs zero tokens on a normal turn. When the extension
@@ -24,22 +24,22 @@
  * or a single platform's paths into this base.
  *
  * MAINTENANCE: this file is generated, not hand-edited section by section. When
- * Juggler's tools/commands/providers change, regenerate the whole corpus from
+ * Facet's tools/commands/providers change, regenerate the whole corpus from
  * repo source using the prompt in ./REGEN-CORPUS.md so it never drifts from
  * reality. Keep it grounded in real repo facts — no speculation.
  * @module about-juggler/corpus
  */
 
-/** @type {string} The full About-Juggler reference manual (markdown). */
-const CORPUS = `# About Juggler
+/** @type {string} The full About-Facet reference manual (markdown). */
+const CORPUS = `# About Facet
 
-This is Juggler's own reference manual — factual information about the Juggler
-application itself. Use it to answer questions about what Juggler is, how it
+This is Facet's own reference manual — factual information about the Facet
+application itself. Use it to answer questions about what Facet is, how it
 works, and how to drive it. It does not describe the user's own code or project.
 
-## What Juggler is
+## What Facet is
 
-Juggler is a local-first AI coding agent with a graphical workbench UI. Its
+Facet is a local-first AI coding agent with a graphical workbench UI. Its
 angle is hands-on control: instead of a scrolling chat transcript, it gives you
 an inspectable, navigable view of everything the model is doing to your codebase.
 
@@ -128,7 +128,7 @@ built-in commands are:
 
 You can define your own "/name" commands without writing code. A custom command
 is a markdown file — YAML frontmatter (description, run mode, and a few options)
-over a prompt template — that Juggler turns into a real menu command and
+over a prompt template — that Facet turns into a real menu command and
 hot-reloads the moment you save. Placeholders in the template expand from what
 you type after the command: "$1".."$9" for positional arguments, "$ARGUMENTS"
 for everything after the command name, and "$$" for a literal dollar sign.
@@ -157,7 +157,7 @@ this platform:
 
 ## Model providers
 
-Juggler talks to models through pluggable providers; the built-in set includes
+Facet talks to models through pluggable providers; the built-in set includes
 Anthropic, the Claude Code CLI, OpenAI, OpenAI Codex, Google Gemini, DeepSeek,
 OpenRouter, Z.AI, and Ollama (for local models). Pick and configure your default
 model in the app; API keys are stored locally (see below).
@@ -186,9 +186,9 @@ commands that are shared through the project's git repository.
 
 ## Extensions
 
-Juggler's capabilities are delivered as extensions. Built-in ones include Juggler
-Core (the standard tools, strategies, and commands) and Juggler MCP (tools from
-configured MCP servers). "About Juggler" — the extension providing this manual —
+Facet's capabilities are delivered as extensions. Built-in ones include Facet
+Core (the standard tools, strategies, and commands) and Facet MCP (tools from
+configured MCP servers). "About Facet" — the extension providing this manual —
 is itself one such extension: it is on by default and can be turned off in the
 Extensions view, which removes this tool entirely.
 
@@ -201,9 +201,9 @@ strategies, commands) that subclass the SDK base classes.
 
 ## Updates and connectivity
 
-Juggler runs locally and only contacts the network when it needs to: LLM requests
+Facet runs locally and only contacts the network when it needs to: LLM requests
 go to whichever model provider you have configured, WebFetch/WebSearch reach the
-sites you ask for, and Juggler checks for new versions. Your code is not sent
+sites you ask for, and Facet checks for new versions. Your code is not sent
 anywhere except to the model provider you choose for a given request.
 
 ## Troubleshooting
@@ -211,13 +211,13 @@ anywhere except to the model provider you choose for a given request.
 - **Logs** — logs do not live in "~/.juggler"; on this platform they are written
   to {{LOG_LOCATION}}. The in-app logging documentation explains how to read them
   and report issues.
-- **Reset the cache** — deleting "~/.juggler/cache/" is safe; Juggler rebuilds it.
+- **Reset the cache** — deleting "~/.juggler/cache/" is safe; Facet rebuilds it.
 - **A tool seems missing** — check the Extensions view; the tool's providing
   extension or capability may be disabled.
 
 ## Source code and deeper documentation
 
-Juggler is open source at https://github.com/juggler-ai/juggler. The app lives at
+Facet is open source at https://github.com/juggler-ai/juggler. The app lives at
 the repository root, so the paths below are relative to it — when you need more
 than this manual carries (exact API signatures, precise behaviour, or how to
 extend the app), read the source rather than guessing:
@@ -248,7 +248,7 @@ https://github.com/juggler-ai/juggler/blob/main/docs/extension_guide.md.
 ## Where to learn more
 
 The website https://juggler.studio has the current overview and docs. This manual
-is generated from Juggler's own source, so for the newest details always defer to
+is generated from Facet's own source, so for the newest details always defer to
 the source above, the running app's Extensions view, and the official docs.`;
 
 export default CORPUS;

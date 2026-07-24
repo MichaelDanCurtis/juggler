@@ -127,13 +127,13 @@ func (a *appState) handleWindowControl(w http.ResponseWriter, r *http.Request) {
 	case "title":
 		// The page reports the project it's viewing. Two uses: the display title
 		// names the window in the macOS "Window" menu (which lists windows by
-		// NSWindow title, else every window reads "Juggler"); and the raw project
+		// NSWindow title, else every window reads "Facet"); and the raw project
 		// path becomes the window's workspace identity, so a relaunch reopens the
 		// right project (projects are chosen in-page, so this report is the only
 		// way the app learns which one a window actually shows).
 		title := strings.TrimSpace(r.URL.Query().Get("title"))
 		if title == "" {
-			title = "Juggler"
+			title = "Facet"
 		}
 		application.InvokeAsync(func() { e.win.SetTitle(title) })
 		a.setWindowProject(e, r.URL.Query().Get("project"))

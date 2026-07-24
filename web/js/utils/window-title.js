@@ -5,7 +5,7 @@
 /**
  * Native window title — names the OS window after the session (project) it
  * views. The macOS "Window" menu lists open windows by their NSWindow title;
- * without this every window reads "Juggler" and they're indistinguishable.
+ * without this every window reads "Facet" and they're indistinguishable.
  *
  * Like theme/control, this drives the *native window* hosting the page (the
  * desktop app's loopback endpoint via nativeCtl), so it's gated on window-mode:

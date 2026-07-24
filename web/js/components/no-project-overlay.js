@@ -79,8 +79,8 @@ class NoProjectOverlay extends HTMLElement {
   /** @private */
   _render() {
     this.innerHTML = `
-      <section class="no-project-onboarding" aria-label="Welcome to Juggler">
-        <div class="no-project-logo" role="img" aria-label="Juggler"></div>
+      <section class="no-project-onboarding" aria-label="Welcome to Facet">
+        <div class="no-project-logo" role="img" aria-label="Facet"></div>
         <h1>Welcome to Juggler</h1>
         <p>
           Juggler is an AI coding agent designed around transparency, control, and fast iteration.
