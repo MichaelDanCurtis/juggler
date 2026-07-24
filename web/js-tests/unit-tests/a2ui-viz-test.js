@@ -1,6 +1,5 @@
-//     ▄▄ ▄▄ ▄▄  ▄▄▄▄  ▄▄▄▄ ▄▄    ▄▄▄▄▄ ▄▄▄▄
-//     ██ ██ ██ ██ ▄▄ ██ ▄▄ ██    ██▄▄  ██▄█▄   Copyright (c) 2026 Julian Storer
-//   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   AGPL-3.0-or-later - see LICENSE
+// Copyright (c) 2026 Julian Storer
+// AGPL-3.0-or-later - see LICENSE
 
 /**
  * A2UI viz catalog tests (increment 4 of the A2UI design): Chart, Metric,

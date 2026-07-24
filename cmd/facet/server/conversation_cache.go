@@ -1,6 +1,5 @@
-//     ▄▄ ▄▄ ▄▄  ▄▄▄▄  ▄▄▄▄ ▄▄    ▄▄▄▄▄ ▄▄▄▄
-//     ██ ██ ██ ██ ▄▄ ██ ▄▄ ██    ██▄▄  ██▄█▄   Copyright (c) 2026 Julian Storer
-//   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   AGPL-3.0-or-later - see LICENSE
+// Copyright (c) 2026 Julian Storer
+// AGPL-3.0-or-later - see LICENSE
 
 // Server-side per-conversation Provider Conversation cache. One handle
 // per (convID, providerName, model, credential) tuple, opened lazily, reused across

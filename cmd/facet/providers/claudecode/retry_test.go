@@ -1,6 +1,5 @@
-//     ▄▄ ▄▄ ▄▄  ▄▄▄▄  ▄▄▄▄ ▄▄    ▄▄▄▄▄ ▄▄▄▄
-//     ██ ██ ██ ██ ▄▄ ██ ▄▄ ██    ██▄▄  ██▄█▄   Copyright (c) 2026 Julian Storer
-//   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   AGPL-3.0-or-later - see LICENSE
+// Copyright (c) 2026 Julian Storer
+// AGPL-3.0-or-later - see LICENSE
 
 // Turn-level retry for transient CLI failures: when the claude CLI process
 // dies without emitting a terminal stop reason (crash / quota-kill / dropped

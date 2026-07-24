@@ -1,6 +1,5 @@
-//     ▄▄ ▄▄ ▄▄  ▄▄▄▄  ▄▄▄▄ ▄▄    ▄▄▄▄▄ ▄▄▄▄
-//     ██ ██ ██ ██ ▄▄ ██ ▄▄ ██    ██▄▄  ██▄█▄   Copyright (c) 2026 Julian Storer
-//   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   AGPL-3.0-or-later - see LICENSE
+// Copyright (c) 2026 Julian Storer
+// AGPL-3.0-or-later - see LICENSE
 
 import slashCommandHandler from '../services/slash-command-handler.js';
 import { longestCommonPrefix } from './completion-menu.js';

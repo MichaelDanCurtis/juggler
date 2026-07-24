@@ -1,6 +1,5 @@
-//     ▄▄ ▄▄ ▄▄  ▄▄▄▄  ▄▄▄▄ ▄▄    ▄▄▄▄▄ ▄▄▄▄
-//     ██ ██ ██ ██ ▄▄ ██ ▄▄ ██    ██▄▄  ██▄█▄   Copyright (c) 2026 Julian Storer
-//   ▄▄█▀ ▀███▀ ▀███▀ ▀███▀ ██▄▄▄ ██▄▄▄ ██ ██   AGPL-3.0-or-later - see LICENSE
+// Copyright (c) 2026 Julian Storer
+// AGPL-3.0-or-later - see LICENSE
 
 /** Default settle delay (ms) before focusing an element in a just-shown modal. */
 const FOCUS_AFTER_SHOW_MS = 100;
