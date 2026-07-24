@@ -92,3 +92,27 @@ html.embed-mode .app-header,
 html.embed-mode #conversation-bar {
   display: none;
 }
+
+/* ── Collapsible details panel (2026-07-24) ─────────────────────────────────
+   The right-side tool-call inspector folds to a slim rail; the chevron is
+   the only affordance in either state. !important beats the inline width
+   that setupColumnResize stamps, so the stored drag width survives. */
+.properties-panel-collapse {
+  position: absolute; top: 8px; left: 5px; z-index: 6;
+  width: 20px; height: 20px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: 1px solid var(--border-divider);
+  border-radius: 4px; color: var(--text-secondary);
+  font-size: 11px; line-height: 1; cursor: pointer;
+}
+.properties-panel-collapse:hover { color: var(--text-primary); }
+properties-panel > properties-panel-content { padding-top: 26px; }
+properties-panel[data-collapsed] {
+  width: 30px !important; min-width: 30px !important;
+  flex: 0 0 30px !important;
+}
+properties-panel[data-collapsed] properties-panel-content,
+properties-panel[data-collapsed] col-resize-handle { display: none; }
+properties-panel[data-collapsed] .properties-panel-collapse {
+  transform: rotate(180deg);
+}

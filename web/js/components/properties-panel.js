@@ -293,6 +293,9 @@ class PropertiesPanel extends HTMLElement {
    */
   render() {
     this.innerHTML = `
+            <button class="properties-panel-collapse" type="button"
+                    title="Collapse the details panel"
+                    aria-label="Toggle the details panel">⟩</button>
             <properties-panel-content>
                 <properties-panel-empty>
                     <span class="properties-panel-empty-icon">
@@ -305,6 +308,31 @@ class PropertiesPanel extends HTMLElement {
             </properties-panel-content>
             <col-resize-handle></col-resize-handle>
         `;
+    // Collapsible details rail (Prizmanyx 2026-07-24): the toggle folds the
+    // panel to a slim strip and remembers the choice; the strip's button
+    // re-expands. Width is CSS-forced while collapsed, so the stored
+    // drag-resize width survives untouched underneath.
+    const toggle = this.querySelector('.properties-panel-collapse');
+    toggle?.addEventListener('click', () => {
+      const collapsed = this.toggleAttribute('data-collapsed');
+      toggle.setAttribute(
+        'title',
+        collapsed ? 'Expand the details panel' : 'Collapse the details panel'
+      );
+      try {
+        localStorage.setItem('facet-properties-collapsed', collapsed ? '1' : '0');
+      } catch {
+        /* per-session only */
+      }
+    });
+    try {
+      if (localStorage.getItem('facet-properties-collapsed') === '1') {
+        this.setAttribute('data-collapsed', '');
+        toggle?.setAttribute('title', 'Expand the details panel');
+      }
+    } catch {
+      /* default expanded */
+    }
     setupColumnResize(this, 'juggler-properties-panel-width');
   }
 
