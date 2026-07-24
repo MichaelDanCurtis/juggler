@@ -116,3 +116,7 @@ properties-panel[data-collapsed] col-resize-handle { display: none; }
 properties-panel[data-collapsed] .properties-panel-collapse {
   transform: rotate(180deg);
 }
+/* Parent-driven swap: when the Prizmanyx shell shows its own Workspace/Browser
+   pane in this region, the inspector is removed entirely — no 30px stub to
+   stack beside the shell's dock (embed-bridge sets data-embed-hidden). */
+properties-panel[data-embed-hidden] { display: none !important; }

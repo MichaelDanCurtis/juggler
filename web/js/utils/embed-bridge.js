@@ -64,6 +64,38 @@ async function seedConversation(title, prompt) {
 }
 
 /**
+ * Drive the details rail (the tool-call inspector) on the parent's behalf.
+ * The Prizmanyx shell owns that screen real estate as ONE switchable region —
+ * Details / Workspace / Browser — so when it shows its own pane it hides ours
+ * entirely (not the 30px collapse rail, which would stack beside it). Both
+ * fields are optional and independent:
+ *   { collapsed } mirrors the panel's own fold toggle (30px rail, persisted).
+ *   { hidden }    removes the panel so the region cleanly swaps.
+ * @param {{collapsed?: boolean, hidden?: boolean}} msg
+ */
+function setDetailsState(msg) {
+  const panel = document.querySelector('properties-panel');
+  if (!panel) return;
+  if (typeof msg.hidden === 'boolean') {
+    panel.toggleAttribute('data-embed-hidden', msg.hidden);
+  }
+  if (typeof msg.collapsed === 'boolean') {
+    panel.toggleAttribute('data-collapsed', msg.collapsed);
+    panel
+      .querySelector('.properties-panel-collapse')
+      ?.setAttribute(
+        'title',
+        msg.collapsed ? 'Expand the details panel' : 'Collapse the details panel'
+      );
+    try {
+      localStorage.setItem('facet-properties-collapsed', msg.collapsed ? '1' : '0');
+    } catch {
+      /* per-session only */
+    }
+  }
+}
+
+/**
  * Whether an origin matches the server-granted embed source list. Supports
  * the CSP port-wildcard form we use in dev ("http://localhost:*").
  * @param {string} origin
@@ -120,6 +152,8 @@ function onMessage(event) {
       typeof msg.title === 'string' && msg.title.trim() ? msg.title : 'Prizmanyx investigation',
       msg.prompt,
     );
+  } else if (msg.type === 'facet:details') {
+    setDetailsState(msg);
   }
 }
 
