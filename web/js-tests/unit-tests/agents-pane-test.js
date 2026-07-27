@@ -1,0 +1,96 @@
+// Copyright (c) 2026 Julian Storer
+// AGPL-3.0-or-later - see LICENSE
+
+/**
+ * Agents pane unit test (Prizmanyx roster slice 4).
+ *
+ * The roster's two load-bearing claims are density and honesty, and both are
+ * testable without a running Prizmanyx:
+ *
+ *  - BLAST RADIUS is derived from the definition, never written by hand, so a
+ *    template card cannot promise a narrower agent than it starts. An agent
+ *    that deposits nothing must SAY it deposits nothing — the default, and the
+ *    one a consultant is most likely to skim past.
+ *  - ELAPSED degrades rather than lies: a missing or unparseable timestamp
+ *    renders as nothing, never as "NaNs" or a wrong duration on a card someone
+ *    is using to decide whether an agent is stuck.
+ * @module unit-tests/agents-pane-test
+ */
+
+import { blastRadius, elapsed } from '../../js/components/facet-agents-pane.js';
+
+/**
+ * @param {any} _ctx
+ * @returns {Promise<{passed: number, failed: number, errors: string[]}>} The suite result.
+ */
+export async function runTests(_ctx) {
+  let passed = 0;
+  let failed = 0;
+  const errors = [];
+
+  /**
+   * @param {string} name
+   * @param {() => void} fn
+   * @returns {void} Nothing; failures are collected.
+   */
+  function run(name, fn) {
+    try {
+      fn();
+      passed += 1;
+    } catch (error) {
+      failed += 1;
+      errors.push(`${name}: ${error && error.message ? error.message : error}`);
+    }
+  }
+
+  /**
+   * @param {boolean} condition
+   * @param {string} message
+   * @returns {void} Nothing; throws on failure.
+   */
+  function assert(condition, message) {
+    if (!condition) throw new Error(message);
+  }
+
+  run('blast radius names what the agent SAVES, not just what it reads', () => {
+    const text = blastRadius({
+      tool_ids: ['discovery.listGaps', 'knowledge.search'],
+      deposit_kinds: ['finding'],
+      default_budget_calls: 300,
+    });
+    assert(text.includes('READS 2 tools'), `reads: ${text}`);
+    assert(text.includes('SAVES finding'), `saves: ${text}`);
+    assert(text.includes('BUDGET 300'), `budget: ${text}`);
+  });
+
+  run('an agent that deposits nothing says so explicitly', () => {
+    // The default. Silence here would read as "unknown" on the card that is
+    // meant to tell you the blast radius BEFORE you start the agent.
+    const text = blastRadius({ tool_ids: ['knowledge.search'], deposit_kinds: [], default_budget_calls: 50 });
+    assert(text.includes('SAVES nothing'), `expected an explicit nothing: ${text}`);
+    assert(text.includes('READS 1 tool'), `singular tool: ${text}`);
+  });
+
+  run('a missing budget renders a question mark, never undefined', () => {
+    const text = blastRadius({ tool_ids: [], deposit_kinds: [] });
+    assert(!text.includes('undefined'), `leaked undefined: ${text}`);
+    assert(text.includes('BUDGET ?'), `budget: ${text}`);
+  });
+
+  run('elapsed formats seconds, minutes and hours', () => {
+    const now = Date.now();
+    assert(elapsed(new Date(now - 30_000).toISOString()).endsWith('s'), 'seconds');
+    assert(elapsed(new Date(now - 300_000).toISOString()) === '5m', 'minutes');
+    assert(elapsed(new Date(now - 3_900_000).toISOString()) === '1h5m', 'hours');
+  });
+
+  run('elapsed degrades to empty rather than lying', () => {
+    // A card showing "NaNs" is worse than one showing nothing: the operator is
+    // reading it to judge whether an agent is stuck.
+    assert(elapsed(null) === '', 'null');
+    assert(elapsed('') === '', 'empty');
+    assert(elapsed('not a date') === '', 'garbage');
+  });
+
+  return { passed, failed, errors };
+}

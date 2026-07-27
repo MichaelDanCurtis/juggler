@@ -103,6 +103,7 @@ import { runTests as runThinkingStreamTests } from '../unit-tests/thinking-strea
 import { runTests as runMarkdownSanitizerTests } from '../unit-tests/markdown-sanitizer-test.js';
 import { runTests as runExternalLinkTests } from '../unit-tests/external-link-test.js';
 import { runTests as runAnsiTests } from '../unit-tests/ansi-test.js';
+import { runTests as runAgentsPaneTests } from '../unit-tests/agents-pane-test.js';
 import { runTests as runBashHighlightTests } from '../unit-tests/bash-highlight-test.js';
 import { runTests as runToolNameResolutionTests } from '../unit-tests/tool-name-resolution-test.js';
 import { runTests as runCommandApprovalUnitTests } from '../unit-tests/bash-command-approval-unit-test.js';
@@ -276,6 +277,7 @@ const UNIT_TEST_SUITES = [
   { name: 'unit:markdown-sanitizer', run: runMarkdownSanitizerTests },
   { name: 'unit:external-link', run: runExternalLinkTests },
   { name: 'unit:ansi', run: runAnsiTests },
+  { name: 'unit:agents-pane', run: runAgentsPaneTests },
   { name: 'unit:bash-highlight', run: runBashHighlightTests },
   { name: 'unit:tool-name-resolution', run: runToolNameResolutionTests },
   { name: 'unit:bash-command-approval', run: runCommandApprovalUnitTests },

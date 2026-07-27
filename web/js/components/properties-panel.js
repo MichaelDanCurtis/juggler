@@ -22,9 +22,10 @@ import { dispatchItemRenderer, renderContextItem } from '../services/renderers/i
 import workerManager from '../services/worker-manager.js';
 import { setupColumnResize } from '../utils/column-resize.js';
 import { formatRelativeDateTime } from '../utils/format.js';
-// Prizmanyx fork: register the panel's Workspace/Browser tab panes.
+// Prizmanyx fork: register the panel's Workspace/Browser/Agents tab panes.
 import './facet-workspace-pane.js';
 import './facet-browser-pane.js';
+import './facet-agents-pane.js';
 
 /**
  * @typedef {import('../model/conversation.js').default} Conversation
@@ -307,6 +308,7 @@ class PropertiesPanel extends HTMLElement {
                 <button type="button" role="tab" data-panel-tab="details">Details</button>
                 <button type="button" role="tab" data-panel-tab="workspace">Workspace</button>
                 <button type="button" role="tab" data-panel-tab="browser">Browser</button>
+                <button type="button" role="tab" data-panel-tab="agents">Agents</button>
             </div>
             <properties-panel-content>
                 <properties-panel-empty>
@@ -320,6 +322,7 @@ class PropertiesPanel extends HTMLElement {
             </properties-panel-content>
             <facet-workspace-pane hidden></facet-workspace-pane>
             <facet-browser-pane hidden></facet-browser-pane>
+            <facet-agents-pane hidden></facet-agents-pane>
             <col-resize-handle></col-resize-handle>
         `;
     this._setupPanelTabs();
@@ -353,7 +356,8 @@ class PropertiesPanel extends HTMLElement {
 
   /**
    * The panel is ONE switchable region — Details (the tool-call inspector),
-   * Workspace (per-task Prizmanyx files), Browser (gateway browsing) — native
+   * Workspace (per-task Prizmanyx files), Browser (gateway browsing), Agents
+   * (the roster: spawn, watch, answer the one that needs you) — native
    * fork UI, present in the embedded console and the standalone window alike.
    * Details keeps the whole existing properties-panel-content rendering path;
    * the other two tabs swap it for their pane component. Choice persists.
@@ -372,11 +376,14 @@ class PropertiesPanel extends HTMLElement {
       const content = this.querySelector('properties-panel-content');
       const workspace = this.querySelector('facet-workspace-pane');
       const browser = this.querySelector('facet-browser-pane');
+      const agents = this.querySelector('facet-agents-pane');
       content?.toggleAttribute('hidden', name !== 'details');
       workspace?.toggleAttribute('hidden', name !== 'workspace');
       browser?.toggleAttribute('hidden', name !== 'browser');
+      agents?.toggleAttribute('hidden', name !== 'agents');
       if (name === 'workspace') /** @type {any} */ (workspace)?.refresh?.();
       if (name === 'browser') /** @type {any} */ (browser)?.refresh?.();
+      if (name === 'agents') /** @type {any} */ (agents)?.refresh?.();
       try {
         localStorage.setItem('facet-panel-tab', name);
       } catch {
@@ -392,7 +399,7 @@ class PropertiesPanel extends HTMLElement {
     let initial = 'details';
     try {
       const saved = localStorage.getItem('facet-panel-tab');
-      if (saved === 'workspace' || saved === 'browser') initial = saved;
+      if (saved === 'workspace' || saved === 'browser' || saved === 'agents') initial = saved;
     } catch {
       /* default details */
     }

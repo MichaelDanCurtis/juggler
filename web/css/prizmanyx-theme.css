@@ -146,14 +146,16 @@ properties-panel > properties-panel-content { padding-top: 4px; }
 properties-panel-content[hidden] { display: none; }
 properties-panel[data-collapsed] .facet-panel-tabs,
 properties-panel[data-collapsed] facet-workspace-pane,
-properties-panel[data-collapsed] facet-browser-pane { display: none; }
+properties-panel[data-collapsed] facet-browser-pane,
+properties-panel[data-collapsed] facet-agents-pane { display: none; }
 
 /* The panes themselves */
-facet-workspace-pane, facet-browser-pane {
+facet-workspace-pane, facet-browser-pane, facet-agents-pane {
   display: flex; flex-direction: column; gap: 8px;
   flex: 1; min-height: 0; padding: 10px 12px; overflow: hidden;
 }
-facet-workspace-pane[hidden], facet-browser-pane[hidden] { display: none; }
+facet-workspace-pane[hidden], facet-browser-pane[hidden],
+facet-agents-pane[hidden] { display: none; }
 .pzx-pane-toolbar { display: flex; gap: 6px; align-items: center; flex: none; }
 .pzx-scope, .pzx-upload, .pzx-go {
   font-size: 11px; padding: 3px 10px; cursor: pointer;
@@ -201,3 +203,75 @@ facet-workspace-pane[hidden], facet-browser-pane[hidden] { display: none; }
   border: 1px solid var(--border-divider); border-radius: 4px;
   background: var(--background-secondary, transparent);
 }
+
+
+/* ── Agents pane (roster slice 4) ──────────────────────────────────────────
+   DENSITY IS THE DESIGN. A card is ONE LINE by default so nine agents are
+   readable at once; hover peeks at the journal without committing the space;
+   a BLOCKED card expands itself and stays expanded. A card earns space by
+   being urgent, never by being interesting. */
+.agents-pane { display: flex; flex-direction: column; gap: 8px; min-height: 0; overflow: auto; }
+.agents-header {
+  display: flex; align-items: center; justify-content: space-between;
+  flex: none; font-size: 11px; color: var(--text-secondary);
+}
+.agents-header button {
+  font-size: 11px; padding: 3px 10px; cursor: pointer; background: none;
+  color: var(--text-secondary); border: 1px solid var(--border-divider); border-radius: 4px;
+}
+.agents-empty, .agents-error, .agent-journal-empty {
+  font-size: 12px; line-height: 1.5; color: var(--text-secondary);
+}
+.agents-error { color: var(--accent-error, #d9534f); }
+
+.agent-cards { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.agent-card { border: 1px solid transparent; border-radius: 4px; }
+.agent-line {
+  display: grid; grid-template-columns: 8px minmax(0, auto) minmax(0, 1fr) auto;
+  gap: 8px; align-items: center; width: 100%; text-align: left;
+  padding: 5px 8px; cursor: pointer; background: none; border: none;
+  color: var(--text-primary); font-size: 12px;
+}
+.agent-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-secondary); }
+.status-running .agent-dot { background: var(--accent-success, #4caf50); }
+.status-blocked .agent-dot { background: var(--accent-warning, #e0a030); }
+.status-failed .agent-dot { background: var(--accent-error, #d9534f); }
+.agent-name { font-weight: 500; }
+/* The focus line is the one thing that makes a roster readable at a glance,
+   so it gets the flexible column and truncates rather than wrapping. */
+.agent-focus { color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.agent-meta { color: var(--text-secondary); font-size: 10px; font-variant-numeric: tabular-nums; }
+
+/* Hover peek: the journal appears without the card committing to open. */
+.agent-card:not(.is-open):not(.status-blocked):hover { border-color: var(--border-divider); }
+.agent-card-body { padding: 0 8px 8px 24px; display: flex; flex-direction: column; gap: 6px; }
+.agent-journal { list-style: none; margin: 0; padding: 0; font-size: 11px; color: var(--text-secondary); }
+
+/* Needs-you. The only place in this pane that raises contrast — if everything
+   were emphasised, the one card that matters would not be. */
+.agent-needs-you { border-left: 2px solid var(--accent-warning, #e0a030); }
+.agent-question { margin: 0; font-size: 12px; line-height: 1.5; color: var(--text-primary); }
+.agent-evidence { margin: 0; padding-left: 16px; font-size: 11px; color: var(--text-secondary); }
+.agent-options { display: flex; gap: 6px; flex-wrap: wrap; }
+.agent-options button, .agent-actions button {
+  font-size: 11px; padding: 3px 10px; cursor: pointer; background: none;
+  color: var(--text-secondary); border: 1px solid var(--border-divider); border-radius: 4px;
+}
+.agent-card-body textarea {
+  font: inherit; font-size: 12px; padding: 6px 8px; resize: vertical;
+  background: var(--background-secondary, transparent); color: var(--text-primary);
+  border: 1px solid var(--border-divider); border-radius: 4px;
+}
+.agent-actions { display: flex; gap: 6px; }
+
+/* The sketch. Plain boxes and arrows: this is a hand-raise read by someone who
+   was interrupted, not the estate graph. */
+.agent-diagram { margin: 0; padding: 6px 8px; border: 1px solid var(--border-divider); border-radius: 4px; }
+.agent-diagram figcaption { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+.agent-diagram-nodes, .agent-diagram-edges { list-style: none; margin: 0; padding: 0; font-size: 11px; }
+.agent-diagram-edges { color: var(--text-secondary); margin-top: 4px; }
+.agent-node-type { color: var(--text-secondary); font-family: var(--font-mono, monospace); }
+/* Server-stamped, so the agent cannot claim an invented type is known. */
+.agent-beyond { color: var(--accent-warning, #e0a030); font-size: 10px; }
+.agent-diagram-error { font-size: 11px; color: var(--text-secondary); font-style: italic; }
+.agents-done { font-size: 11px; color: var(--text-secondary); }
