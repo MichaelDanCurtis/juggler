@@ -155,7 +155,15 @@ class FacetAgentsPane extends HTMLElement {
   _target() {
     const context = getPzxContext();
     if (!context) return null;
-    return { base: '/pzx/api/v1/agents', token: context.token, programId: context.programId };
+    // Program-scoped path, not a bare /agents base: these routes are gated by
+    // the capability token, which is HMAC-bound to a program, and the server
+    // verifies it against the program in the PATH. Keeping the id in the URL
+    // means the value authorized and the value used are the same value.
+    return {
+      base: `/pzx/api/v1/programs/${context.programId}/agents`,
+      token: context.token,
+      programId: context.programId,
+    };
   }
 
   /**
@@ -183,7 +191,7 @@ class FacetAgentsPane extends HTMLElement {
     }
     try {
       const [runs, definitions] = await Promise.all([
-        this._get(`${target.base}/runs?program_id=${target.programId}&t=${target.token}`),
+        this._get(`${target.base}/runs?t=${target.token}`),
         this._get(`${target.base}/definitions?t=${target.token}`),
       ]);
       if (Array.isArray(runs)) {
@@ -204,7 +212,12 @@ class FacetAgentsPane extends HTMLElement {
   async _get(url) {
     const response = await fetch(url);
     if (response.status === 401) {
-      this._error = 'Access token expired — open the Console in Prizmanyx to refresh it.';
+      // Was unconditionally "expired". For over a day the real cause was that
+      // these routes did not accept this credential at all, and the message
+      // sent every reader looking for a stale token. Name the likelier cause
+      // second rather than asserting either one.
+      this._error =
+        'Not authorized for this program — the console may need reopening to refresh its access.';
       return null;
     }
     if (!response.ok) {
@@ -483,9 +496,10 @@ class FacetAgentsPane extends HTMLElement {
         const context = getPzxContext();
         if (!context) return;
         this._library = false;
+        // No program_id in the body: it travels in the path, and the request
+        // model on the server has no such field to be confused by.
         void this._post('/spawn', {
           definition: name,
-          program_id: context.programId,
           brief: brief ? brief.value : '',
         });
       });
