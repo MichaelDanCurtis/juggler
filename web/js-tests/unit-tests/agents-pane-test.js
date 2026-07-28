@@ -17,7 +17,7 @@
  * @module unit-tests/agents-pane-test
  */
 
-import { blastRadius, elapsed } from '../../js/components/facet-agents-pane.js';
+import { blastRadius, elapsed, groupByStage } from '../../js/components/facet-agents-pane.js';
 
 /**
  * @param {any} _ctx
@@ -90,6 +90,31 @@ export async function runTests(_ctx) {
     assert(elapsed(null) === '', 'null');
     assert(elapsed('') === '', 'empty');
     assert(elapsed('not a date') === '', 'garbage');
+  });
+
+  run('templates group under every stage they serve', () => {
+    const groups = groupByStage([
+      { name: 'a', stages: ['discover', 'code'] },
+      { name: 'b', stages: ['deploy'] },
+      { name: 'c', stages: [] },
+    ]);
+    assert(groups.discover.length === 1, 'discover');
+    assert(groups.code.length === 1, 'an agent serving two stages appears under both');
+    assert(groups.deploy.length === 1, 'deploy');
+    assert(groups.unassigned.length === 1, 'a stageless agent is still reachable, not hidden');
+  });
+
+  run('an unknown stage does not silently swallow an agent', () => {
+    // The binding is suggestive, and the server enforces the vocabulary with a
+    // CHECK — but a definition written before a stage was renamed must not
+    // vanish from the only surface that can start it.
+    const groups = groupByStage([{ name: 'a', stages: ['nonsense'] }]);
+    assert(groups.unassigned.length === 1, 'an agent with only unknown stages falls back');
+  });
+
+  run('a missing stages field is tolerated, not thrown on', () => {
+    const groups = groupByStage([{ name: 'a' }, null]);
+    assert(groups.unassigned.length === 1, 'undefined stages behaves like []');
   });
 
   return { passed, failed, errors };

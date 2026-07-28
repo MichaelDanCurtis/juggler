@@ -73,6 +73,45 @@ function blastRadius(def) {
   } calls`;
 }
 
+
+/** The eight canonical journey stages, in journey order (Prizmanyx journey_stages.py). */
+const STAGE_ORDER = [
+  'connect', 'extract', 'discover', 'code', 'decide', 'translate', 'deploy', 'verify',
+];
+
+/** Stage key -> the label shown above its group. */
+const STAGE_LABELS = {
+  connect: 'Connect', extract: 'Extract', discover: 'Discover', code: 'Code',
+  decide: 'Decide', translate: 'Translate', deploy: 'Deploy', verify: 'Verify',
+  unassigned: 'Any stage',
+};
+
+/**
+ * Group agent templates by the stages they serve.
+ *
+ * An agent may serve several stages and appears under each — the binding is
+ * SUGGESTIVE, so this decides what is PROMOTED where, never what is permitted;
+ * every agent can still be started from anywhere. A stageless agent, or one
+ * tagged with a stage this build does not know, lands in `unassigned` rather
+ * than vanishing: hiding an agent because nobody tagged it (or because a stage
+ * was renamed) is a worse failure than listing it twice, since this pane is the
+ * only surface that can start it.
+ * @param {Array<Record<string, any>>} definitions
+ * @returns {Record<string, Array<Record<string, any>>>} Stage key to templates.
+ */
+function groupByStage(definitions) {
+  /** @type {Record<string, Array<Record<string, any>>>} */
+  const groups = { unassigned: [] };
+  for (const key of STAGE_ORDER) groups[key] = [];
+  for (const def of definitions || []) {
+    if (!def) continue;
+    const stages = Array.isArray(def.stages) ? def.stages.filter((s) => STAGE_ORDER.includes(s)) : [];
+    if (stages.length === 0) groups.unassigned.push(def);
+    else for (const s of stages) groups[s].push(def);
+  }
+  return groups;
+}
+
 class FacetAgentsPane extends HTMLElement {
   constructor() {
     super();
@@ -340,28 +379,45 @@ class FacetAgentsPane extends HTMLElement {
       </li>`;
   }
 
+  /**
+   * @param {Record<string, any>} def
+   * @returns {string} One template card.
+   */
+  _renderTemplate(def) {
+    const version = Number(def.version) > 0 ? ` <span class="agent-version">v${esc(String(def.version))}</span>` : '';
+    return `
+      <li class="agent-template">
+        <h4>${esc(def.title || def.name)}${version}</h4>
+        <p>${esc(def.description || '')}</p>
+        <p class="agent-blast">${esc(blastRadius(def))}</p>
+        <textarea data-brief="${esc(def.name)}" rows="2"
+          placeholder="What are you trying to find out?"></textarea>
+        <button type="button" data-spawn="${esc(def.name)}">Start this agent</button>
+      </li>`;
+  }
+
   /** @returns {string} The template-library markup. */
   _renderLibrary() {
     const definitions = this._definitions || [];
     if (!definitions.length) {
       return '<p class="agents-empty">No agent templates are defined.</p>';
     }
-    return `
-      <ul class="agent-templates">
-        ${definitions
-          .map(
-            (def) => `
-          <li class="agent-template">
-            <h4>${esc(def.title || def.name)}</h4>
-            <p>${esc(def.description || '')}</p>
-            <p class="agent-blast">${esc(blastRadius(def))}</p>
-            <textarea data-brief="${esc(def.name)}" rows="2"
-              placeholder="What are you trying to find out?"></textarea>
-            <button type="button" data-spawn="${esc(def.name)}">Start this agent</button>
-          </li>`
-          )
-          .join('')}
-      </ul>`;
+    const groups = groupByStage(definitions);
+    // `unassigned` renders LAST: an untagged agent is still offered, just not
+    // promoted above the ones that named this stage.
+    const order = [...STAGE_ORDER, 'unassigned'];
+    return order
+      .filter((key) => groups[key].length > 0)
+      .map(
+        (key) => `
+        <section class="agent-stage-group">
+          <h5 class="agent-stage-heading">${esc(STAGE_LABELS[key] || key)}</h5>
+          <ul class="agent-templates">
+            ${groups[key].map((def) => this._renderTemplate(def)).join('')}
+          </ul>
+        </section>`
+      )
+      .join('');
   }
 
   /** @returns {void} */
@@ -463,4 +519,4 @@ class FacetAgentsPane extends HTMLElement {
 
 customElements.define('facet-agents-pane', FacetAgentsPane);
 
-export { FacetAgentsPane, blastRadius, elapsed };
+export { FacetAgentsPane, blastRadius, elapsed, groupByStage, STAGE_ORDER };
