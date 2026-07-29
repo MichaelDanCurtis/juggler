@@ -235,6 +235,14 @@ class FacetAgentsPane extends HTMLElement {
   async _post(path, body) {
     const target = this._target();
     if (!target) return;
+    // Held in a local, NOT written straight to this._error, because _load()
+    // below clears _error whenever its own refresh succeeds — and it does
+    // succeed, since only the POST failed. Writing the failure before the
+    // reload meant it was erased microseconds after being recorded, so a
+    // rejected spawn looked exactly like a button that does nothing. Found by
+    // clicking Start with an empty brief: server said 422 "brief is required",
+    // the pane said nothing at all.
+    let failure = '';
     try {
       const response = await fetch(`${target.base}${path}?t=${target.token}`, {
         method: 'POST',
@@ -243,12 +251,16 @@ class FacetAgentsPane extends HTMLElement {
       });
       if (!response.ok) {
         const detail = await response.json().catch(() => ({}));
-        this._error = detail.detail || `Request failed (HTTP ${response.status})`;
+        failure = detail.detail || `Request failed (HTTP ${response.status})`;
       }
     } catch {
-      this._error = 'Agents unreachable — is the Prizmanyx API running?';
+      failure = 'Agents unreachable — is the Prizmanyx API running?';
     }
     await this._load();
+    if (failure) {
+      this._error = failure;
+      this._render();
+    }
   }
 
   /**
@@ -496,11 +508,19 @@ class FacetAgentsPane extends HTMLElement {
         const context = getPzxContext();
         if (!context) return;
         this._library = false;
+        const briefText = brief ? brief.value.trim() : '';
+        if (!briefText) {
+          // The server refuses an empty brief with a 422; say so here rather
+          // than spending a round trip to be told what this pane already knows.
+          this._error = 'Give the agent a brief first — what should it find out?';
+          this._render();
+          return;
+        }
         // No program_id in the body: it travels in the path, and the request
         // model on the server has no such field to be confused by.
         void this._post('/spawn', {
           definition: name,
-          brief: brief ? brief.value : '',
+          brief: briefText,
         });
       });
     }
