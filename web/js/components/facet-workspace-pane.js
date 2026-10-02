@@ -17,14 +17,20 @@ import {
   onPzxContextChange,
 } from '../utils/prizmanyx-context.js';
 
-/** @param {string} value @returns {string} */
+/**
+ * @param {string} value
+ * @returns {string} Escaped text.
+ */
 function esc(value) {
   const div = document.createElement('div');
   div.textContent = value;
   return div.innerHTML;
 }
 
-/** @param {number} bytes @returns {string} */
+/**
+ * @param {number} bytes
+ * @returns {string} Human-readable size.
+ */
 function formatSize(bytes) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
@@ -59,7 +65,7 @@ class FacetWorkspacePane extends HTMLElement {
     void this._load();
   }
 
-  /** @returns {{base: string, task: string, token: string}|null} */
+  /** @returns {{base: string, task: string, token: string, writeToken?: string}|null} The current workspace target. */
   _target() {
     const context = getPzxContext();
     if (!context) return null;
@@ -68,7 +74,8 @@ class FacetWorkspacePane extends HTMLElement {
     return {
       base: `/pzx/api/v1/programs/${context.programId}/workspace/files`,
       task,
-      token: context.token,
+      token: context.workspaceReadToken || context.token,
+      writeToken: context.workspaceWriteToken,
     };
   }
 
@@ -106,14 +113,19 @@ class FacetWorkspacePane extends HTMLElement {
   async _upload(list) {
     const target = this._target();
     if (!target || !list || list.length === 0) return;
+    if (!target.writeToken) {
+      this._error = 'Open the Prizmanyx Console to refresh write permissions.';
+      this._render();
+      return;
+    }
     this._busy = true;
     this._render();
     try {
       for (const file of Array.from(list)) {
         const response = await fetch(
           `${target.base}/${encodeURIComponent(file.name)}` +
-            `?task=${encodeURIComponent(target.task)}&t=${encodeURIComponent(target.token)}`,
-          { method: 'PUT', body: file }
+            `?task=${encodeURIComponent(target.task)}`,
+          { method: 'PUT', headers: { Authorization: `Bearer ${target.writeToken}` }, body: file }
         );
         if (!response.ok) {
           const body = await response.json().catch(() => ({}));
@@ -130,11 +142,15 @@ class FacetWorkspacePane extends HTMLElement {
   /** @param {string} name */
   async _delete(name) {
     const target = this._target();
-    if (!target) return;
+    if (!target?.writeToken) {
+      this._error = 'Open the Prizmanyx Console to refresh write permissions.';
+      this._render();
+      return;
+    }
     await fetch(
       `${target.base}/${encodeURIComponent(name)}` +
-        `?task=${encodeURIComponent(target.task)}&t=${encodeURIComponent(target.token)}`,
-      { method: 'DELETE' }
+        `?task=${encodeURIComponent(target.task)}`,
+      { method: 'DELETE', headers: { Authorization: `Bearer ${target.writeToken}` } }
     );
     await this._load();
   }
@@ -218,3 +234,5 @@ class FacetWorkspacePane extends HTMLElement {
 }
 
 customElements.define('facet-workspace-pane', FacetWorkspacePane);
+
+export { FacetWorkspacePane };

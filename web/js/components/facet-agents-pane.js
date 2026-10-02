@@ -150,7 +150,7 @@ class FacetAgentsPane extends HTMLElement {
   }
 
   /**
-   * @returns {{base: string, token: string, programId: number}|null} The proxy target, or null with no console context.
+   * @returns {{base: string, token: string, writeToken?: string, programId: number}|null} The proxy target, or null with no console context.
    */
   _target() {
     const context = getPzxContext();
@@ -161,7 +161,8 @@ class FacetAgentsPane extends HTMLElement {
     // means the value authorized and the value used are the same value.
     return {
       base: `/pzx/api/v1/programs/${context.programId}/agents`,
-      token: context.token,
+      token: context.agentReadToken || context.token,
+      writeToken: context.agentWriteToken,
       programId: context.programId,
     };
   }
@@ -234,7 +235,11 @@ class FacetAgentsPane extends HTMLElement {
    */
   async _post(path, body) {
     const target = this._target();
-    if (!target) return;
+    if (!target?.writeToken) {
+      this._error = 'Open the Prizmanyx Console to refresh agent-control permissions.';
+      this._render();
+      return;
+    }
     // Held in a local, NOT written straight to this._error, because _load()
     // below clears _error whenever its own refresh succeeds — and it does
     // succeed, since only the POST failed. Writing the failure before the
@@ -244,9 +249,9 @@ class FacetAgentsPane extends HTMLElement {
     // the pane said nothing at all.
     let failure = '';
     try {
-      const response = await fetch(`${target.base}${path}?t=${target.token}`, {
+      const response = await fetch(`${target.base}${path}`, {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: { 'content-type': 'application/json', Authorization: `Bearer ${target.writeToken}` },
         body: JSON.stringify(body),
       });
       if (!response.ok) {

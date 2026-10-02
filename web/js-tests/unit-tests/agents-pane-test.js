@@ -17,7 +17,9 @@
  * @module unit-tests/agents-pane-test
  */
 
-import { blastRadius, elapsed, groupByStage } from '../../js/components/facet-agents-pane.js';
+import { FacetAgentsPane, blastRadius, elapsed, groupByStage } from '../../js/components/facet-agents-pane.js';
+import { FacetWorkspacePane } from '../../js/components/facet-workspace-pane.js';
+import { clearPzxContext, getPzxContext, setPzxContext } from '../../js/utils/prizmanyx-context.js';
 
 /**
  * @param {any} _ctx
@@ -117,5 +119,57 @@ export async function runTests(_ctx) {
     assert(groups.unassigned.length === 1, 'undefined stages behaves like []');
   });
 
+  const originalFetch = window.fetch;
+  const originalContext = getPzxContext();
+  /** @type {Array<{url: string, init: RequestInit}>} */
+  const requests = [];
+  window.fetch = async (url, init = {}) => {
+    requests.push({ url: String(url), init });
+    return new window.Response(JSON.stringify({ files: [] }), { status: 200 });
+  };
+  try {
+    const context = {
+      programId: 7, version: 2, token: 'gateway-read', webBase: location.origin,
+      expires: Math.floor(Date.now() / 1000) + 300,
+      workspaceReadToken: 'workspace-read', workspaceWriteToken: 'workspace-write',
+      agentReadToken: 'agent-read', agentWriteToken: 'agent-write',
+    };
+    setPzxContext(context);
+    const workspace = new FacetWorkspacePane();
+    const agents = new FacetAgentsPane();
+    assert(workspace._target()?.token === 'workspace-read', 'workspace read scope');
+    assert(agents._target()?.token === 'agent-read', 'agent read scope');
+    workspace._load = async () => {};
+    workspace._render = () => {};
+    agents._load = async () => {};
+    agents._render = () => {};
+    const transfer = new window.DataTransfer();
+    transfer.items.add(new window.File(['{}'], 'fixture.json'));
+    await workspace._upload(transfer.files);
+    await workspace._delete('fixture.json');
+    for (const path of ['/spawn', '/runs/1/answer', '/runs/1/cancel']) await agents._post(path, {});
+    const mutations = requests.filter((request) => request.url.startsWith('/pzx/'));
+    assert(mutations.length === 5, 'all workspace and agent mutations were exercised');
+    for (const request of mutations) {
+      assert(!request.url.includes('t='), 'a write capability escaped into a URL');
+      const expected = request.url.includes('/workspace/') ? 'workspace-write' : 'agent-write';
+      assert(new window.Headers(request.init.headers).get('Authorization') === `Bearer ${expected}`, 'write Bearer scope');
+    }
+    setPzxContext({ ...context, workspaceWriteToken: undefined, agentWriteToken: undefined });
+    const before = requests.length;
+    await workspace._delete('fixture.json');
+    await agents._post('/spawn', {});
+    assert(requests.length === before, 'read-only contexts must never attempt a mutation');
+    clearPzxContext();
+    assert(getPzxContext() === null, 'switching programs clears old capabilities');
+    passed += 1;
+  } catch (error) {
+    failed += 1;
+    errors.push(`scoped capabilities: ${error instanceof Error ? error.message : error}`);
+  } finally {
+    if (originalContext) setPzxContext(originalContext);
+    else clearPzxContext();
+    window.fetch = originalFetch;
+  }
   return { passed, failed, errors };
 }

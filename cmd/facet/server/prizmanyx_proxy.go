@@ -55,7 +55,9 @@ func (s *Server) handlePutPzxContext(w http.ResponseWriter, r *http.Request) {
 // proxied path. Auth is Prizmanyx's own program-bound capability token (`t=`),
 // carried in each proxied URL — so this proxy adds no fork-token requirement
 // (an iframe navigation cannot set X-Facet-Token anyway) and forwards no
-// fork credentials: Cookie, X-Facet-Token, and Authorization are stripped.
+// fork credentials: Cookie and X-Facet-Token are stripped. Only an explicit
+// Prizmanyx v2 Bearer capability is forwarded for a mutation; the backend
+// verifies its signature, program, expiry and purpose.
 // The Host allowlist still applies (a hostile page on another host cannot use
 // the fork as a springboard, and without a valid capability token Prizmanyx
 // answers 401 regardless).
@@ -75,7 +77,13 @@ func (s *Server) registerPrizmanyxProxy() {
 			pr.Out.Host = target.Host
 			pr.Out.Header.Del("Cookie")
 			pr.Out.Header.Del("X-Facet-Token")
+			authorization := pr.In.Header.Get("Authorization")
 			pr.Out.Header.Del("Authorization")
+			// Only the explicit Prizmanyx v2 capability may cross this proxy.
+			// Never forward ambient provider or Facet authentication.
+			if strings.HasPrefix(authorization, "Bearer v2.") && len(authorization) <= 520 {
+				pr.Out.Header.Set("Authorization", authorization)
+			}
 		},
 	}
 	handler := http.StripPrefix("/pzx", proxy)
