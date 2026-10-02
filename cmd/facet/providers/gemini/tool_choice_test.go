@@ -6,8 +6,8 @@ package gemini
 import (
 	"testing"
 
-	"google.golang.org/genai"
 	provider "facet/cmd/facet/providers/registry"
+	"google.golang.org/genai"
 )
 
 func TestGeminiFunctionCallingConfig(t *testing.T) {

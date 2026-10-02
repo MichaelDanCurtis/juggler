@@ -6,8 +6,8 @@ package integration
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"facet/cmd/facet/worker"
+	"fmt"
 	"sync"
 	"testing"
 	"time"
