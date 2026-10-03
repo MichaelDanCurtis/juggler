@@ -5,8 +5,8 @@ package integration_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"facet/cmd/facet/worker"
+	"fmt"
 	"strings"
 	"testing"
 	"time"

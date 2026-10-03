@@ -32,7 +32,7 @@ const coreManifest = `{
 // and a sdk/version.js pinning the host engine API version.
 func coreFS(manifest, version string) fstest.MapFS {
 	return fstest.MapFS{
-		"extensions/facet-core/facet.extension.json":                  {Data: []byte(manifest)},
+		"extensions/facet-core/facet.extension.json":                    {Data: []byte(manifest)},
 		"extensions/facet-core/context-items/read-file-context-item.js": {Data: []byte("//")},
 		"extensions/facet-core/context-items/execute-context-item.js":   {Data: []byte("//")},
 		"extensions/facet-core/context-items/edit-base.js":              {Data: []byte("// not a capability")},

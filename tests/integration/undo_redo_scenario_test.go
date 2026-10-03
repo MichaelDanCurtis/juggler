@@ -4,8 +4,8 @@
 package integration_test
 
 import (
-	"fmt"
 	"facet/cmd/facet/worker"
+	"fmt"
 	"testing"
 )
 

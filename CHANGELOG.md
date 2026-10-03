@@ -5,6 +5,8 @@ of changes; this project follows semantic versioning.
 
 ## [Unreleased]
 
+- Separated Prizmanyx read capabilities from workspace writes and agent controls
+
 - Extensions can render declarative UI via the new facet/a2ui SDK module
 - A2UI surfaces now animate: value pulses, entry effects, and flow/heartbeat motion
 - Added A2UI charts, metric tiles, and network diagrams with a built-in symbol set

@@ -12,27 +12,31 @@
  * gated) so the pop-out and desktop windows share it — NOT localStorage:
  * browsers partition a third-party iframe's storage, so anything the embedded
  * console wrote there would never reach a top-level fork window. Tokens are
- * program-scoped and expire server-side (~30 min); a stale context degrades
+ * program-scoped and expire server-side (reads 15 min, writes 5); a stale context degrades
  * to an honest 401 in the pane, never silent access.
  *
  * The active conversation id (the pane's "This task" scope) comes from the
  * fork's OWN session — tracked here in both embedded and standalone modes.
  */
 
-/** @typedef {{programId: number, token: string, webBase: string, expires: number}} PzxContext */
+/** @typedef {{programId: number, token: string, workspaceReadToken?: string, workspaceWriteToken?: string, agentReadToken?: string, agentWriteToken?: string, version?: number, webBase: string, expires: number}} PzxContext */
 
 /** @type {PzxContext|null} */
 let _context = null;
+let _contextRevision = 0;
 /** @type {string|null} */
 let _activeConversationId = null;
 /** @type {Set<() => void>} */
 const _listeners = new Set();
 
+/**
+ *
+ */
 function _notify() {
   for (const listener of _listeners) listener();
 }
 
-/** @returns {Record<string, string>} */
+/** @returns {Record<string, string>} Instance authentication headers. */
 function _authHeaders() {
   const token = /** @type {{__facetToken?: string}} */ (globalThis).__facetToken;
   return token ? { 'X-Facet-Token': token } : {};
@@ -44,6 +48,7 @@ function _authHeaders() {
  * @param {PzxContext} context
  */
 export function setPzxContext(context) {
+  _contextRevision += 1;
   _context = context;
   _notify();
   void fetch('/api/pzx-context', {
@@ -55,6 +60,18 @@ export function setPzxContext(context) {
   });
 }
 
+/** Clear this window's capabilities and the context used by newly opened windows. */
+export function clearPzxContext() {
+  _contextRevision += 1;
+  _context = null;
+  _notify();
+  void fetch('/api/pzx-context', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ..._authHeaders() },
+    body: 'null',
+  }).catch(() => {});
+}
+
 /** @returns {PzxContext|null} null when unconfigured or expired. */
 export function getPzxContext() {
   if (!_context) return null;
@@ -62,7 +79,7 @@ export function getPzxContext() {
   return _context;
 }
 
-/** @returns {string|null} */
+/** @returns {string|null} The active conversation, if any. */
 export function getActiveConversationId() {
   return _activeConversationId;
 }
@@ -83,10 +100,13 @@ export function initPzxContext(session) {
       _notify();
     }
   });
+  const revision = _contextRevision;
   void fetch('/api/pzx-context', { headers: _authHeaders() })
     .then(async (response) => {
       if (!response.ok) return;
       const stored = await response.json();
+      // A delayed startup response must never undo a program switch or clear.
+      if (revision !== _contextRevision) return;
       if (stored && typeof stored.programId === 'number' && typeof stored.token === 'string') {
         _context = stored;
         _notify();
@@ -97,7 +117,10 @@ export function initPzxContext(session) {
     });
 }
 
-/** @param {() => void} listener  @returns {() => void} unsubscribe */
+/**
+ * @param {() => void} listener
+ * @returns {() => void} Unsubscribe.
+ */
 export function onPzxContextChange(listener) {
   _listeners.add(listener);
   return () => _listeners.delete(listener);

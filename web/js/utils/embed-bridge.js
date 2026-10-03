@@ -17,7 +17,7 @@
  */
 
 import workerManager from '../services/worker-manager.js';
-import { setPzxContext } from './prizmanyx-context.js';
+import { clearPzxContext, setPzxContext } from './prizmanyx-context.js';
 
 /** @type {import('../model/session.js').default|null} */
 let _session = null;
@@ -100,7 +100,7 @@ function setDetailsState(msg) {
  * Whether an origin matches the server-granted embed source list. Supports
  * the CSP port-wildcard form we use in dev ("http://localhost:*").
  * @param {string} origin
- * @returns {boolean}
+ * @returns {boolean} Whether the origin is approved.
  */
 function originAllowed(origin) {
   const raw = /** @type {string} */ ((/** @type {any} */ (window).FACET_EMBED_PARENTS) || '');
@@ -114,7 +114,7 @@ function originAllowed(origin) {
   return false;
 }
 
-/** @returns {Array<{id: string, name: string, active: boolean}>} */
+/** @returns {Array<{id: string, name: string, active: boolean}>} Current conversations. */
 function snapshot() {
   if (!_session) return [];
   const visibleId = _session.visibleConversationId;
@@ -125,6 +125,9 @@ function snapshot() {
   }));
 }
 
+/**
+ *
+ */
 function send() {
   if (!_parentOrigin) return;
   window.parent.postMessage({ type: 'facet:conversations', items: snapshot() }, _parentOrigin);
@@ -134,7 +137,7 @@ function send() {
  * @param {MessageEvent} event
  */
 function onMessage(event) {
-  if (!originAllowed(event.origin)) return;
+  if (event.source !== window.parent || !originAllowed(event.origin)) return;
   const msg = event.data;
   if (!msg || typeof msg !== 'object' || typeof msg.type !== 'string') return;
   if (msg.type === 'facet:hello') {
@@ -144,7 +147,9 @@ function onMessage(event) {
   }
   // Commands are accepted only from the origin that said hello.
   if (event.origin !== _parentOrigin || !_session) return;
-  if (msg.type === 'facet:select' && typeof msg.id === 'string') {
+  if (msg.type === 'facet:context-clear') {
+    clearPzxContext();
+  } else if (msg.type === 'facet:select' && typeof msg.id === 'string') {
     _session.switchConversation(msg.id);
   } else if (msg.type === 'facet:new') {
     void _session.createConversation('', { activate: true, origin: 'embed-bridge' });
@@ -167,6 +172,11 @@ function onMessage(event) {
     setPzxContext({
       programId: msg.programId,
       token: msg.token,
+      version: typeof msg.version === 'number' ? msg.version : undefined,
+      workspaceReadToken: typeof msg.workspaceReadToken === 'string' ? msg.workspaceReadToken : undefined,
+      workspaceWriteToken: typeof msg.workspaceWriteToken === 'string' ? msg.workspaceWriteToken : undefined,
+      agentReadToken: typeof msg.agentReadToken === 'string' ? msg.agentReadToken : undefined,
+      agentWriteToken: typeof msg.agentWriteToken === 'string' ? msg.agentWriteToken : undefined,
       webBase: msg.webBase,
       expires: typeof msg.expires === 'number' ? msg.expires : 0,
     });
