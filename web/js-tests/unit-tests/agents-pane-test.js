@@ -19,7 +19,7 @@
 
 import { FacetAgentsPane, blastRadius, elapsed, groupByStage } from '../../js/components/facet-agents-pane.js';
 import { FacetWorkspacePane } from '../../js/components/facet-workspace-pane.js';
-import { clearPzxContext, getPzxContext, setPzxContext } from '../../js/utils/prizmanyx-context.js';
+import { clearPzxContext, getPzxContext, initPzxContext, setPzxContext } from '../../js/utils/prizmanyx-context.js';
 
 /**
  * @param {any} _ctx
@@ -163,6 +163,26 @@ export async function runTests(_ctx) {
     clearPzxContext();
     assert(getPzxContext() === null, 'switching programs clears old capabilities');
     passed += 1;
+
+    for (const replacement of [null, { ...context, programId: 8 }]) {
+      /** @type {(response: Response) => void} */
+      let finishHydration = () => {};
+      window.fetch = (_url, init = {}) => {
+        if (!init.method || init.method === 'GET') {
+          return new Promise((resolve) => { finishHydration = resolve; });
+        }
+        return Promise.resolve(new window.Response('{}', { status: 200 }));
+      };
+      // The context utility only observes these two session members.
+      initPzxContext(/** @type {any} */ ({ visibleConversationId: null, subscribe: () => {} }));
+      if (replacement) setPzxContext(replacement);
+      else clearPzxContext();
+      finishHydration(new window.Response(JSON.stringify(context), { status: 200 }));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      assert(getPzxContext()?.programId === replacement?.programId,
+        'delayed hydration restored capabilities for a previous program');
+      passed += 1;
+    }
   } catch (error) {
     failed += 1;
     errors.push(`scoped capabilities: ${error instanceof Error ? error.message : error}`);

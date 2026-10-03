@@ -23,6 +23,7 @@
 
 /** @type {PzxContext|null} */
 let _context = null;
+let _contextRevision = 0;
 /** @type {string|null} */
 let _activeConversationId = null;
 /** @type {Set<() => void>} */
@@ -47,6 +48,7 @@ function _authHeaders() {
  * @param {PzxContext} context
  */
 export function setPzxContext(context) {
+  _contextRevision += 1;
   _context = context;
   _notify();
   void fetch('/api/pzx-context', {
@@ -58,8 +60,9 @@ export function setPzxContext(context) {
   });
 }
 
-/** Clear stale program capabilities in every console window. */
+/** Clear this window's capabilities and the context used by newly opened windows. */
 export function clearPzxContext() {
+  _contextRevision += 1;
   _context = null;
   _notify();
   void fetch('/api/pzx-context', {
@@ -97,10 +100,13 @@ export function initPzxContext(session) {
       _notify();
     }
   });
+  const revision = _contextRevision;
   void fetch('/api/pzx-context', { headers: _authHeaders() })
     .then(async (response) => {
       if (!response.ok) return;
       const stored = await response.json();
+      // A delayed startup response must never undo a program switch or clear.
+      if (revision !== _contextRevision) return;
       if (stored && typeof stored.programId === 'number' && typeof stored.token === 'string') {
         _context = stored;
         _notify();
