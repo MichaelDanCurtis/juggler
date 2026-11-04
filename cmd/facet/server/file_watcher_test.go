@@ -13,12 +13,12 @@ import (
 
 func TestIsPluginFile(t *testing.T) {
 	cases := map[string]bool{
-		"/a/b/foo-context-item.js":     true,
+		"/a/b/foo-context-item.js":   true,
 		"/a/b/facet.extension.json":  true,
-		"/a/b/review.md":               true, // user-command definition (or a stray .md — harmless)
-		"/a/b/icon.svg":                false,
+		"/a/b/review.md":             true, // user-command definition (or a stray .md — harmless)
+		"/a/b/icon.svg":              false,
 		"/a/facet.extension.json.js": true,  // .js suffix
-		"/a/notes.json":                false, // a non-manifest json is ignored
+		"/a/notes.json":              false, // a non-manifest json is ignored
 	}
 	for path, want := range cases {
 		if got := isPluginFile(path); got != want {

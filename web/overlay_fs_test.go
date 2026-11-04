@@ -28,7 +28,7 @@ func overlayFixture() fs.FS {
 		"pro/pro.js": {Data: []byte("// pro asset")},
 		"index.html": {Data: []byte("shadowed index")},
 		"extensions/pro-ext/facet.extension.json": {Data: []byte(`{}`)},
-		"extensions/pro-ext/context-items/x.js":     {Data: []byte("//")},
+		"extensions/pro-ext/context-items/x.js":   {Data: []byte("//")},
 	}
 }
 

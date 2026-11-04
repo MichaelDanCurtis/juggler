@@ -19,6 +19,7 @@
       "/js/*": ["web/js/*"],
       "/extensions/*": ["web/extensions/*"],
       "yjs": ["tooling/node_modules/yjs"],
+      "facet/a2ui": ["web/sdk/a2ui.js"],
       "facet/context-item": ["web/sdk/context-item.js"],
       "facet/strategy-type": ["web/sdk/strategy-type.js"],
       "facet/command-type": ["web/sdk/command-type.js"],

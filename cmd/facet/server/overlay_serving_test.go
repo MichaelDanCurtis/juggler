@@ -28,7 +28,7 @@ func proOverlay() fs.FS {
 		"provides": {"contextItems": ["context-items/*-context-item.js"]}
 	}`
 	return fstest.MapFS{
-		"extensions/pro-test/facet.extension.json":            {Data: []byte(manifest)},
+		"extensions/pro-test/facet.extension.json":              {Data: []byte(manifest)},
 		"extensions/pro-test/context-items/pro-context-item.js": {Data: []byte("// pro capability")},
 	}
 }

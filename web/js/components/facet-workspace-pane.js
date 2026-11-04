@@ -17,14 +17,20 @@ import {
   onPzxContextChange,
 } from '../utils/prizmanyx-context.js';
 
-/** @param {string} value @returns {string} */
+/**
+ * @param {string} value Text to escape.
+ * @returns {string} Escaped HTML text.
+ */
 function esc(value) {
   const div = document.createElement('div');
   div.textContent = value;
   return div.innerHTML;
 }
 
-/** @param {number} bytes @returns {string} */
+/**
+ * @param {number} bytes File size in bytes.
+ * @returns {string} Human-readable file size.
+ */
 function formatSize(bytes) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
@@ -59,7 +65,7 @@ class FacetWorkspacePane extends HTMLElement {
     void this._load();
   }
 
-  /** @returns {{base: string, task: string, token: string}|null} */
+  /** @returns {{base: string, task: string, token: string}|null} Current workspace target, when available. */
   _target() {
     const context = getPzxContext();
     if (!context) return null;

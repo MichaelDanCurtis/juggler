@@ -14,7 +14,10 @@
 
 import { getPzxContext, onPzxContextChange } from '../utils/prizmanyx-context.js';
 
-/** @param {string} value @returns {string} */
+/**
+ * @param {string} value Text to escape.
+ * @returns {string} Escaped HTML text.
+ */
 function esc(value) {
   const div = document.createElement('div');
   div.textContent = value;

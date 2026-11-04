@@ -33,7 +33,7 @@
 }
 
 :root {
-  --font-mono: 'Space Mono', 'Cousine', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-mono: 'Space Mono', 'Cousine', ui-monospace, 'SF Mono', menlo, monospace;
   --font-sans: 'Space Grotesk', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   /* Space Grotesk carries no 200 weight (upstream leaned on Inter Thin);
@@ -52,18 +52,17 @@
 :root,
 :root[data-theme="dark"] {
   /* Surfaces: pure-black bg, flat #111/#1a1a1a elevations — never glass. */
-  --bg-primary: #000000;
-  --bg-secondary: #111111;
+  --bg-primary: #000;
+  --bg-secondary: #111;
   --bg-raised: #1a1a1a;
 
   /* Hairline dividers (#222), intentional/wireframe borders (#333). */
-  --border-color: #222222;
-  --border-divider: #222222;
-  --border-floating: #333333;
-
+  --border-color: #222;
+  --border-divider: #222;
+  --border-floating: #333;
   --text-primary: #e8e8e8;
-  --text-secondary: #999999;
-  --text-tertiary: #666666;
+  --text-secondary: #999;
+  --text-tertiary: #666;
 
   /* The brand accent slot: Prizmanyx coral, not GitHub blue. Status colors
      map to Prizmanyx's teal/amber/danger. */
@@ -82,7 +81,7 @@
 input-box input-box-wrapper {
   border-radius: var(--radius-lg);
   background: #0a0a0a;
-  border: 1px solid #222222;
+  border: 1px solid #222;
 }
 
 /* Embed mode (?embed=1): the Prizmanyx shell renders the header chrome and
@@ -98,24 +97,28 @@ html.embed-mode #conversation-bar {
    the only affordance in either state. !important beats the inline width
    that setupColumnResize stamps, so the stored drag width survives. */
 .properties-panel-collapse {
-  position: absolute; top: 8px; left: 5px; z-index: 6;
-  width: 20px; height: 20px; padding: 0;
+  position: absolute; top: 0.5rem; left: 0.3125rem; z-index: 6;
+  width: 1.25rem; height: 1.25rem; padding: 0;
   display: flex; align-items: center; justify-content: center;
   background: none; border: 1px solid var(--border-divider);
-  border-radius: 4px; color: var(--text-secondary);
-  font-size: 11px; line-height: 1; cursor: pointer;
+  border-radius: 0.25rem; color: var(--text-secondary);
+  font-size: 0.6875rem; line-height: 1; cursor: pointer;
 }
 .properties-panel-collapse:hover { color: var(--text-primary); }
+
 /* (chevron clearance now comes from the tab strip's padding-left) */
 properties-panel[data-collapsed] {
-  width: 30px !important; min-width: 30px !important;
-  flex: 0 0 30px !important;
+  width: 1.875rem !important; min-width: 1.875rem !important;
+  flex: 0 0 1.875rem !important;
 }
+
 properties-panel[data-collapsed] properties-panel-content,
 properties-panel[data-collapsed] col-resize-handle { display: none; }
+
 properties-panel[data-collapsed] .properties-panel-collapse {
   transform: rotate(180deg);
 }
+
 /* Parent-driven swap: when the Prizmanyx shell shows its own Workspace/Browser
    pane in this region, the inspector is removed entirely — no 30px stub to
    stack beside the shell's dock (embed-bridge sets data-embed-hidden). */
@@ -125,25 +128,29 @@ properties-panel[data-embed-hidden] { display: none !important; }
    The right rail is ONE switchable region, native to Facet — same tabs in the
    embedded console and the standalone window. Collapse folds it all. */
 .facet-panel-tabs {
-  display: flex; gap: 2px;
-  padding: 6px 8px 0 30px; /* clear the collapse chevron */
+  display: flex; gap: 0.125rem;
+  padding: 0.375rem 0.5rem 0 1.875rem; /* clear the collapse chevron */
   border-bottom: 1px solid var(--border-divider);
 }
+
 .facet-panel-tabs [role="tab"] {
-  font-size: 11px; padding: 4px 10px 6px;
+  font-size: 0.6875rem; padding: 0.25rem 0.625rem 0.375rem;
   background: none; border: none; cursor: pointer;
   color: var(--text-secondary);
-  border-bottom: 2px solid transparent;
+  border-bottom: 0.125rem solid transparent;
 }
+
 .facet-panel-tabs [role="tab"][aria-selected="true"] {
   color: var(--text-primary);
   border-bottom-color: var(--accent-blue);
 }
-properties-panel > properties-panel-content { padding-top: 4px; }
+properties-panel > properties-panel-content { padding-top: 0.25rem; }
+
 /* The [hidden] UA default loses to the author display:flex on
    properties-panel-content (components.css) — restate it so tab switching
    actually hides the inspector. */
 properties-panel-content[hidden] { display: none; }
+
 properties-panel[data-collapsed] .facet-panel-tabs,
 properties-panel[data-collapsed] facet-workspace-pane,
 properties-panel[data-collapsed] facet-browser-pane,
@@ -151,56 +158,93 @@ properties-panel[data-collapsed] facet-agents-pane { display: none; }
 
 /* The panes themselves */
 facet-workspace-pane, facet-browser-pane, facet-agents-pane {
-  display: flex; flex-direction: column; gap: 8px;
-  flex: 1; min-height: 0; padding: 10px 12px; overflow: hidden;
+  display: flex; flex-direction: column; gap: 0.5rem;
+  flex: 1; min-height: 0; padding: 0.625rem 0.75rem; overflow: hidden;
 }
+
 facet-workspace-pane[hidden], facet-browser-pane[hidden],
 facet-agents-pane[hidden] { display: none; }
-.pzx-pane-toolbar { display: flex; gap: 6px; align-items: center; flex: none; }
-.pzx-scope, .pzx-upload, .pzx-go {
-  font-size: 11px; padding: 3px 10px; cursor: pointer;
-  background: none; color: var(--text-secondary);
-  border: 1px solid var(--border-divider); border-radius: 4px;
+
+.pzx-pane-toolbar {
+  display: flex;
+  gap: 0.375rem;
+  align-items: center;
+  flex: none;
 }
-.pzx-scope.is-active { color: var(--text-primary); border-color: var(--text-secondary); }
-.pzx-scope[disabled] { opacity: 0.5; cursor: default; }
+
+.pzx-scope, .pzx-upload, .pzx-go {
+  font-size: 0.6875rem; padding: 0.1875rem 0.625rem; cursor: pointer;
+  background: none; color: var(--text-secondary);
+  border: 1px solid var(--border-divider); border-radius: 0.25rem;
+}
+
+.pzx-scope.is-active {
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+.pzx-scope[disabled] {
+  opacity: 0.5;
+  cursor: default;
+}
 .pzx-upload { margin-left: auto; }
+
 .pzx-address {
-  flex: 1; min-width: 80px; font-size: 11px; padding: 4px 8px;
+  flex: 1; min-width: 5rem; font-size: 0.6875rem; padding: 0.25rem 0.5rem;
   font-family: var(--font-mono, monospace);
   background: var(--background-secondary, transparent);
   color: var(--text-primary);
-  border: 1px solid var(--border-divider); border-radius: 4px;
+  border: 1px solid var(--border-divider); border-radius: 0.25rem;
 }
-.pzx-pane-status { flex: none; font-size: 10px; color: var(--text-secondary); }
+
+.pzx-pane-status {
+  flex: none;
+  font-size: 0.625rem;
+  color: var(--text-secondary);
+}
+
 .pzx-pane-empty, .pzx-pane-error {
-  flex: none; font-size: 12px; line-height: 1.5; color: var(--text-secondary);
-  padding: 10px; border: 1px dashed var(--border-divider); border-radius: 4px;
+  flex: none; font-size: 0.75rem; line-height: 1.5; color: var(--text-secondary);
+  padding: 0.625rem; border: 1px dashed var(--border-divider); border-radius: 0.25rem;
 }
-.pzx-pane-error { color: var(--text-error, #f66); border-style: solid; }
+
+.pzx-pane-error {
+  color: var(--text-error, #f66);
+  border-style: solid;
+}
+
 .pzx-file-list {
   list-style: none; margin: 0; padding: 0;
   overflow-y: auto; min-height: 0;
-  display: flex; flex-direction: column; gap: 4px;
+  display: flex; flex-direction: column; gap: 0.25rem;
 }
+
 .pzx-file-row {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 9px; font-size: 12px;
-  border: 1px solid var(--border-divider); border-radius: 4px;
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.375rem 0.5625rem; font-size: 0.75rem;
+  border: 1px solid var(--border-divider); border-radius: 0.25rem;
 }
+
 .pzx-file-name {
   flex: 1; min-width: 0; overflow: hidden;
   text-overflow: ellipsis; white-space: nowrap;
   color: var(--text-primary); text-decoration: none;
 }
-.pzx-file-size { flex: none; font-size: 10px; color: var(--text-secondary); }
+
+.pzx-file-size {
+  flex: none;
+  font-size: 0.625rem;
+  color: var(--text-secondary);
+}
+
 .pzx-file-delete {
   flex: none; background: none; border: none; cursor: pointer;
-  color: var(--text-secondary); font-size: 12px; padding: 0;
+  color: var(--text-secondary); font-size: 0.75rem; padding: 0;
 }
+
 .pzx-browser-frame {
   flex: 1; min-height: 0; width: 100%;
-  border: 1px solid var(--border-divider); border-radius: 4px;
+  border: 1px solid var(--border-divider); border-radius: 0.25rem;
   background: var(--background-secondary, transparent);
 }
 
@@ -210,68 +254,253 @@ facet-agents-pane[hidden] { display: none; }
    readable at once; hover peeks at the journal without committing the space;
    a BLOCKED card expands itself and stays expanded. A card earns space by
    being urgent, never by being interesting. */
-.agents-pane { display: flex; flex-direction: column; gap: 8px; min-height: 0; overflow: auto; }
+.agents-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 0;
+  overflow: auto;
+}
+
 .agents-header {
   display: flex; align-items: center; justify-content: space-between;
-  flex: none; font-size: 11px; color: var(--text-secondary);
+  flex: none; font-size: 0.6875rem; color: var(--text-secondary);
 }
+
 .agents-header button {
-  font-size: 11px; padding: 3px 10px; cursor: pointer; background: none;
-  color: var(--text-secondary); border: 1px solid var(--border-divider); border-radius: 4px;
+  font-size: 0.6875rem; padding: 0.1875rem 0.625rem; cursor: pointer; background: none;
+  color: var(--text-secondary); border: 1px solid var(--border-divider); border-radius: 0.25rem;
 }
+
 .agents-empty, .agents-error, .agent-journal-empty {
-  font-size: 12px; line-height: 1.5; color: var(--text-secondary);
+  font-size: 0.75rem; line-height: 1.5; color: var(--text-secondary);
 }
 .agents-error { color: var(--accent-error, #d9534f); }
 
-.agent-cards { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
-.agent-card { border: 1px solid transparent; border-radius: 4px; }
-.agent-line {
-  display: grid; grid-template-columns: 8px minmax(0, auto) minmax(0, 1fr) auto;
-  gap: 8px; align-items: center; width: 100%; text-align: left;
-  padding: 5px 8px; cursor: pointer; background: none; border: none;
-  color: var(--text-primary); font-size: 12px;
+.agent-templates {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.625rem;
+  min-width: 0;
+  }
+
+.agent-stage-group {
+  min-width: 0;
+  }
+
+.agent-stage-heading {
+  margin: 0.5rem 0;
+  color: var(--text-secondary);
+  font-size: 0.6875rem;
+  }
+
+.agent-template {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  border: 1px solid var(--border-divider);
+  border-radius: 0.25rem;
+  padding: 0.625rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: 0.75rem;
 }
-.agent-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-secondary); }
+
+.agent-template h4, .agent-template p {
+  margin: 0;
+  }
+
+.agent-template textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  resize: vertical;
+  padding: 0.5rem;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-divider);
+  border-radius: 0.25rem;
+  font: inherit;
+}
+
+.agent-template button {
+  align-self: flex-start;
+  max-width: 100%;
+  padding: 0.375rem 0.625rem;
+  font: inherit;
+  color: var(--text-primary);
+  background: none;
+  border: 1px solid var(--border-divider);
+  border-radius: 0.25rem;
+  cursor: pointer;
+  white-space: normal;
+}
+
+.agent-blast {
+  color: var(--text-secondary);
+  line-height: 1.5;
+  }
+
+.agent-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.agent-card {
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+}
+
+.agent-line {
+  display: grid; grid-template-columns: 0.5rem minmax(0, auto) minmax(0, 1fr) auto;
+  gap: 0.5rem; align-items: center; width: 100%; text-align: left;
+  padding: 0.3125rem 0.5rem; cursor: pointer; background: none; border: none;
+  color: var(--text-primary); font-size: 0.75rem;
+}
+
+.agent-dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: var(--text-secondary);
+}
 .status-running .agent-dot { background: var(--accent-success, #4caf50); }
 .status-blocked .agent-dot { background: var(--accent-warning, #e0a030); }
 .status-failed .agent-dot { background: var(--accent-error, #d9534f); }
 .agent-name { font-weight: 500; }
+
 /* The focus line is the one thing that makes a roster readable at a glance,
    so it gets the flexible column and truncates rather than wrapping. */
-.agent-focus { color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.agent-meta { color: var(--text-secondary); font-size: 10px; font-variant-numeric: tabular-nums; }
+.agent-focus {
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agent-meta {
+  color: var(--text-secondary);
+  font-size: 0.625rem;
+  font-variant-numeric: tabular-nums;
+}
 
 /* Hover peek: the journal appears without the card committing to open. */
-.agent-card:not(.is-open):not(.status-blocked):hover { border-color: var(--border-divider); }
-.agent-card-body { padding: 0 8px 8px 24px; display: flex; flex-direction: column; gap: 6px; }
-.agent-journal { list-style: none; margin: 0; padding: 0; font-size: 11px; color: var(--text-secondary); }
+.agent-card:not(.is-open, .status-blocked):hover { border-color: var(--border-divider); }
+
+.agent-card-body {
+  padding: 0 0.5rem 0.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.agent-card-body .agents-error, .agent-result {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.75rem;
+}
+
+.agent-journal {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+}
 
 /* Needs-you. The only place in this pane that raises contrast — if everything
    were emphasised, the one card that matters would not be. */
-.agent-needs-you { border-left: 2px solid var(--accent-warning, #e0a030); }
-.agent-question { margin: 0; font-size: 12px; line-height: 1.5; color: var(--text-primary); }
-.agent-evidence { margin: 0; padding-left: 16px; font-size: 11px; color: var(--text-secondary); }
-.agent-options { display: flex; gap: 6px; flex-wrap: wrap; }
+.agent-needs-you { border-left: 0.125rem solid var(--accent-warning, #e0a030); }
+
+.agent-question {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.agent-evidence {
+  margin: 0;
+  padding-left: 1rem;
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+}
+
+.agent-options {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
 .agent-options button, .agent-actions button {
-  font-size: 11px; padding: 3px 10px; cursor: pointer; background: none;
-  color: var(--text-secondary); border: 1px solid var(--border-divider); border-radius: 4px;
+  font-size: 0.6875rem; padding: 0.1875rem 0.625rem; cursor: pointer; background: none;
+  color: var(--text-secondary); border: 1px solid var(--border-divider); border-radius: 0.25rem;
 }
+
 .agent-card-body textarea {
-  font: inherit; font-size: 12px; padding: 6px 8px; resize: vertical;
+  font: inherit; font-size: 0.75rem; padding: 0.375rem 0.5rem; resize: vertical;
   background: var(--background-secondary, transparent); color: var(--text-primary);
-  border: 1px solid var(--border-divider); border-radius: 4px;
+  border: 1px solid var(--border-divider); border-radius: 0.25rem;
 }
-.agent-actions { display: flex; gap: 6px; }
+
+.agent-actions {
+  display: flex;
+  gap: 0.375rem;
+}
 
 /* The sketch. Plain boxes and arrows: this is a hand-raise read by someone who
    was interrupted, not the estate graph. */
-.agent-diagram { margin: 0; padding: 6px 8px; border: 1px solid var(--border-divider); border-radius: 4px; }
-.agent-diagram figcaption { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
-.agent-diagram-nodes, .agent-diagram-edges { list-style: none; margin: 0; padding: 0; font-size: 11px; }
-.agent-diagram-edges { color: var(--text-secondary); margin-top: 4px; }
-.agent-node-type { color: var(--text-secondary); font-family: var(--font-mono, monospace); }
+.agent-diagram {
+  margin: 0;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--border-divider);
+  border-radius: 0.25rem;
+}
+
+.agent-diagram figcaption {
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.agent-diagram-nodes, .agent-diagram-edges {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.6875rem;
+}
+
+.agent-diagram-edges {
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.agent-node-type {
+  color: var(--text-secondary);
+  font-family: var(--font-mono, monospace);
+}
+
 /* Server-stamped, so the agent cannot claim an invented type is known. */
-.agent-beyond { color: var(--accent-warning, #e0a030); font-size: 10px; }
-.agent-diagram-error { font-size: 11px; color: var(--text-secondary); font-style: italic; }
-.agents-done { font-size: 11px; color: var(--text-secondary); }
+.agent-beyond {
+  color: var(--accent-warning, #e0a030);
+  font-size: 0.625rem;
+}
+
+.agent-diagram-error {
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.agents-done {
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+}

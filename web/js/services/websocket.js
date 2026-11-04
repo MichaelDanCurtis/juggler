@@ -403,16 +403,13 @@ class WebSocketService {
       // (e.g. the test harness's exec counter). The engine itself
       // both originated the message and skips its own replay.
       //
-      // Also replay onto a same-window BroadcastChannel so existing
-      // BC subscribers (action-progress, etc.) keep working. In the
-      // multi-iframe test pool the BC path inherently fans the
-      // event N-1 ways (sender doesn't get its own posts but every
-      // sibling iframe does), which is why new test instrumentation
-      // should subscribe to 'engine-bridge' on wsService instead.
+      // The transport already delivers once to each viewer. Relaying again
+      // across same-origin windows duplicates payloads quadratically, including
+      // every accumulated output snapshot from streaming tools.
       if (data.type === 'engine-bridge' && typeof data.channel === 'string') {
         if (isEngine()) return;
-        // The engine has no tape of its own (separate window, no
-        // BroadcastChannel reach), so its bridged events are the
+        // The engine has no tape of its own (a separate window),
+        // so its bridged events are the
         // only record of what it executed. Stamp them onto this
         // viewer's tape so a failure block shows the engine's
         // tool-exec timeline interleaved with local events.
@@ -436,15 +433,6 @@ class WebSocketService {
             });
         }
         this._emit('engine-bridge', { channel: data.channel, payload: data.payload });
-        if (typeof BroadcastChannel !== 'undefined') {
-          try {
-            const bc = new BroadcastChannel(data.channel);
-            bc.postMessage(data.payload);
-            bc.close();
-          } catch (err) {
-            console.error('[WebSocket] engine-bridge replay failed:', err);
-          }
-        }
         return;
       }
 
@@ -794,9 +782,8 @@ class WebSocketService {
 
   /**
    * Bridge a cross-window event from the engine to every viewer via the
-   * server. Viewer-side WS handler replays the payload into a local
-   * BroadcastChannel(channel) so in-page subscribers fire.
-   * @param {string} channel - BroadcastChannel name (e.g. 'facet-action-progress')
+   * server. Each viewer receives one local 'engine-bridge' event.
+   * @param {string} channel - Engine event channel (e.g. 'facet-action-progress')
    * @param {unknown} payload - Payload to deliver to viewers
    * @returns {boolean} True if sent
    */

@@ -1024,15 +1024,15 @@ export const threadDeleteFirstItemUndoRedoTest = {
 };
 
 /**
- * Two rapid thread-item deletions are grouped into one undo step.
+ * Two thread-item deletions share one authored transaction and undo step.
  *
- * Both deletions happen synchronously (<100ms) so the Go worker groups them
- * under a single undo groupID. One undo restores both; one redo removes both.
+ * The intermediate counts remain asserted inside the transaction. One undo
+ * restores both; one redo removes both, regardless of transport scheduling.
  * @type {import('../utilities/integration-test-runner.js').IntegrationTestDefinition}
  */
 export const threadDeleteMiddleItemUndoRedoTest = {
   name: 'thread-delete-middle-item-undo-redo',
-  description: 'Two rapid thread-item deletions are grouped and undone together',
+  description: 'Two thread-item deletions in one authored transaction are undone together',
   fixture: 'unit-test-fixture',
 
   llmResponses: [
@@ -1047,12 +1047,12 @@ export const threadDeleteMiddleItemUndoRedoTest = {
     { type: 'send-thread-message', message: 'Do something' },
     // Thread: [user, assistant] — 2 items
     { type: 'assert-thread-item-count', count: 2 },
-    // Delete both items rapidly (< 100ms) — they get one undo group
-    { type: 'delete-last-item-in-thread' },
-    { type: 'assert-thread-item-count', count: 1 },
-    { type: 'delete-first-item-in-thread' },
+    // Keep both intermediate assertions, but send the intended group as one
+    // authored transaction. Scheduler/transport latency between separate
+    // operations must not decide whether these edits share an undo group.
+    { type: 'delete-thread-items-grouped', indices: [1, 0], expectedCounts: [1, 0] },
     { type: 'assert-thread-item-count', count: 0 },
-    // One undo restores both (rapid group)
+    // One undo restores both (one authored group)
     { type: 'undo' },
     { type: 'assert-thread-item-count', count: 2 },
     // One redo removes both again

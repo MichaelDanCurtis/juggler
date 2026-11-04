@@ -663,6 +663,7 @@ app-container {
     content: "";
     display: block;
     height: 2.5rem;
+
     /* Prizmanyx fork: the mark SVG is square (64x64), unlike the wide
        upstream wordmark; the name renders as the ::after text below. */
     aspect-ratio: 1 / 1;

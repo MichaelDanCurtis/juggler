@@ -9,6 +9,7 @@
  * @module integration/integration-test-executor
  */
 
+import { installTestWorkerRouting } from './worker-routing.js';
 import { runIntegrationTests } from './integration-test-runner.js';
 import { tests as readFileTests } from '../integration-tests/read-file-tests.js';
 import { tests as writeFileTests } from '../integration-tests/write-file-tests.js';
@@ -137,6 +138,7 @@ import { runTests as runPopupBackButtonTests } from '../unit-tests/popup-back-bu
 import { runTests as runModelDisplayTests } from '../unit-tests/model-display-test.js';
 import './golden-comparator.js'; // Initialize window.__integrationTestHelpers
 import logger from './test-logger.js';
+import wsService from '../../js/services/websocket.js';
 import {
   installClaimAutoRegistration,
   snapshotOwnConversationIds,
@@ -144,28 +146,18 @@ import {
   setCurrentTestName
 } from './conversation-claims.js';
 
-// Action progress events fire in the engine WebviewWindow's document; without
-// a bridge they are invisible to the test page. action-executor broadcasts
-// them; re-dispatch on the test document so capture listeners see them.
-//
-// BroadcastChannel scopes to the whole browsing context (origin), so in the
-// multi-iframe test pool every iframe receives every other iframe's events.
-// We tag each detail with conversationId and only redispatch events whose
-// conversation we host — otherwise sibling tests' tool executions would
-// count toward this test's per-tool exec counters.
-const __apChan = new BroadcastChannel('facet-action-progress');
+// Progress reaches each viewer once through its own transport. Same-origin
+// BroadcastChannel rebroadcasts multiplied each output chunk across the pool.
 const __inIframePool = window.parent && window.parent !== window;
-__apChan.onmessage = (/** @type {MessageEvent} */ e) => {
-  const detail = e.data;
-  // In the iframe pool, only redispatch events for conversations THIS
-  // iframe owns — otherwise sibling test iframes' tool executions pile
-  // onto this test's counters.
+wsService.on('engine-bridge', (/** @type {any} */ event) => {
+  if (event.channel !== 'facet-action-progress') return;
+  const detail = event.payload;
   if (__inIframePool && detail?.conversationId) {
     const owned = /** @type {any} */ (window).__ownConversationIds;
     if (!owned || !owned.has(detail.conversationId)) return;
   }
   document.dispatchEvent(new CustomEvent('action-progress', { detail }));
-};
+});
 
 /**
  * @typedef {object} TestContext
@@ -393,11 +385,7 @@ async function setupWebSocketForUnitTests() {
     });
   }
 
-  wsService.on('message', (/** @type {any} */ data) => {
-    if (data.type === 'worker-message') {
-      workerManager.handleWorkerMessageFromWS(data);
-    }
-  });
+  installTestWorkerRouting(wsService, workerManager);
 }
 
 /**

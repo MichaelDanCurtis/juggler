@@ -23,6 +23,10 @@ import {
   waitForWorkerReady
 } from '../utilities/test-helpers.js';
 
+import {
+  snapshotOwnConversationIds,
+  deleteOwnConversationsCreatedSince
+} from '../utilities/conversation-claims.js';
 import workerManager from '../../js/services/worker-manager.js';
 import { TOOL_STATES } from '../../sdk/lib/message.js';
 import logger from '../utilities/test-logger.js';
@@ -2403,6 +2407,29 @@ async function testForwardOrderDeletionOrdering(session) {
 // =============================================================================
 
 /**
+ * Reclaim a completed case's fixtures before the next case consumes shared
+ * session capacity. Never destroy conversations belonging to sibling lanes.
+ * @param {import('../../js/model/session.js').default} session
+ * @param {Set<string>} before
+ * @param {string} name
+ * @returns {Promise<void>}
+ */
+async function cleanupCaseConversations(session, before, name) {
+  const created = [...snapshotOwnConversationIds()].filter(id => !before.has(id));
+  try {
+    for (const id of created) {
+      const conversation = session.conversations.get(id);
+      if (conversation) await workerManager.destroyConversationAndWorker(conversation);
+      session.conversations.delete(id);
+    }
+  } finally {
+    // Direct owned deletion also reclaims the last fixture; the UI session
+    // deletion path intentionally protects a user's last conversation.
+    await deleteOwnConversationsCreatedSince(before, `undo-redo-case:${name}`);
+  }
+}
+
+/**
  * Run all undo/redo tests
  * @param {object} _ctx - Test context (unused)
  * @returns {Promise<{passed: number, failed: number, errors: string[]}>} Test results
@@ -2467,6 +2494,7 @@ export async function runTests(_ctx) {
   const errors = [];
 
   for (const test of tests) {
+    const claimsBeforeCase = snapshotOwnConversationIds();
     try {
       logger.info(`[undo-redo-test] Running: ${test.name}`);
       const timeoutPromise = new Promise((_, reject) =>
@@ -2483,6 +2511,13 @@ export async function runTests(_ctx) {
       errors.push(`${test.name}: ${msg}`);
       logger.error(`[undo-redo-test] ✗ ${test.name}: ${msg}`);
       if (stack) logger.error(`[undo-redo-test]   Stack: ${stack}`);
+    } finally {
+      try {
+        await cleanupCaseConversations(session, claimsBeforeCase, test.name);
+      } catch (error) {
+        failed++;
+        errors.push(`${test.name} cleanup: ${error instanceof Error ? error.message : String(error)}`);
+      }
     }
   }
 

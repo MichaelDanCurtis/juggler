@@ -360,7 +360,7 @@ class A2uiSurfaceContextItem extends ContextItem {
    * standalone surface item; returns the small LLM-facing ack that
    * getSummary() formats.
    * @param {Record<string, unknown>} params - Validated params
-   * @returns {Promise<object>} Raw result data
+   * @returns {Promise<Record<string, unknown>>} Raw result data
    */
   async execute(params) {
     const p = /** @type {any} */ (params);
@@ -380,7 +380,7 @@ class A2uiSurfaceContextItem extends ContextItem {
    * client, whose cards reconcile pending busy states against it on repaint.
    * The store is bounded — oldest responses are pruned.
    * @param {any} p - Validated params
-   * @returns {Promise<object>} Ack
+   * @returns {Promise<Record<string, unknown>>} Ack
    */
   async _executeRespondAction(p) {
     const item = this._findSurface(p.surfaceId);
@@ -393,7 +393,7 @@ class A2uiSurfaceContextItem extends ContextItem {
       : { value: p.value ?? null };
     // Prune oldest first (object key order is insertion order).
     const keys = Object.keys(responses);
-    for (let i = 0; i < keys.length - MAX_ACTION_RESPONSES; i++) delete responses[keys[i]];
+    for (const key of keys.slice(0, Math.max(0, keys.length - MAX_ACTION_RESPONSES))) delete responses[key];
     data.actionResponses = responses;
     this.messageThread.updateContextItem(item.id, { data });
     await this.session?.save?.();
@@ -403,7 +403,7 @@ class A2uiSurfaceContextItem extends ContextItem {
   /**
    * Create (or replace) a surface item.
    * @param {any} p - Validated params
-   * @returns {Promise<object>} Ack
+   * @returns {Promise<Record<string, unknown>>} Ack
    */
   async _executeCreate(p) {
     const surfaceId = p.surfaceId || `s_${Date.now().toString(36)}_${Math.floor(Math.random() * 1e6).toString(36)}`;
@@ -434,7 +434,7 @@ class A2uiSurfaceContextItem extends ContextItem {
   /**
    * Upsert components by id on an existing surface.
    * @param {any} p - Validated params
-   * @returns {Promise<object>} Ack
+   * @returns {Promise<Record<string, unknown>>} Ack
    */
   async _executeUpdateComponents(p) {
     const item = this._findSurface(p.surfaceId);
@@ -449,7 +449,7 @@ class A2uiSurfaceContextItem extends ContextItem {
   /**
    * Upsert the data model at a pointer (or replace it wholesale).
    * @param {any} p - Validated params
-   * @returns {Promise<object>} Ack
+   * @returns {Promise<Record<string, unknown>>} Ack
    */
   async _executeUpdateDataModel(p) {
     const item = this._findSurface(p.surfaceId);
@@ -469,7 +469,7 @@ class A2uiSurfaceContextItem extends ContextItem {
   /**
    * Tombstone a surface (kept in history for undo; hidden from rendering).
    * @param {any} p - Validated params
-   * @returns {Promise<object>} Ack
+   * @returns {Promise<Record<string, unknown>>} Ack
    */
   async _executeDelete(p) {
     const item = this._findSurface(p.surfaceId);
@@ -668,7 +668,7 @@ class A2uiSurfaceContextItem extends ContextItem {
     const wrap = document.createElement('div');
     wrap.className = 'a2ui-properties';
 
-    const addSection = (label, value) => {
+    const addSection = (/** @type {string} */ label, /** @type {unknown} */ value) => {
       const h = document.createElement('h4');
       h.className = 'properties-panel-subtitle';
       h.textContent = label;

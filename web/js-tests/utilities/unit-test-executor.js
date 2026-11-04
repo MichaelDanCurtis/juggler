@@ -12,6 +12,7 @@
  * Used for testing plugin lifecycle, registries, and utilities.
  */
 
+import { installTestWorkerRouting } from './worker-routing.js';
 import TestScorer from './test-scorer.js';
 import logger from './test-logger.js';
 
@@ -164,11 +165,7 @@ class UnitTestExecutor {
 
     // Set up worker message routing (normally done by app.js)
     const { default: workerManager } = await import('../../js/services/worker-manager.js');
-    wsService.on('message', (/** @type {any} */ data) => {
-      if (data.type === 'worker-message') {
-        workerManager.handleWorkerMessageFromWS(data);
-      }
-    });
+    installTestWorkerRouting(wsService, workerManager);
 
     await this.session.load();
 

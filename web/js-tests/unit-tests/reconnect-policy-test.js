@@ -19,6 +19,7 @@
 
 import { assert } from '../utilities/test-helpers.js';
 import { WebSocketService } from '../../js/services/websocket.js';
+import { installTestWorkerRouting } from '../utilities/worker-routing.js';
 
 /**
  * @typedef {object} TestResult
@@ -90,6 +91,45 @@ export async function runTests(_ctx) {
     }
     return n;
   };
+
+  await run('mixed test entrypoints install only one worker router', async () => {
+    const service = new WebSocketService();
+    let delivered = 0;
+    const manager = { handleWorkerMessageFromWS: () => { delivered++; } };
+    installTestWorkerRouting(service, manager);
+    installTestWorkerRouting(service, manager);
+    installTestWorkerRouting(service, manager);
+    service._handleMessageData(JSON.stringify({ type: 'worker-message', conversationId: 'test', payload: {} }));
+    assert(delivered === 1, `worker message delivered ${delivered} times`);
+  });
+
+  await run('engine progress reaches each viewer once without a cross-window relay', async () => {
+    const originalChannel = globalThis.BroadcastChannel;
+    let relays = 0;
+    // No connection or timers: all nine viewers receive the same real envelope.
+    globalThis.BroadcastChannel = class {
+      constructor() { relays++; }
+      postMessage() {}
+      close() {}
+    };
+    try {
+      const counts = Array(9).fill(0);
+      const envelope = { type: 'engine-bridge', channel: 'facet-action-progress',
+        payload: { conversationId: 'progress-test', accumulatedOutput: 'retained output' } };
+      for (let i = 0; i < counts.length; i++) {
+        const viewer = new WebSocketService();
+        viewer.on('engine-bridge', (event) => {
+          assert(event.payload.accumulatedOutput === 'retained output', 'progress payload changed');
+          counts[i]++;
+        });
+        viewer._handleMessageData(JSON.stringify(envelope));
+      }
+      assert(counts.every((count) => count === 1), `delivery counts: ${counts}`);
+      assert(relays === 0, `transport envelopes were rebroadcast ${relays} times`);
+    } finally {
+      globalThis.BroadcastChannel = originalChannel;
+    }
+  });
 
   await run('non-intentional transport death enters the shared reconnect loop', async () => {
     const svc = new WebSocketService();

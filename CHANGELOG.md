@@ -5,6 +5,13 @@ of changes; this project follows semantic versioning.
 
 ## [Unreleased]
 
+- Removed duplicate streaming event relays between connected viewers
+
+- Preserved roster answers and showed completed run results and authorization errors
+- Fixed A2UI module loading and strict typing for charts and surface actions
+- Reported browser test import failures directly instead of timing out silently
+- Restored unsent investigation prompts when the console worker cannot start
+- Preserved agent briefs during roster refresh and fitted templates inside narrow panels
 - Extensions can render declarative UI via the new facet/a2ui SDK module
 - A2UI surfaces now animate: value pulses, entry effects, and flow/heartbeat motion
 - Added A2UI charts, metric tiles, and network diagrams with a built-in symbol set

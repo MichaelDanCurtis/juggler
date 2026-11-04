@@ -74,6 +74,7 @@ class ContextItemMessage extends BaseMessage {
    * @private
    */
   _snapshot() {
+    if (!this.itemId) return null;
     const item = this._observedThread?.findByItemId?.(this.itemId)
       ?? this._getMessageThread()?.findByItemId?.(this.itemId);
     if (!item) return null;

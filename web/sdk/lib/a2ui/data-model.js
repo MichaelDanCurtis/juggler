@@ -79,13 +79,13 @@ function asArrayIndex(token, arr) {
  */
 export function setByPointer(root, pointer, value) {
   const tokens = parsePointer(pointer);
-  if (tokens.length === 0) {
+  const last = tokens.at(-1);
+  if (last === undefined) {
     throw new Error('setByPointer cannot replace the whole document; handle the empty pointer at the call site');
   }
   /** @type {any} */
   let node = root;
-  for (let i = 0; i < tokens.length - 1; i++) {
-    const token = tokens[i];
+  for (const [i, token] of tokens.slice(0, -1).entries()) {
     const key = Array.isArray(node) ? asArrayIndex(token, node) : token;
     if (Array.isArray(node) && Number.isNaN(key)) {
       throw new Error(`Invalid array index ${JSON.stringify(token)} in pointer ${JSON.stringify(pointer)}`);
@@ -97,12 +97,11 @@ export function setByPointer(root, pointer, value) {
       }
       // Create the missing container: an array when the NEXT token looks like
       // an array index, an object otherwise.
-      next = /^(0|[1-9][0-9]*|-)$/.test(tokens[i + 1]) ? [] : {};
+      next = /^(0|[1-9][0-9]*|-)$/.test(tokens[i + 1] ?? '') ? [] : {};
       node[key] = next;
     }
     node = next;
   }
-  const last = tokens[tokens.length - 1];
   const key = Array.isArray(node) ? asArrayIndex(last, node) : last;
   if (Array.isArray(node) && Number.isNaN(key)) {
     throw new Error(`Invalid array index ${JSON.stringify(last)} in pointer ${JSON.stringify(pointer)}`);

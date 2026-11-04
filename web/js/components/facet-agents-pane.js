@@ -79,7 +79,7 @@ const STAGE_ORDER = [
   'connect', 'extract', 'discover', 'code', 'decide', 'translate', 'deploy', 'verify',
 ];
 
-/** Stage key -> the label shown above its group. */
+/** @type {Record<string, string>} Stage key -> the label shown above its group. */
 const STAGE_LABELS = {
   connect: 'Connect', extract: 'Extract', discover: 'Discover', code: 'Code',
   decide: 'Decide', translate: 'Translate', deploy: 'Deploy', verify: 'Verify',
@@ -106,8 +106,8 @@ function groupByStage(definitions) {
   for (const def of definitions || []) {
     if (!def) continue;
     const stages = Array.isArray(def.stages) ? def.stages.filter((s) => STAGE_ORDER.includes(s)) : [];
-    if (stages.length === 0) groups.unassigned.push(def);
-    else for (const s of stages) groups[s].push(def);
+    if (stages.length === 0) groups.unassigned?.push(def);
+    else for (const s of stages) groups[s]?.push(def);
   }
   return groups;
 }
@@ -127,6 +127,13 @@ class FacetAgentsPane extends HTMLElement {
     this._unsubscribe = null;
     /** Run ids the user expanded by hand — sticky across re-render. */
     this._expanded = new Set();
+    /** Brief drafts survive roster polling, but never cross program boundaries. */
+    this._briefs = new Map();
+    /** Unsent answers are retained until the run leaves its blocked state. */
+    this._answers = new Map();
+    this._doneOpen = false;
+    /** @type {number|null} */
+    this._draftProgramId = null;
   }
 
   /** @returns {void} */
@@ -172,8 +179,7 @@ class FacetAgentsPane extends HTMLElement {
    * @returns {Promise<void>} Resolves once the tick is done or skipped.
    */
   async _poll() {
-    const typing = this.querySelector('textarea[data-answer]');
-    if (typing && this.contains(document.activeElement) && document.activeElement === typing) {
+    if (document.activeElement?.tagName === 'TEXTAREA' && this.contains(document.activeElement)) {
       return;
     }
     await this._load();
@@ -182,6 +188,13 @@ class FacetAgentsPane extends HTMLElement {
   /** @returns {Promise<void>} Resolves once runs and definitions are refreshed. */
   async _load() {
     const target = this._target();
+    if (this._draftProgramId !== target?.programId) {
+      this._briefs.clear();
+      this._answers.clear();
+      this._expanded.clear();
+      this._doneOpen = false;
+      this._draftProgramId = target?.programId ?? null;
+    }
     if (!target) {
       this._runs = null;
       this._definitions = null;
@@ -194,20 +207,23 @@ class FacetAgentsPane extends HTMLElement {
         this._get(`${target.base}/runs?t=${target.token}`),
         this._get(`${target.base}/definitions?t=${target.token}`),
       ]);
-      if (Array.isArray(runs)) {
-        this._runs = runs;
-        this._error = '';
+      this._runs = runs;
+      this._definitions = definitions;
+      this._error = '';
+      const blocked = new Set(runs.filter((run) => run.status === 'blocked').map((run) => String(run.id)));
+      for (const id of this._answers.keys()) {
+        if (!blocked.has(id)) this._answers.delete(id);
       }
-      if (Array.isArray(definitions)) this._definitions = definitions;
-    } catch {
-      this._error = 'Agents unreachable — is the Prizmanyx API running?';
+    } catch (error) {
+      this._error = error instanceof Error && !(error instanceof TypeError)
+        ? error.message : 'Agents unreachable — is the Prizmanyx API running?';
     }
     this._render();
   }
 
   /**
    * @param {string} url
-   * @returns {Promise<any>} The parsed body, or null when the request failed.
+   * @returns {Promise<Array<Record<string, any>>>} The validated collection; failures reject the refresh.
    */
   async _get(url) {
     const response = await fetch(url);
@@ -216,15 +232,14 @@ class FacetAgentsPane extends HTMLElement {
       // these routes did not accept this credential at all, and the message
       // sent every reader looking for a stale token. Name the likelier cause
       // second rather than asserting either one.
-      this._error =
-        'Not authorized for this program — the console may need reopening to refresh its access.';
-      return null;
+      throw new Error('Not authorized for this program — the console may need reopening to refresh its access.');
     }
     if (!response.ok) {
-      this._error = `Agents unavailable (HTTP ${response.status})`;
-      return null;
+      throw new Error(`Agents unavailable (HTTP ${response.status})`);
     }
-    return response.json().catch(() => null);
+    const data = await response.json().catch(() => null);
+    if (!Array.isArray(data)) throw new Error('Agents returned an invalid response.');
+    return data;
   }
 
   /**
@@ -311,7 +326,7 @@ class FacetAgentsPane extends HTMLElement {
             : ''
         }
         <textarea data-answer data-run="${esc(run.id)}" rows="2"
-          placeholder="Answer and the run continues from where it stopped."></textarea>
+          placeholder="Answer and the run continues from where it stopped.">${esc(this._answers.get(String(run.id)) || '')}</textarea>
         <div class="agent-actions">
           <button type="button" data-send="${esc(run.id)}">Send</button>
           <button type="button" data-cancel="${esc(run.id)}">Stop this agent</button>
@@ -366,7 +381,8 @@ class FacetAgentsPane extends HTMLElement {
    * @returns {string} The recent tool journal markup.
    */
   _renderJournal(run) {
-    const events = Array.isArray(run.events) ? run.events.slice(-6) : [];
+    if (!Array.isArray(run.events)) return '<p class="agent-journal-empty">Tool-call details are not available in this roster.</p>';
+    const events = run.events.slice(-6);
     if (!events.length) return '<p class="agent-journal-empty">No tool calls yet.</p>';
     return `<ul class="agent-journal">${events
       .map((e) => `<li>${esc(e.kind)}${e.payload?.tool ? `: ${esc(e.payload.tool)}` : ''}</li>`)
@@ -394,10 +410,13 @@ class FacetAgentsPane extends HTMLElement {
           run.status === 'blocked'
             ? this._renderBlocked(run)
             : open
-              ? `<div class="agent-card-body">${this._renderJournal(run)}
-                   <div class="agent-actions">
+              ? `<div class="agent-card-body">
+                   ${run.error_detail ? `<p class="agents-error">${esc(run.error_detail)}</p>` : ''}
+                   ${run.result ? `<p class="agent-result">${esc(run.result)}</p>` : ''}
+                   ${this._renderJournal(run)}
+                   ${run.status === 'running' ? `<div class="agent-actions">
                      <button type="button" data-cancel="${esc(run.id)}">Stop this agent</button>
-                   </div>
+                   </div>` : ''}
                  </div>`
               : ''
         }
@@ -416,7 +435,7 @@ class FacetAgentsPane extends HTMLElement {
         <p>${esc(def.description || '')}</p>
         <p class="agent-blast">${esc(blastRadius(def))}</p>
         <textarea data-brief="${esc(def.name)}" rows="2"
-          placeholder="What are you trying to find out?"></textarea>
+          placeholder="What are you trying to find out?">${esc(this._briefs.get(def.name) || '')}</textarea>
         <button type="button" data-spawn="${esc(def.name)}">Start this agent</button>
       </li>`;
   }
@@ -432,13 +451,13 @@ class FacetAgentsPane extends HTMLElement {
     // promoted above the ones that named this stage.
     const order = [...STAGE_ORDER, 'unassigned'];
     return order
-      .filter((key) => groups[key].length > 0)
+      .filter((key) => (groups[key]?.length ?? 0) > 0)
       .map(
         (key) => `
         <section class="agent-stage-group">
           <h5 class="agent-stage-heading">${esc(STAGE_LABELS[key] || key)}</h5>
           <ul class="agent-templates">
-            ${groups[key].map((def) => this._renderTemplate(def)).join('')}
+            ${(groups[key] ?? []).map((def) => this._renderTemplate(def)).join('')}
           </ul>
         </section>`
       )
@@ -447,8 +466,7 @@ class FacetAgentsPane extends HTMLElement {
 
   /** @returns {void} */
   _render() {
-    const context = getPzxContext();
-    if (!context) {
+    if (!this._target()) {
       this.innerHTML = `
         <div class="agents-pane">
           <p class="agents-empty">
@@ -476,7 +494,7 @@ class FacetAgentsPane extends HTMLElement {
         }
         ${
           done.length
-            ? `<details class="agents-done"><summary>${done.length} finished</summary>
+            ? `<details class="agents-done"${this._doneOpen ? ' open' : ''}><summary>${done.length} finished</summary>
                  <ul class="agent-cards">${done.map((r) => this._renderRun(r)).join('')}</ul>
                </details>`
             : ''
@@ -487,12 +505,30 @@ class FacetAgentsPane extends HTMLElement {
 
   /** @returns {void} */
   _wire() {
+    const finished = this.querySelector('details.agents-done');
+    finished?.addEventListener('toggle', () => {
+      this._doneOpen = /** @type {HTMLDetailsElement} */ (finished).open;
+    });
+    for (const field of Array.from(this.querySelectorAll('textarea[data-answer]'))) {
+      field.addEventListener('input', () => {
+        this._answers.set(field.getAttribute('data-run'), /** @type {HTMLTextAreaElement} */ (field).value);
+      });
+    }
+    for (const field of Array.from(this.querySelectorAll('textarea[data-brief]'))) {
+      field.addEventListener('input', () => {
+        const name = field.getAttribute('data-brief');
+        this._briefs.set(name, /** @type {HTMLTextAreaElement} */ (field).value);
+      });
+    }
     this.querySelector('[data-library]')?.addEventListener('click', () => {
       this._library = !this._library;
       this._render();
     });
     for (const el of Array.from(this.querySelectorAll('[data-toggle]'))) {
       el.addEventListener('click', () => {
+        // The disclosure's toggle event may still be queued when its card is clicked.
+        const finished = /** @type {HTMLDetailsElement|null} */ (this.querySelector('details.agents-done'));
+        if (finished) this._doneOpen = finished.open;
         const id = Number(el.getAttribute('data-toggle'));
         if (this._expanded.has(id)) this._expanded.delete(id);
         else this._expanded.add(id);
@@ -502,13 +538,11 @@ class FacetAgentsPane extends HTMLElement {
     for (const el of Array.from(this.querySelectorAll('[data-spawn]'))) {
       el.addEventListener('click', () => {
         const name = el.getAttribute('data-spawn');
-        const brief = /** @type {HTMLTextAreaElement|null} */ (
-          this.querySelector(`textarea[data-brief="${name}"]`)
-        );
+        const brief = this._briefs.get(name) || '';
         const context = getPzxContext();
         if (!context) return;
         this._library = false;
-        const briefText = brief ? brief.value.trim() : '';
+        const briefText = brief.trim();
         if (!briefText) {
           // The server refuses an empty brief with a 422; say so here rather
           // than spending a round trip to be told what this pane already knows.
@@ -529,7 +563,10 @@ class FacetAgentsPane extends HTMLElement {
         const box = /** @type {HTMLTextAreaElement|null} */ (
           this.querySelector(`textarea[data-answer][data-run="${el.getAttribute('data-run')}"]`)
         );
-        if (box) box.value = el.getAttribute('data-answer-option') || '';
+        if (box) {
+          box.value = el.getAttribute('data-answer-option') || '';
+          box.dispatchEvent(new Event('input'));
+        }
       });
     }
     for (const el of Array.from(this.querySelectorAll('[data-send]'))) {

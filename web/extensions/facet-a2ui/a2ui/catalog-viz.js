@@ -25,7 +25,9 @@ import { buildSymbol, svgEl } from './symbols.js';
  * @typedef {import('./renderer.js').RenderContext} RenderContext
  */
 
-/** Series palette: CSS variable with a colorblind-safe fallback. */
+/**
+ * Series palette: CSS variable with a colorblind-safe fallback.
+ * @type {[string, ...string[]]} */
 const SERIES_COLORS = [
   'var(--a2ui-series-1, #4e79a7)',
   'var(--a2ui-series-2, #f28e2b)',
@@ -45,6 +47,14 @@ const STATUS_COLORS = {
 
 /** Muted color for axes, edges, and secondary text. */
 const MUTED = 'var(--a2ui-muted, #9aa0a6)';
+
+/**
+ * @param {number} index - Series index
+ * @returns {string} Palette color, cycling through the available colors
+ */
+function seriesColor(index) {
+  return SERIES_COLORS[index % SERIES_COLORS.length] ?? SERIES_COLORS[0];
+}
 
 /**
  * Normalize chart data into named series of numbers.
@@ -69,9 +79,10 @@ function normalizeChartData(data, seriesProp, xKey) {
   }
   if (typeof data[0] === 'object' && data[0] !== null) {
     const rows = /** @type {Record<string, unknown>[]} */ (data);
+    const firstRow = /** @type {Record<string, unknown>} */ (data[0]);
     const keys = Array.isArray(seriesProp) && seriesProp.length
       ? seriesProp.map(String)
-      : Object.keys(rows[0]).filter(k => typeof rows[0][k] === 'number');
+      : Object.keys(firstRow).filter(k => typeof firstRow[k] === 'number');
     if (!keys.length) throw new Error('Chart rows carry no numeric series keys');
     const labelKey = typeof xKey === 'string' ? xKey : null;
     return {
@@ -147,7 +158,7 @@ function drawLegend(svg, series) {
   if (series.length < 2) return;
   let x = PLOT_X + 30;
   series.forEach((s, i) => {
-    const dot = svgEl('circle', { cx: x, cy: H - 8, r: 4, fill: SERIES_COLORS[i % SERIES_COLORS.length] });
+    const dot = svgEl('circle', { cx: x, cy: H - 8, r: 4, fill: seriesColor(i) });
     const label = svgEl('text', { x: x + 8, y: H - 5, 'font-size': 9, fill: MUTED });
     label.textContent = s.key;
     svg.appendChild(dot);
@@ -177,11 +188,13 @@ function seriesPoints(values, y) {
  */
 function drawChart(svg, chartType, norm) {
   const { series } = norm;
+  const firstSeries = series[0];
+  if (!firstSeries) throw new Error('Chart needs at least one numeric series');
   const all = series.flatMap(s => s.values);
 
   if (chartType === 'pie') {
     // One series; each value is a slice.
-    const values = series[0].values.map(v => Math.max(0, v));
+    const values = firstSeries.values.map(v => Math.max(0, v));
     const total = values.reduce((a, b) => a + b, 0);
     if (total <= 0) throw new Error('Pie chart needs positive values');
     const cx = W / 2;
@@ -201,7 +214,7 @@ function drawChart(svg, chartType, norm) {
         ? svgEl('circle', { cx, cy, r, fill: SERIES_COLORS[0] })
         : svgEl('path', {
           d: `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`,
-          fill: SERIES_COLORS[i % SERIES_COLORS.length]
+          fill: seriesColor(i)
         });
       slice.dataset.sliceIndex = String(i);
       svg.appendChild(slice);
@@ -215,7 +228,7 @@ function drawChart(svg, chartType, norm) {
   drawAxes(svg, min, max);
 
   if (chartType === 'bar') {
-    const n = series[0].values.length;
+    const n = firstSeries.values.length;
     const groupW = PLOT_W / n;
     const barW = Math.max(2, (groupW * 0.7) / series.length);
     series.forEach((s, si) => {
@@ -226,7 +239,7 @@ function drawChart(svg, chartType, norm) {
           x, y: Math.min(top, y(0)),
           width: barW,
           height: Math.max(1, Math.abs(y(0) - top)),
-          fill: SERIES_COLORS[si % SERIES_COLORS.length]
+          fill: seriesColor(si)
         });
         rect.dataset.series = s.key;
         svg.appendChild(rect);
@@ -235,7 +248,10 @@ function drawChart(svg, chartType, norm) {
   } else {
     series.forEach((s, si) => {
       const pts = seriesPoints(s.values, y);
-      const color = SERIES_COLORS[si % SERIES_COLORS.length];
+      const first = pts[0];
+      const last = pts.at(-1);
+      if (!first || !last) return;
+      const color = seriesColor(si);
       if (chartType === 'scatter') {
         for (const [px, py] of pts) {
           svg.appendChild(svgEl('circle', { cx: px, cy: py, r: 3, fill: color }));
@@ -244,7 +260,7 @@ function drawChart(svg, chartType, norm) {
       }
       if (chartType === 'area') {
         const area = svgEl('path', {
-          d: `M ${pts.map(p => p.join(' ')).join(' L ')} L ${pts[pts.length - 1][0]} ${y(Math.max(0, min))} L ${pts[0][0]} ${y(Math.max(0, min))} Z`,
+          d: `M ${pts.map(p => p.join(' ')).join(' L ')} L ${last[0]} ${y(Math.max(0, min))} L ${first[0]} ${y(Math.max(0, min))} Z`,
           fill: color,
           opacity: 0.25,
           stroke: 'none'
@@ -286,7 +302,8 @@ function autoLayout(nodes, edges) {
   /** @type {Map<string, number>} */
   const layer = new Map();
   let frontier = nodes.filter(n => !hasIncoming.has(n.id)).map(n => n.id);
-  if (!frontier.length && nodes.length) frontier = [nodes[0].id];
+  const firstNode = nodes[0];
+  if (!frontier.length && firstNode) frontier = [firstNode.id];
   let depth = 0;
   while (frontier.length) {
     /** @type {string[]} */
@@ -321,7 +338,7 @@ function autoLayout(nodes, edges) {
   return pos;
 }
 
-/** @type {Record<string, (def: ComponentDef, ctx: RenderContext) => HTMLElement>} */
+/** @satisfies {Record<string, (def: ComponentDef, ctx: RenderContext) => HTMLElement>} */
 export const VIZ_CATALOG = {
   /**
    * Chart — line, area, bar, scatter, pie, sparkline over bound data.
@@ -352,7 +369,9 @@ export const VIZ_CATALOG = {
 
     if (chartType === 'sparkline') {
       const svg = chartSvg(120, 28);
-      const values = norm.series[0].values;
+      const firstSeries = norm.series[0];
+      if (!firstSeries) throw new Error('Sparkline needs a numeric series');
+      const values = firstSeries.values;
       const { y } = yScale(values);
       // Sparkline reuses the line geometry compressed into its own frame.
       const pts = seriesPoints(values, v => 2 + ((y(v) - PLOT_Y) / PLOT_H) * 24)

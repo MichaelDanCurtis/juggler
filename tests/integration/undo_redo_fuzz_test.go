@@ -4,9 +4,9 @@
 package integration_test
 
 import (
-	"fmt"
 	"facet/cmd/facet/worker"
 	"facet/tests/helpers"
+	"fmt"
 	"sort"
 	"testing"
 	"time"

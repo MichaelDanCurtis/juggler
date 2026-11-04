@@ -268,9 +268,13 @@ func listBrowserTests(srv testServerEntry) (names, polluters []string, err error
 	var payload struct {
 		Names     []string `json:"names"`
 		Polluters []string `json:"polluters"`
+		Errors    []string `json:"errors"`
 	}
 	if err := pollServer(srv.addr, "/api/test/names", 30*time.Second, &payload); err != nil {
 		return nil, nil, fmt.Errorf("waiting for test names: %w", err)
+	}
+	if len(payload.Errors) > 0 {
+		return nil, nil, fmt.Errorf("browser registration failed: %s", strings.Join(payload.Errors, "\n"))
 	}
 	return payload.Names, payload.Polluters, nil
 }
