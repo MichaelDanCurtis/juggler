@@ -17,7 +17,7 @@
  * @module unit-tests/agents-pane-test
  */
 
-import { blastRadius, elapsed, groupByStage } from '../../js/components/facet-agents-pane.js';
+import { FacetAgentsPane, blastRadius, elapsed, groupByStage } from '../../js/components/facet-agents-pane.js';
 
 /**
  * @param {any} _ctx
@@ -116,6 +116,102 @@ export async function runTests(_ctx) {
     const groups = groupByStage([{ name: 'a' }, null]);
     assert(groups.unassigned.length === 1, 'undefined stages behaves like []');
   });
+
+  run('brief survives template replacement and uses the edited stage card', () => {
+    const pane = new FacetAgentsPane();
+    const definition = { name: 'audit', stages: ['discover', 'code'] };
+    pane.innerHTML = pane._renderTemplate(definition) + pane._renderTemplate(definition);
+    pane._wire();
+    const fields = pane.querySelectorAll('textarea');
+    fields[1].value = 'Keep this draft <intact>';
+    fields[1].dispatchEvent(new Event('input'));
+    pane.innerHTML = pane._renderTemplate(definition);
+    assert(pane.querySelector('textarea').value === 'Keep this draft <intact>', 'draft lost on refresh');
+    assert(pane._briefs.get('audit') === 'Keep this draft <intact>', 'second stage card ignored');
+  });
+
+  run('missing journal data never claims no tools ran', () => {
+    const pane = new FacetAgentsPane();
+    const markup = pane._renderJournal({ calls_used: 12 });
+    assert(markup.includes('not available'), 'missing journal presented as empty history');
+  });
+
+  run('terminal cards show their outcome and do not offer cancellation', () => {
+    const pane = new FacetAgentsPane();
+    pane._expanded.add(7);
+    for (const status of ['succeeded', 'failed', 'cancelled']) {
+      pane.innerHTML = pane._renderRun({ id: 7, status, result: 'Result <safe>', error_detail: 'Failure <safe>' });
+      assert(!pane.querySelector('[data-cancel]'), `${status} still offers Stop`);
+      assert(pane.textContent.includes('Result <safe>'), `${status} hides result`);
+      assert(pane.textContent.includes('Failure <safe>'), `${status} hides error`);
+    }
+    pane.innerHTML = pane._renderRun({ id: 7, status: 'running' });
+    assert(!!pane.querySelector('[data-cancel]'), 'running agent cannot be stopped');
+  });
+
+  run('blocked answer and option selection survive replacement', () => {
+    const pane = new FacetAgentsPane();
+    const blocked = { id: 7, status: 'blocked', blocked_payload: { options: ['Review first'] } };
+    pane.innerHTML = pane._renderRun(blocked);
+    pane._wire();
+    const field = pane.querySelector('textarea');
+    field.value = 'My answer <safe>';
+    field.dispatchEvent(new Event('input'));
+    pane.innerHTML = pane._renderRun(blocked);
+    pane._wire();
+    assert(pane.querySelector('textarea').value === 'My answer <safe>', 'typed answer lost');
+    pane.querySelector('[data-answer-option]').click();
+    pane.innerHTML = pane._renderRun(blocked);
+    assert(pane.querySelector('textarea').value === 'Review first', 'selected option lost');
+  });
+
+  run('finished disclosure survives roster replacement', () => {
+    const pane = new FacetAgentsPane();
+    pane._target = () => ({ base: '/audit', token: '', programId: 7 });
+    pane._runs = [{ id: 7, status: 'succeeded' }];
+    pane._render();
+    const finished = pane.querySelector('details');
+    finished.open = true;
+    pane.querySelector('[data-toggle]').click();
+    assert(pane.querySelector('details').open, 'finished disclosure collapsed');
+  });
+
+  const originalFetch = globalThis.fetch;
+  try {
+    const pane = new FacetAgentsPane();
+    pane._target = () => ({ base: '/audit-agents', token: '', programId: 7 });
+    pane._render = () => {};
+    globalThis.fetch = async (url, options) => {
+      if (String(url).startsWith('/audit-agents/')) {
+        return String(url).includes('/definitions')
+          ? new globalThis.Response('{}', { status: 401 }) : new globalThis.Response('[]');
+      }
+      return originalFetch(url, options);
+    };
+    await pane._load();
+    run('a successful run load cannot hide a definitions authorization error', () => {
+      assert(pane._error.includes('Not authorized'), `authorization error lost: ${pane._error}`);
+    });
+    pane._get = async () => [];
+    pane._draftProgramId = 7;
+    pane._answers.set('7', 'old answer');
+    await pane._load();
+    run('answers clear when their run leaves blocked state', () => {
+      assert(pane._answers.size === 0, 'stale answer retained');
+    });
+    pane._briefs.set('audit', 'old program brief');
+    pane._answers.set('7', 'old program answer');
+    pane._draftProgramId = 8;
+    await pane._load();
+    run('drafts do not cross program boundaries', () => {
+      assert(pane._briefs.size === 0 && pane._answers.size === 0, 'draft crossed program boundary');
+    });
+  } catch (error) {
+    failed += 1;
+    errors.push(`roster refresh: ${error.message}`);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 
   return { passed, failed, errors };
 }

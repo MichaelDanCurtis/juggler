@@ -1113,7 +1113,7 @@ class ConversationTab extends HTMLElement {
       // builder reuses this same element, so the rail never flickers.
       if (
         newColumns.length === 0 ||
-        newColumns[newColumns.length - 1].tagName !== 'PROPERTIES-PANEL'
+        newColumns.at(-1)?.tagName !== 'PROPERTIES-PANEL'
       ) {
         newColumns.push(this._buildRailColumn(newColumns.length, conversation));
       }
@@ -1321,7 +1321,7 @@ class ConversationTab extends HTMLElement {
    * Details/Workspace/Browser tabs are always reachable (Prizmanyx fork).
    * @param {number} i
    * @param {any} conversation
-   * @returns {HTMLElement}
+   * @returns {HTMLElement} The persistent properties rail.
    * @private
    */
   _buildRailColumn(i, conversation) {

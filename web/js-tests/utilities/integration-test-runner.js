@@ -9,6 +9,7 @@
  * @module integration/integration-test-runner
  */
 
+import { installTestWorkerRouting } from './worker-routing.js';
 import { UITestHarness } from './ui-test-harness.js';
 import { executeUIOperation } from './ui-operation-executor.js';
 import {
@@ -103,7 +104,7 @@ __tapeChan.onmessage = (/** @type {MessageEvent} */ ev) => {
 
 /**
  * @typedef {object} TestOperation
- * @property {'send-message'|'send-message-no-wait'|'send-thread-message'|'send-thread-message-no-wait'|'close-thread'|'assert-input-warning'|'reopen-thread'|'approve'|'approve-no-wait'|'deny'|'wait-for-approval'|'wait-for-thread-approval'|'approve-thread-tool'|'approve-thread-tool-no-wait'|'deny-thread-tool'|'run-command'|'compact-up-to'|'simulate-disconnect'|'wait-for-state'|'wait-for-idle'|'create-conversation'|'duplicate-conversation'|'switch-conversation'|'delete-conversation'|'undo'|'redo'|'set-model'|'assert-document'|'assert-transaction-markers'|'validate-context-snapshot'|'validate-thread-context'|'start-capture-progress'|'wait-for-progress'|'assert-streaming-chunks'|'assert-no-result'|'cancel'|'cancel-from-root'|'cancel-thread'|'delete-last-item'|'delete-last-item-in-thread'|'delete-first-item-in-thread'|'delete-item-in-thread'|'assert-thread-item-count'|'wait-for-execution'|'rerun-tool'|'rerun-tool-no-wait'|'cancel-via-ui-flow'|'continue'|'continue-sub-thread'|'continue-in-new-thread'|'assert-dom'|'click-dom'|'set-dom-value'|'move-items'|'copy-items'|'copy-items-new-tab'|'move-items-new-tab'|'expand-thread'|'promote-thread'|'start-tool-exec-counter'|'assert-tool-exec-count'|'start-spinner-capture'|'assert-spinner-was-visible'|'capture-tool-result'|'assert-tool-result-changed'|'add-context-item-to-sub-thread'|'add-context-item-to-root'|'add-ai-files-to-sub-thread'|'remove-context-item-from-sub-thread'|'wait-ms'|'at-mention-file'|'wait-for-mock-paused'|'release-mock'|'add-execute-pattern'|'set-strategy'} type - Operation type
+ * @property {'send-message'|'send-message-no-wait'|'send-thread-message'|'send-thread-message-no-wait'|'close-thread'|'assert-input-warning'|'reopen-thread'|'approve'|'approve-no-wait'|'deny'|'wait-for-approval'|'wait-for-thread-approval'|'approve-thread-tool'|'approve-thread-tool-no-wait'|'deny-thread-tool'|'run-command'|'compact-up-to'|'simulate-disconnect'|'wait-for-state'|'wait-for-idle'|'create-conversation'|'duplicate-conversation'|'switch-conversation'|'delete-conversation'|'undo'|'redo'|'set-model'|'assert-document'|'assert-transaction-markers'|'validate-context-snapshot'|'validate-thread-context'|'start-capture-progress'|'wait-for-progress'|'assert-streaming-chunks'|'assert-no-result'|'cancel'|'cancel-from-root'|'cancel-thread'|'delete-last-item'|'delete-last-item-in-thread'|'delete-first-item-in-thread'|'delete-thread-items-grouped'|'delete-item-in-thread'|'assert-thread-item-count'|'wait-for-execution'|'rerun-tool'|'rerun-tool-no-wait'|'cancel-via-ui-flow'|'continue'|'continue-sub-thread'|'continue-in-new-thread'|'assert-dom'|'click-dom'|'set-dom-value'|'move-items'|'copy-items'|'copy-items-new-tab'|'move-items-new-tab'|'expand-thread'|'promote-thread'|'start-tool-exec-counter'|'assert-tool-exec-count'|'start-spinner-capture'|'assert-spinner-was-visible'|'capture-tool-result'|'assert-tool-result-changed'|'add-context-item-to-sub-thread'|'add-context-item-to-root'|'add-ai-files-to-sub-thread'|'remove-context-item-from-sub-thread'|'wait-ms'|'at-mention-file'|'wait-for-mock-paused'|'release-mock'|'add-execute-pattern'|'set-strategy'} type - Operation type
  * @property {string} [message] - Message text (for send-message)
  * @property {string} [toolUseId] - Tool use ID (for approve/deny/wait-for-approval/streaming operations)
  * @property {string} [response] - Custom response value (for approve - used by AskUserQuestion answers)
@@ -137,7 +138,8 @@ __tapeChan.onmessage = (/** @type {MessageEvent} */ ev) => {
  * @property {string} [value] - Value to set on an input/textarea (for set-dom-value)
  * @property {'root'|'thread'} [from] - Source container (for move-items / copy-items)
  * @property {'root'|'thread'} [to] - Destination container (for move-items / copy-items)
- * @property {number[]} [indices] - Source indices to move/copy (for move-items / copy-items)
+ * @property {number[]} [indices] - Source indices to move/copy, or successive grouped thread deletion indices
+ * @property {number[]} [expectedCounts] - Expected deletable item count after each grouped deletion
  * @property {number} [position] - Insert position in destination (for move-items / copy-items)
  * @property {string} [text] - Visible text the clicked element must contain (for click-dom)
  * @property {boolean} [absent] - Assert element does NOT exist (for assert-dom / assert-input-warning)
@@ -919,11 +921,7 @@ async function _initSuite() {
   if (!wsService.isConnected()) {
     await connectWebSocket(wsService);
   }
-  wsService.on('message', (/** @type {any} */ data) => {
-    if (data.type === 'worker-message') {
-      workerManager.handleWorkerMessageFromWS(data);
-    }
-  });
+  installTestWorkerRouting(wsService, workerManager);
   _suiteState.initialized = true;
 }
 

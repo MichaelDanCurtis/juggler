@@ -45,7 +45,7 @@ const COMPONENTS = { ...BASIC_CATALOG, ...VIZ_CATALOG };
  * @property {string} type - Catalog component type (e.g. 'Text', 'Row')
  * @property {Record<string, unknown>} props - Component properties (bindings unresolved)
  * @property {string[]} children - Child component ids (empty when none)
- * @property {Record<string, unknown>|undefined} action - Declared action payload, if interactive
+ * @property {Record<string, unknown>} [action] - Declared action payload, if interactive
  */
 
 /**
@@ -95,8 +95,9 @@ export function normalizeComponent(raw) {
   } else if (raw.component && typeof raw.component === 'object') {
     // Wire shape: the single key of `component` is the type, its value the props.
     const keys = Object.keys(raw.component);
-    if (keys.length !== 1) return null;
-    type = keys[0];
+    const componentType = keys[0];
+    if (keys.length !== 1 || componentType === undefined) return null;
+    type = componentType;
     const inner = raw.component[type];
     props = (inner && typeof inner === 'object') ? { ...inner } : {};
   } else {

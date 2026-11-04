@@ -57,10 +57,9 @@ async function seedConversation(title, prompt) {
   // Honest degrade: the worker never came up — leave the ask visible and
   // unsent so the consultant can read it and press Enter themselves.
   // (_getInputBox is fork-internal; the bridge and conversation ship together.)
-  const box = conversation._getInputBox();
+  const box = /** @type {(HTMLElement & {setDraft: (text: string) => void})|null} */ (conversation._getInputBox());
   if (box) {
-    box.value = prompt;
-    box.dispatchEvent(new Event('input', { bubbles: true }));
+    box.setDraft(prompt);
   }
 }
 
@@ -100,7 +99,7 @@ function setDetailsState(msg) {
  * Whether an origin matches the server-granted embed source list. Supports
  * the CSP port-wildcard form we use in dev ("http://localhost:*").
  * @param {string} origin
- * @returns {boolean}
+ * @returns {boolean} Whether the parent origin has an explicit embed grant.
  */
 function originAllowed(origin) {
   const raw = /** @type {string} */ ((/** @type {any} */ (window).FACET_EMBED_PARENTS) || '');
@@ -114,7 +113,7 @@ function originAllowed(origin) {
   return false;
 }
 
-/** @returns {Array<{id: string, name: string, active: boolean}>} */
+/** @returns {Array<{id: string, name: string, active: boolean}>} Current conversations for the parent sidebar. */
 function snapshot() {
   if (!_session) return [];
   const visibleId = _session.visibleConversationId;
@@ -125,6 +124,9 @@ function snapshot() {
   }));
 }
 
+/**
+ *
+ */
 function send() {
   if (!_parentOrigin) return;
   window.parent.postMessage({ type: 'facet:conversations', items: snapshot() }, _parentOrigin);

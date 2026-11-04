@@ -58,11 +58,10 @@ import { recordTape } from '../utils/event-tape.js';
  */
 
 // Cross-window bridge for test instrumentation. The test page subscribes to
-// this BroadcastChannel name to observe tool-exec activity
+// this engine-bridge channel to observe tool-exec activity
 // (`startToolExecCounter` in test-harness.js). Engine sends a single WS
 // `engine-bridge` envelope; the server forwards it to every viewer, whose
-// `websocket.js` handler replays it onto a same-window BroadcastChannel of
-// this name. One transport, one delivery per peer — no duplicate events.
+// `websocket.js` handler emits one local engine-bridge event per viewer.
 const __TOOL_EXEC_CHANNEL = 'facet-tool-exec';
 
 /**
@@ -94,7 +93,7 @@ class ToolExecutor {
     const resolvedName = resolveToolName(toolCall.name);
     // conversationId tags every broadcast so multi-tab (and the multi-
     // iframe test pool) listeners can filter out events for OTHER
-    // conversations — without it, every BroadcastChannel subscriber in
+    // conversations — without it, every event subscriber in
     // the same origin counts every conversation's tool starts.
     const conversationId = messageThread?.conversationId;
 

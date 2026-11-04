@@ -13,6 +13,16 @@
          cause (see runOneTest) and are spliced into failure blocks. -->
     <script nonce="{{.CSPNonce}}">
         window.__earlyErrors = [];
+        function reportLoadError(message) {
+            window.__earlyErrors.push(message);
+            // The entry module cannot report a failed import of itself. Keep
+            // that cause in registration results instead of only timing out.
+            fetch('/api/test/names', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ names: [], errors: window.__earlyErrors }),
+            }).catch(() => {});
+        }
         window.addEventListener('error', (e) => {
             const msg = e.message || (e.error && e.error.message) || 'script error';
             // Benign browser chatter, not a JS failure: WebKit fires this when
@@ -20,10 +30,10 @@
             // it would mislabel every busy test as "likely the real cause".
             if (msg.indexOf('ResizeObserver loop') !== -1) return;
             const where = e.filename ? ' (' + e.filename + ':' + e.lineno + ')' : '';
-            window.__earlyErrors.push(msg + where);
+            reportLoadError(msg + where);
         });
         window.addEventListener('unhandledrejection', (e) => {
-            window.__earlyErrors.push('unhandled rejection: ' + (e.reason && e.reason.message || e.reason));
+            reportLoadError('unhandled rejection: ' + (e.reason && e.reason.message || e.reason));
         });
     </script>
 

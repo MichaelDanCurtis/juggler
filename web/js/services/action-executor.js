@@ -133,8 +133,7 @@ function warnOnEmptySuccessSummary(rawSummary, className) {
 // on the engine document; viewers mirror them on their own document so
 // test-page capture listeners observe them. Engine sends a single WS
 // `engine-bridge` envelope; the server forwards it to every viewer, whose
-// `websocket.js` handler replays it onto a same-window BroadcastChannel of
-// this name. One transport, one delivery per peer — no duplicate events.
+// `websocket.js` handler emits one local engine-bridge event per viewer.
 const __ACTION_PROGRESS_CHANNEL = 'facet-action-progress';
 
 class ActionExecutor {
@@ -253,7 +252,7 @@ class ActionExecutor {
     // Track this running action for cancellation and progress correlation.
     // conversationId is carried into _emitProgress so multi-tab (and the
     // multi-iframe test pool) listeners can filter out events belonging to
-    // OTHER conversations — without it, every BroadcastChannel subscriber
+    // OTHER conversations — without it, every event subscriber
     // in the same browsing context sees every conversation's tool-progress.
     this._runningActions.set(executionId, {
       controller,

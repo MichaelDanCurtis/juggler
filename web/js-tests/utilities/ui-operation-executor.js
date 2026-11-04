@@ -932,6 +932,7 @@ export async function executeUIOperation(harness, op) {
 
     case 'delete-last-item-in-thread':
     case 'delete-first-item-in-thread':
+    case 'delete-thread-items-grouped':
     case 'delete-item-in-thread': {
       const conversation = harness.conversation;
       const rootItems = harness.rootThread.items || [];
@@ -950,6 +951,27 @@ export async function executeUIOperation(harness, op) {
       const deletableItems = allItems.filter(i => !i.get('preventUserDeletion'));
       if (deletableItems.length === 0) {
         throw new Error(`${op.type}: thread has no deletable items`);
+      }
+      if (op.type === 'delete-thread-items-grouped') {
+        const { indices, expectedCounts } = op;
+        if (!indices?.length || expectedCounts?.length !== indices.length) {
+          throw new Error('delete-thread-items-grouped requires indices and one expected count per deletion');
+        }
+        // One authored transaction reaches the worker as one update. Separate
+        // awaited operations can exceed its capture window under pool load.
+        messageThread.transact(() => {
+          indices.forEach((index, step) => {
+            const items = messageThread.items;
+            const target = items.filter(i => !i.get('preventUserDeletion'))[index];
+            if (!target) throw new Error(`grouped deletion index ${index} is out of range`);
+            messageThread.deleteAt(items.indexOf(target));
+            const remaining = messageThread.items.filter(i => !i.get('preventUserDeletion')).length;
+            if (remaining !== expectedCounts[step]) {
+              throw new Error(`grouped deletion ${step}: expected ${expectedCounts[step]} items, got ${remaining}`);
+            }
+          });
+        });
+        break;
       }
       let targetItem;
       if (op.type === 'delete-last-item-in-thread') {

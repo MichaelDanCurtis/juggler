@@ -370,7 +370,7 @@ class PropertiesPanel extends HTMLElement {
     /** @param {string} name */
     const activate = (name) => {
       this.setAttribute('data-panel-view', name);
-      for (const tab of tabs) {
+      for (const tab of Array.from(tabs)) {
         tab.setAttribute('aria-selected', tab.dataset.panelTab === name ? 'true' : 'false');
       }
       const content = this.querySelector('properties-panel-content');
@@ -390,7 +390,7 @@ class PropertiesPanel extends HTMLElement {
         /* per-session only */
       }
     };
-    for (const tab of tabs) {
+    for (const tab of Array.from(tabs)) {
       tab.addEventListener('click', () => activate(/** @type {string} */ (tab.dataset.panelTab)));
     }
     // selectItem/setTransaction bring Details forward through this handle.

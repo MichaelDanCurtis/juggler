@@ -28,11 +28,12 @@ let _activeConversationId = null;
 /** @type {Set<() => void>} */
 const _listeners = new Set();
 
+/** Notify context subscribers of the current state. */
 function _notify() {
   for (const listener of _listeners) listener();
 }
 
-/** @returns {Record<string, string>} */
+/** @returns {Record<string, string>} Authentication headers for the current embedded session. */
 function _authHeaders() {
   const token = /** @type {{__facetToken?: string}} */ (globalThis).__facetToken;
   return token ? { 'X-Facet-Token': token } : {};
@@ -62,7 +63,7 @@ export function getPzxContext() {
   return _context;
 }
 
-/** @returns {string|null} */
+/** @returns {string|null} Active conversation identifier, when available. */
 export function getActiveConversationId() {
   return _activeConversationId;
 }
@@ -97,7 +98,10 @@ export function initPzxContext(session) {
     });
 }
 
-/** @param {() => void} listener  @returns {() => void} unsubscribe */
+/**
+ * @param {() => void} listener Context change callback.
+ * @returns {() => void} Unsubscribe callback.
+ */
 export function onPzxContextChange(listener) {
   _listeners.add(listener);
   return () => _listeners.delete(listener);

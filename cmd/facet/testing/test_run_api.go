@@ -65,6 +65,7 @@ type TestRunAPI struct {
 type testNames struct {
 	Names     []string `json:"names"`
 	Polluters []string `json:"polluters"`
+	Errors    []string `json:"errors,omitempty"`
 }
 
 // actorState lives entirely inside the actor goroutine. Closures from opsCh
